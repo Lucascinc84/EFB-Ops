@@ -528,6 +528,12 @@ html.dv-lock,html.dv-lock body{overflow:hidden}
 .dv-sizes button.on{background:var(--mag);border-color:var(--mag);color:#fff}
 @media(max-width:700px){.dv-t span{display:none}.dv-t{min-width:40px;padding:8px}.dv-hint{display:none}.dv-title{max-width:28vw}}
 
+/* iPad Safari: date inputs keep a native min-width and overflow their grid cell */
+.fld,.frm>div{min-width:0}
+input[type=date]{-webkit-appearance:none;appearance:none;display:block;min-width:0;max-width:100%;width:100%;min-height:42px;text-align:left}
+input[type=date]::-webkit-date-and-time-value{text-align:left;margin:0}
+.fld input.big+*,.fld input[type=date]{box-sizing:border-box}
+
 /* standalone app: full bleed + safe areas */
 .app{margin:0!important;min-height:100vh;border:0!important;border-radius:0!important;box-shadow:none!important;max-width:none}
 .top{padding-top:calc(10px + env(safe-area-inset-top));padding-left:calc(16px + env(safe-area-inset-left));padding-right:calc(16px + env(safe-area-inset-right))}
