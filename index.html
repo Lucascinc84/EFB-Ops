@@ -445,6 +445,22 @@ html.lock,html.lock body{overflow:hidden}
 /* modals too */
 .modal{-webkit-overflow-scrolling:touch;overscroll-behavior:contain;max-height:calc(100dvh - 32px)}
 
+.wx-src{font-size:11.5px;margin:0 2px 10px}
+.wx-age{font-family:var(--mono);font-size:10.5px;color:var(--green);background:#14281e;padding:2px 7px;border-radius:3px}
+.wx-age.old{color:var(--amber);background:#2a2516}
+
+/* ---------- profiles ---------- */
+.prof-sel{appearance:none;-webkit-appearance:none;background:none;border:0;color:var(--muted);font-size:12px;font-weight:700;letter-spacing:.5px;padding:6px 10px;border-radius:4px;max-width:150px;text-overflow:ellipsis;cursor:pointer}
+.prof-sel.on{background:var(--mag);color:#fff}
+.prof-sel option{color:#111}
+.swatches{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.sw{width:30px;height:30px;border-radius:50%;border:2px solid transparent}
+.sw.on{border-color:#fff;box-shadow:0 0 0 2px #0008}
+.swatches input[type=color]{width:44px;height:32px;padding:0;border:1px solid var(--line);border-radius:6px;background:none}
+.pchks{display:flex;flex-wrap:wrap;gap:6px}
+.pchk{display:flex;align-items:center;gap:6px;background:#17181d;border:1px solid var(--line);border-radius:16px;padding:5px 10px;font-size:12.5px;color:var(--text);margin:0!important}
+.frm label .muted{font-weight:400}
+
 /* standalone app: full bleed + safe areas */
 .app{margin:0!important;min-height:100vh;border:0!important;border-radius:0!important;box-shadow:none!important;max-width:none}
 .top{padding-top:calc(10px + env(safe-area-inset-top));padding-left:calc(16px + env(safe-area-inset-left));padding-right:calc(16px + env(safe-area-inset-right))}
@@ -874,7 +890,15 @@ const ICON={
 };
 
 /* ---------------- aircraft helpers ---------------- */
-const isWizz=()=>S.settings.mode!=="global";
+const isWizz=()=>S.settings.mode==="wizz"||!S.settings.mode;
+/* ---------- custom profiles (Global behaviour + own colour / checklists / aircraft) ---------- */
+const profList=()=>S.settings.profiles||(S.settings.profiles=[]);
+const curProf=()=>{ const m=S.settings.mode||""; return m.startsWith("p:")?profList().find(p=>p.id===m.slice(2))||null:null; };
+const famAllowed=id=>{ const p=curProf(); return !p||!p.fams||!p.fams.length||p.fams.includes(id); };
+const clAllowed=id=>{ const p=curProf(); return !p||!p.cls||!p.cls.length||p.cls.includes(id); };
+function hex2hsl(h){ h=h.replace("#",""); const r=parseInt(h.slice(0,2),16)/255,g=parseInt(h.slice(2,4),16)/255,b=parseInt(h.slice(4,6),16)/255; const mx=Math.max(r,g,b),mn=Math.min(r,g,b); let H=0,Sx=0,L=(mx+mn)/2; if(mx!==mn){const d=mx-mn; Sx=L>.5?d/(2-mx-mn):d/(mx+mn); H=mx===r?(g-b)/d+(g<b?6:0):mx===g?(b-r)/d+2:(r-g)/d+4; H*=60;} return [H,Sx*100,L*100]; }
+const hsl=(h,s,l)=>`hsl(${Math.round(h)} ${Math.round(s)}% ${Math.max(0,Math.min(100,Math.round(l)))}%)`;
+function profPalette(c){ const [h,s,l]=hex2hsl(c||"#1f9d63"); return {mag:hsl(h,s,l), mag2:hsl(h,s,Math.min(78,l+14)), purple:hsl(h,Math.min(80,s),Math.max(12,l-30)), nextbg:hsl(h,Math.min(45,s),12), grad:`linear-gradient(90deg,${hsl(h,s,l)} 0%,${hsl(h,s,Math.max(18,l-14))} 55%,${hsl(h,Math.min(80,s),Math.max(10,l-30))} 100%)`, ring:hsl(h,s,Math.min(72,l+10)), wa:hsl(h,Math.min(70,s),Math.max(10,l-32)), wb:hsl(h,s,Math.max(18,l-12)), line:hsl(h,s,Math.min(85,l+25))}; }
 function variantInfo(v){ for(const f of FAMILIES){const x=f.variants.find(y=>y.v===v); if(x) return {fam:f,var:x};} return null; }
 const enginesFor=v=>(variantInfo(v)||{var:{eng:[]}}).var.eng;
 function currentAc(){
@@ -934,10 +958,10 @@ function aircraftRowHTML(){
   const g=h.g, fam=FAMILIES.find(f=>f.id===g.fam);
   const vars=fam?fam.variants:[], engs=g.variant?enginesFor(g.variant):[];
   return `<div class="ac-row">
-    <div class="fld"><label>Family</label><select data-g="fam"><option value="">— family —</option>${FAMILIES.map(f=>opt(f.id,f.name,g.fam)).join("")}</select></div>
+    <div class="fld"><label>Family</label><select data-g="fam"><option value="">— family —</option>${FAMILIES.filter(f=>famAllowed(f.id)).map(f=>opt(f.id,f.name,g.fam)).join("")}</select></div>
     <div class="fld"><label>Variant</label><select class="big" data-g="variant" ${vars.length?"":"disabled"}><option value="">${vars.length?"— variant —":"select a family first"}</option>${vars.map(x=>opt(x.v,x.v,g.variant)).join("")}</select></div>
     <div class="fld"><label>Engine</label><select data-g="eng" ${engs.length?"":"disabled"}><option value="">${engs.length?"— engine —":"—"}</option>${engs.map(e=>opt(e,e,g.eng)).join("")}</select></div>
-    <div class="fld"><label>Registration</label><input class="big" data-g="reg" value="${esc(g.reg||"")}" placeholder="F-GSQA"></div>
+    <div class="fld"><label>Registration</label><input class="big" data-g="reg" list="profRegs" value="${esc(g.reg||"")}" placeholder="F-GSQA"><datalist id="profRegs">${((curProf()&&curProf().regs&&curProf().regs.length)?curProf().regs:Object.keys((S.acdb&&S.acdb.list)||{})).map(r=>`<option value="${esc(r)}">`).join("")}</datalist></div>
   </div>
   <div id="photoSlot">${photoLinks(g.reg)}</div>`;
 }
@@ -1058,8 +1082,9 @@ function briefingText(){
 /* ================= MODULE: CHECKLIST ================= */
 function activeCl(){
   if(isWizz()) return "a320";
-  if(S.checklist.sel&&CHECKLISTS[S.checklist.sel]) return S.checklist.sel;
-  const fam=FAMILIES.find(f=>f.id===currentAc().fam); return fam?fam.cl:"a320";
+  if(S.checklist.sel&&CHECKLISTS[S.checklist.sel]&&clAllowed(S.checklist.sel)) return S.checklist.sel;
+  const fam=FAMILIES.find(f=>f.id===currentAc().fam); if(fam&&clAllowed(fam.cl)) return fam.cl;
+  return Object.keys(CHECKLISTS).find(clAllowed)||"a320";
 }
 function clItems(cl,si){return CHECKLISTS[cl].sections[si].i.map((raw,ii)=>{
   const id=`${cl}:${si}_${ii}`;
@@ -1084,7 +1109,7 @@ function renderChecklist(el){
   el.innerHTML=`
   <div class="page-head"><span class="title-chip">${esc(C.title)}</span><span class="sp"></span>
     <button class="btn ghost" id="cResetAll">Reset all</button></div>
-  ${isWizz()?"":`<div class="cl-pick">${Object.entries(CHECKLISTS).sort((x,y)=>["a220","a320","b737","b757","b777"].indexOf(x[0])-["a220","a320","b737","b757","b777"].indexOf(y[0])).map(([id,c])=>`<button data-cl="${id}" class="${id===cl?"on":""}">${esc(c.name)}</button>`).join("")}</div>`}
+  ${isWizz()?"":`<div class="cl-pick">${Object.entries(CHECKLISTS).filter(([id])=>clAllowed(id)).sort((x,y)=>["a220","a320","b737","b757","b777"].indexOf(x[0])-["a220","a320","b737","b757","b777"].indexOf(y[0])).map(([id,c])=>`<button data-cl="${id}" class="${id===cl?"on":""}">${esc(c.name)}</button>`).join("")}</div>`}
   <div class="cl-src ${C.generic?"warn":""}">Source: ${esc(C.src)}${C.generic?" — send me your A220 checklist to replace it":""}</div>
   <div class="overall"><span class="mono">${ta}/${tb}</span><div class="bar ${ta===tb?"done":""}"><i style="width:${tb?ta/tb*100:0}%"></i></div><span>${tb?Math.round(ta/tb*100):0}%</span></div>
   <div class="cl-wrap">
@@ -1487,8 +1512,8 @@ function renderOfp(el){
     box.addEventListener("scroll",hl,{passive:true}); hl();
   }
   const sbf=$("#sbFetch"); if(sbf) sbf.onclick=async()=>{ sbf.disabled=true; sbf.textContent="Fetching…";
-    try{ const r=await fetch(sbLink(),{cache:"no-store"}); if(!r.ok) throw new Error(r.status); const t=await r.text(); if(!importOfp(t)) throw 0; }
-    catch(e){ toast("Direct fetch not allowed — use Open, then copy & paste"); sbf.disabled=false; sbf.textContent="⟳ Fetch latest OFP"; } };
+    try{ const rl=relayUrl(); const r=await fetch(rl?`${rl}/simbrief?id=${encodeURIComponent((S.settings.sb||"").trim())}`:sbLink(),{cache:"no-store"}); if(!r.ok) throw new Error(r.status); const t=await r.text(); if(!importOfp(t)) throw 0; }
+    catch(e){ toast(relayUrl()?"Could not fetch the OFP — check your SimBrief ID":"Direct fetch blocked — set your relay URL (☰ → Settings)"); sbf.disabled=false; sbf.textContent="⟳ Fetch latest OFP"; } };
   const idIn=$("#sbId");
   idIn.addEventListener("input",()=>{S.settings.sb=idIn.value.trim();save("settings")});
   idIn.addEventListener("change",()=>render());
@@ -1615,14 +1640,55 @@ function wxAirports(){
   (S.wx.extra||"").split(/[\s,]+/).forEach(x=>add(x,"EXTRA",""));
   return list;
 }
+/* ---- freshness: METAR age from its ddhhmmZ time, TAF validity from ddhh/ddhh ---- */
+function zToDate(dd,hh,mm){ const n=new Date(); let d=new Date(Date.UTC(n.getUTCFullYear(),n.getUTCMonth(),+dd,+hh,+mm||0)); if(d-n>36*3600e3) d=new Date(Date.UTC(n.getUTCFullYear(),n.getUTCMonth()-1,+dd,+hh,+mm||0)); if(n-d>20*86400e3) d=new Date(Date.UTC(n.getUTCFullYear(),n.getUTCMonth()+1,+dd,+hh,+mm||0)); return d; }
+function metarAge(raw){ const m=/\b(\d{2})(\d{2})(\d{2})Z\b/.exec(raw||""); if(!m) return null; return Math.round((Date.now()-zToDate(m[1],m[2],m[3]))/60000); }
+function tafEnd(raw){ const m=/\b\d{4}\/(\d{2})(\d{2})\b/.exec(raw||""); if(!m) return null; return m[2]==="24"?new Date(zToDate(m[1],0,0).getTime()+86400e3):zToDate(m[1],m[2],0); }
+const tafValid=raw=>{ const e=tafEnd(raw); return e?e>new Date():false; };
+const METAR_MAX_MIN=60;
 function wxFor(icao){
-  const live=S.wx.live&&S.wx.live[icao]; const s=S.ofp&&S.ofp.sum;
-  let metar=live&&live.metar, taf=live&&live.taf, src=live?"live":"";
-  if(s&&(!metar||!taf)){
-    const m={[s.from]:[s.metar.dep,s.taf.dep],[s.to]:[s.metar.arr,s.taf.arr],[s.altn]:[s.metar.altn,""]}[icao];
-    if(m){ if(!metar&&m[0]){metar=m[0];src=src||"OFP";} if(!taf&&m[1]){taf=m[1];} }
+  const L=(S.wx.live&&S.wx.live[icao])||{}; const s=S.ofp&&S.ofp.sum;
+  const o=s?({[s.from]:[s.metar.dep,s.taf.dep],[s.to]:[s.metar.arr,s.taf.arr],[s.altn]:[s.metar.altn,""]}[icao]||[]):[];
+  const cand=[["live",L.metar],["OFP",o[0]]].filter(x=>x[1]).map(x=>({src:x[0],raw:x[1],age:metarAge(x[1])}));
+  cand.sort((x,y)=>(x.age==null?1e9:x.age)-(y.age==null?1e9:y.age));
+  const mc=cand[0]||null;
+  const tc=[["live",L.taf],["OFP",o[1]]].filter(x=>x[1]);
+  const tv=tc.find(x=>tafValid(x[1].startsWith("TAF")?x[1]:"TAF "+x[1]))||tc[0]||null;
+  return {metar:mc&&mc.raw, src:mc?mc.src:"", age:mc?mc.age:null, taf:tv&&tv[1], tafSrc:tv?tv[0]:"", tafOk:tv?tafValid(tv[1]):false, at:L.at, fetched:L.fetched};
+}
+function wxNeedsLive(icao,role){
+  const w=wxFor(icao);
+  if(role==="EXTRA"&&!w.metar) return true;
+  if(!w.metar||w.age==null||w.age>METAR_MAX_MIN) return true;
+  if(w.taf&&!w.tafOk) return true;
+  if(!w.taf&&role!=="EXTRA"&&role!=="ALTN") return true;
+  return false;
+}
+const relayUrl=()=>(S.settings.relay||"").trim().replace(/\/+$/,"");
+let WX_BUSY=false;
+async function wxFetchLive(icaos,manual){
+  if(WX_BUSY||!icaos.length) return; WX_BUSY=true;
+  const r=relayUrl(); const url=r?`${r}/wx?ids=${icaos.join(",")}`:`https://aviationweather.gov/api/data/metar?ids=${icaos.join(",")}&format=raw&taf=true&hours=2`;
+  try{
+    const res=await fetch(url,{cache:"no-store"}); if(!res.ok) throw new Error(res.status);
+    const txt=await res.text(); const now=new Date().toISOString(); S.wx.live=S.wx.live||{};
+    icaos.forEach(i=>{ (S.wx.live[i]=S.wx.live[i]||{}).fetched=now; });
+    importWx(txt,{silent:!manual});
+    if(r){ await sigmetFetch(); if(current==="wx"){ const y=window.scrollY; render(); window.scrollTo(0,y); } }
+  }catch(e){
+    const now=new Date().toISOString(); icaos.forEach(i=>{ (S.wx.live[i]=S.wx.live[i]||{}).fetched=now; }); save("wx");
+    if(manual) toast(r?"Relay unreachable — check the relay URL":"Live weather blocked — set your relay URL (☰ → Settings)");
   }
-  return {metar,taf,src,at:live&&live.at};
+  WX_BUSY=false;
+}
+let SIG={text:"",at:0};
+async function sigmetFetch(){ const r=relayUrl(); if(!r) return; try{ const res=await fetch(r+"/sigmet",{cache:"no-store"}); if(res.ok){ SIG={text:(await res.text()).slice(0,400000),at:Date.now()}; } }catch(e){} }
+function sigmetsFor(prefixes){
+  if(!SIG.text) return [];
+  const blocks=SIG.text.replace(/\r/g,"").split(/\n(?=\S*W[SCV][A-Z]{2}\d{2}\b)|\n\s*\n/).map(x=>x.trim()).filter(x=>x.length>20);
+  if(!prefixes.length) return blocks;
+  const re=new RegExp("\\b("+prefixes.join("|")+")[A-Z]{2}\\b");
+  return blocks.filter(b=>re.test(b));
 }
 function ofpBlock(re,max=40){
   const t=S.ofp&&S.ofp.text; if(!t) return "";
@@ -1631,24 +1697,28 @@ function ofpBlock(re,max=40){
   for(let k=i+1;k<lines.length&&out.length<max;k++){ if(ofpHeading(lines[k])&&!re.test(lines[k])&&out.length>2) break; out.push(lines[k]); }
   return out.join("\n").trim();
 }
-function importWx(text){
-  const reps=splitWxReports(text); let n=0; S.wx.live=S.wx.live||{};
+function importWx(text,opts){
+  opts=opts||{}; const reps=splitWxReports(text); let n=0; S.wx.live=S.wx.live||{};
   const now=new Date().toISOString();
   reps.forEach(r=>{
     if(r.kind==="TAF"){ const p=parseTaf(r.raw); if(p.icao&&/^[A-Z0-9]{4}$/.test(p.icao)){ (S.wx.live[p.icao]=S.wx.live[p.icao]||{}).taf=p.raw; S.wx.live[p.icao].at=now; n++; } }
     else { const p=parseMetar(r.raw); if(p.icao&&/^[A-Z0-9]{4}$/.test(p.icao)){ (S.wx.live[p.icao]=S.wx.live[p.icao]||{}).metar=r.raw.replace(/^(METAR|SPECI)\s+/,""); S.wx.live[p.icao].at=now; n++; } }
   });
-  if(!n){ const e=$("#wxErr"); if(e) e.textContent="No METAR or TAF found in what you pasted."; return; }
-  save("wx"); render(); toast(`${n} weather report${n>1?"s":""} updated`);
+  if(!n){ if(!opts.silent){ const e=$("#wxErr"); if(e) e.textContent="No METAR or TAF found."; } save("wx"); return; }
+  save("wx"); const y=window.scrollY; render(); window.scrollTo(0,y); if(!opts.silent) toast(`${n} weather report${n>1?"s":""} updated`);
 }
 
 function renderWeather(el){
   const aps=wxAirports();
   const url=aps.length?`https://aviationweather.gov/api/data/metar?ids=${aps.map(a=>a.icao).join(",")}&format=raw&taf=true&hours=1`:"";
   const sig=ofpBlock(/SIGMET/i), wind=ofpBlock(/WIND (INFORMATION|DATA|SUMMARY)|WINDS? ALOFT/i,24);
+  const canLive=IS_SA, rel=relayUrl();
+  const stale=aps.filter(a=>wxNeedsLive(a.icao,a.role));
   el.innerHTML=`
   <div class="page-head"><span class="title-chip">Weather</span><span class="sp"></span>
-    ${url&&IS_SA?`<button class="btn mag" id="wxFetch">⟳ Fetch live METAR / TAF</button>`:""}${url?`<a class="btn ${IS_SA?"ghost":"mag"}" href="${esc(url)}" target="_blank" rel="noopener">${IS_SA?"Open":"① Get live METAR / TAF"}</a>`:""}</div>
+    ${canLive&&aps.length?`<button class="btn mag" id="wxFetch">⟳ Refresh live</button>`:""}${url?`<a class="btn ${canLive?"ghost":"mag"}" href="${esc(url)}" target="_blank" rel="noopener">${canLive?"Open":"① Get live METAR / TAF"}</a>`:""}</div>
+  ${canLive&&!rel?`<div class="info" style="margin-bottom:10px">Live weather needs your free relay. Paste its address here (see the Cloudflare guide): <input id="relayIn" class="pf-in" style="width:100%;margin-top:6px" placeholder="https://efb-relay.yourname.workers.dev" autocapitalize="off"></div>`:""}
+  <div class="wx-src muted">Source rule: SimBrief OFP if the METAR is under ${METAR_MAX_MIN} min and the TAF still valid — otherwise live (aviationweather.gov)${canLive?"":" · live fetch only works in the standalone app"}.</div>
   <div class="card imp">
     <div class="imp-grid">
       <div class="fld"><label>Other airports (en-route alternates…)</label><input id="wxExtra" class="big" value="${esc(S.wx.extra||"")}" placeholder="LOWW LKPR" autocapitalize="characters"></div>
@@ -1663,7 +1733,7 @@ function renderWeather(el){
     if(m&&rh!=null&&m.wspd!=null&&!m.vrb){ const c=windComp(rh,m.wdir,m.wspd), g=m.gust?windComp(rh,m.wdir,m.gust):null;
       comp=`<div class="wx-comp"><span>RWY ${esc(a.rwy)}</span><b class="${c.head<0?"neg":""}">${c.head<0?"TAIL "+(-c.head):"HEAD "+c.head}${g?"/"+Math.abs(g.head):""} kt</b><b>X ${Math.abs(c.cross)}${g?"/"+Math.abs(g.cross):""} kt ${c.cross>0?"R":c.cross<0?"L":""}</b></div>`; }
     return `<div class="wx-card">
-      <div class="wx-h"><span class="role-t">${a.role}</span><b class="mono">${a.icao}</b>${m?catBadge(m.cat):""}<span class="sp"></span><span class="muted mono" style="font-size:11px">${m&&m.time?m.time:""} ${w.src?"· "+w.src:""}</span></div>
+      <div class="wx-h"><span class="role-t">${a.role}</span><b class="mono">${a.icao}</b>${m?catBadge(m.cat):""}<span class="sp"></span><span class="wx-age ${w.age!=null&&w.age>METAR_MAX_MIN?"old":""}">${w.src?w.src.toUpperCase():""}${w.age!=null?" · "+(w.age<120?w.age+" min":Math.round(w.age/60)+" h"):""}${w.age!=null&&w.age>METAR_MAX_MIN?" · outdated":""}</span></div>
       ${m?`<div class="wx-grid">
         <div><small>Wind</small><b>${m.wspd==null?"—":m.vrb?"VRB "+m.wspd:String(m.wdir).padStart(3,"0")+"° / "+m.wspd+(m.gust?"G"+m.gust:"")} kt</b></div>
         <div><small>Visibility</small><b>${m.cavok?"CAVOK":kmOrM(m.vis)}</b></div>
@@ -1671,15 +1741,18 @@ function renderWeather(el){
         <div><small>Temp / Dew</small><b>${m.temp??"—"}° / ${m.dew??"—"}°</b></div>
         <div><small>QNH</small><b>${m.qnh?m.qnh+" hPa · "+(m.inhg||(m.qnh/33.8639)).toFixed(2)+" inHg":"—"}</b></div>
         <div><small>Weather</small><b>${m.wx.length?esc(m.wx.join(", ")):"nil"}</b></div>
-      </div>${comp}<div class="wx-raw mono">${esc(m.raw)}</div>`:`<div class="muted" style="font-size:12.5px;padding:6px 0">No METAR yet — tap ① then paste.</div>`}
-      ${t&&t.groups.length?`<div class="taf"><div class="taf-h">TAF ${esc(t.valid)}</div>${t.groups.map(g=>`<div class="taf-r"><span class="taf-l mono">${esc(g.label)}</span>${catBadge(g.cat)}<span class="taf-c">${esc(condLine(g))||"—"}</span></div>`).join("")}<details><summary>Raw TAF</summary><div class="wx-raw mono">${esc(t.raw)}</div></details></div>`:""}
+      </div>${comp}<div class="wx-raw mono">${esc(m.raw)}</div>`:`<div class="muted" style="font-size:12.5px;padding:6px 0">${canLive?(rel?"Fetching live weather…":"No METAR yet — set the relay or paste."):"No METAR yet — tap ① then paste."}</div>`}
+      ${t&&t.groups.length?`<div class="taf"><div class="taf-h">TAF ${esc(t.valid)} <span class="wx-age ${w.tafOk?"":"old"}">${esc((w.tafSrc||"").toUpperCase())}${w.tafOk?"":" · expired"}</span></div>${t.groups.map(g=>`<div class="taf-r"><span class="taf-l mono">${esc(g.label)}</span>${catBadge(g.cat)}<span class="taf-c">${esc(condLine(g))||"—"}</span></div>`).join("")}<details><summary>Raw TAF</summary><div class="wx-raw mono">${esc(t.raw)}</div></details></div>`:""}
     </div>`}).join(""):""}
-  ${sig?`<h2 class="sec">SIGMET (from OFP)</h2><pre class="ofp-txt" style="max-height:300px;overflow:auto">${esc(sig)}</pre>`:""}
+  ${(()=>{ const pre=[...new Set(aps.map(x=>x.icao.slice(0,2)))]; const live=sigmetsFor(pre);
+     return SIG.text?`<h2 class="sec">SIGMET (live) <span class="count">${live.length} for ${pre.join(", ")} regions</span></h2>${live.length?`<pre class="ofp-txt" style="max-height:300px;overflow:auto">${esc(live.join("\n\n"))}</pre>`:`<div class="empty">No SIGMET in force for these regions.</div>`}`:(sig?`<h2 class="sec">SIGMET (from OFP)</h2><pre class="ofp-txt" style="max-height:300px;overflow:auto">${esc(sig)}</pre>`:""); })()}
   ${wind?`<h2 class="sec">Winds aloft (from OFP)</h2><pre class="ofp-txt" style="max-height:260px;overflow:auto">${esc(wind)}</pre>`:""}
   <div class="link-row"><a href="https://aviationweather.gov/api/data/isigmet?format=raw" target="_blank" rel="noopener">International SIGMETs (raw) ↗</a></div>`;
-  const wf=$("#wxFetch"); if(wf) wf.onclick=async()=>{ wf.disabled=true; wf.textContent="Fetching…";
-    try{ const r=await fetch(url,{cache:"no-store"}); if(!r.ok) throw new Error(r.status); importWx(await r.text()); }
-    catch(e){ toast("Direct fetch not allowed — use Open, then copy & paste"); wf.disabled=false; wf.textContent="⟳ Fetch live METAR / TAF"; } };
+  const wf=$("#wxFetch"); if(wf) wf.onclick=async()=>{ wf.disabled=true; wf.textContent="Fetching…"; await wxFetchLive(aps.map(x=>x.icao),true); const b=$("#wxFetch"); if(b){b.disabled=false;b.textContent="⟳ Refresh live";} };
+  const ri=$("#relayIn"); if(ri) ri.addEventListener("change",()=>{ S.settings.relay=ri.value.trim(); save("settings"); render(); });
+  // auto: fetch live only for airports whose OFP data is missing/outdated, at most every 10 min
+  if(canLive&&stale.length){ const due=stale.filter(x=>{ const f=wxFor(x.icao).fetched; return !f||Date.now()-new Date(f)>10*60e3; }).map(x=>x.icao); if(due.length) setTimeout(()=>wxFetchLive(due,false),50); }
+  else if(canLive&&rel&&!SIG.text&&aps.length) setTimeout(()=>sigmetFetch().then(()=>{ if(current==="wx"){const y=window.scrollY;render();window.scrollTo(0,y);} }),50);
   const ex=$("#wxExtra"); ex.addEventListener("change",()=>{S.wx.extra=ex.value.toUpperCase();save("wx");render()});
   const wi=$("#wxIn"); wi.addEventListener("paste",()=>setTimeout(()=>importWx(wi.value),50));
 }
@@ -1881,7 +1954,8 @@ function perfAc(){
 function perfType(){ return perfAc().type; }
 function calcTakeoff(T,P,eng){
   const db=PERF_DB[T], F=FLAPS[db.fam], fl=F.to.find(f=>f[0]===P.flaps)||F.to.find(f=>f[3]), tr=traitsFor(T,eng);
-  const rat=tr.rat?(tr.rat.find(r=>r[0]===P.rating)||tr.rat[0]):null, rf=(rat?rat[1]:1)*tr.eng;
+  const forceToga=P.thr==="toga";
+  const rat=tr.rat?(forceToga?tr.rat[0]:(tr.rat.find(r=>r[0]===P.rating)||tr.rat[0])):null, rf=(rat?rat[1]:1)*tr.eng;
   const w=+P.w||db.mtow*0.85, wr=w/db.mtow;
   const a=atmo(P.elev,P.qnh,P.oat), hw=+P.hw||0;
   const tflat=Math.max(a.isa+15,30-1.98*a.pa/1000*0);  // flat-rating ≈ ISA+15
@@ -1891,7 +1965,7 @@ function calcTakeoff(T,P,eng){
   const todr=t=>db.tofl*fl[2]*Math.pow(wr,2)/(sig(t)*thrust(t))*windFactor(v2,hw)*(P.cond==="wet"?1.10:1);
   const toga=todr(a.t), avail=+P.tora||0;
   let flex=null;
-  if(avail&&toga<=avail){
+  if(avail&&toga<=avail&&!forceToga){
     let lo=Math.max(a.t,tflat), hi=a.isa+tr.flexMax;
     if(todr(lo)>avail) flex=null; else { for(let i=0;i<30;i++){ const m=(lo+hi)/2; if(todr(m)<=avail&&thrust(m)>=0.75*rf) lo=m; else hi=m; } flex=Math.floor(lo); if(flex<=a.t+1) flex=null; }
   }
@@ -1901,7 +1975,7 @@ function calcTakeoff(T,P,eng){
   let v1=Math.round(vr-Math.min(8,Math.max(0,margin*25)));
   if(P.cond==="wet") v1=Math.max(Math.round(vr*0.88),v1-6);
   v1=Math.max(Math.round(vr*0.88),v1);
-  return {v1,vr,v2,toga:Math.round(toga),dist:Math.round(dist),flex,ok:avail?toga<=avail:null,wOver:w>db.mtow,w,a,fl:fl[0],rating:rat?rat[0]:""};
+  return {v1,vr,v2,toga:Math.round(toga),dist:Math.round(dist),flex,ok:avail?toga<=avail:null,wOver:w>db.mtow,w,a,fl:fl[0],rating:rat?rat[0]:"",forceToga};
 }
 /* Reverse-thrust credit on the actual landing distance (baseline = no reverse).
    Decel-rate autobrake on a dry runway gains little; manual braking and slippery runways gain more. */
@@ -2038,7 +2112,7 @@ function renderPerf(el){
   if(!P.to.flaps) P.to.flaps=(F.to.find(x=>x[3])||F.to[0])[0];
   if(!P.ldg.flaps) P.ldg.flaps=(F.ldg.find(x=>x[3])||F.ldg[0])[0];
   if(!P.ldg.ab) P.ldg.ab=(F.ab[2]||F.ab[1])[0];
-  if(!P.to.cond) P.to.cond="dry"; if(!P.ldg.cond) P.ldg.cond="dry"; if(!P.ldg.rev) P.ldg.rev="IDLE";
+  if(!P.to.thr) P.to.thr="auto"; if(!P.to.cond) P.to.cond="dry"; if(!P.ldg.cond) P.ldg.cond="dry"; if(!P.ldg.rev) P.ldg.rev="IDLE";
   const bar=(need,avail)=>{ if(!avail) return ""; const p=Math.min(100,need/avail*100); return `<div class="rbar"><i style="width:${p}%" class="${need>avail?"bad":p>85?"warn":"ok"}"></i><span>${num(need)} / ${num(avail)} m</span></div>`; };
   el.innerHTML=`
   <div class="page-head"><span class="title-chip">Performance</span><span class="est">ESTIMATE · SIM USE ONLY</span><span class="sp"></span>
@@ -2054,13 +2128,13 @@ function renderPerf(el){
         ${f("to","w","TOW (kg)",num(Math.round(db.mtow*0.85)),'inputmode="numeric"')}${sel("to","flaps","Flaps",flTo)}
         ${f("to","elev","Elevation (ft)","0",'inputmode="numeric"')}${f("to","oat","OAT (°C)","15",'inputmode="numeric"')}
         ${f("to","qnh","QNH (hPa)","1013",'inputmode="numeric"')}${f("to","hw","Head(+)/Tail(−) wind kt","0",'inputmode="numeric"')}
-        ${sel("to","cond","Runway",condO)}${tr.rat?sel("to","rating","Thrust rating",tr.rat.map(r=>[r[0],r[0]+(r[1]<1?" (derate)":"")])):""}
+        ${sel("to","cond","Runway",condO)}${sel("to","thr","Thrust",[["auto",(db.fam==="airbus"||db.fam==="a220")?"FLEX (auto)":"Assumed temp (auto)"],["toga",(db.fam==="airbus"||db.fam==="a220")?"TOGA (forced)":"Full TO (forced)"]])}${tr.rat&&P.to.thr!=="toga"?sel("to","rating","Thrust rating",tr.rat.map(r=>[r[0],r[0]+(r[1]<1?" (derate)":"")])):""}
       </div>
       <div class="perf-out">
         <div class="vspd"><div><small>V1</small><b>${to.v1}</b></div><div><small>VR</small><b>${to.vr}</b></div><div><small>V2</small><b>${to.v2}</b></div>
-          <div class="thr ${to.ok===false?"bad":""}"><small>THRUST</small><b>${to.ok===false?"NO GO":(db.fam==="airbus"||db.fam==="a220")?(to.flex!=null?"FLEX "+to.flex+"°":"TOGA"):(to.rating+(to.flex!=null?" · "+to.flex+"°":""))}</b></div></div>
+          <div class="thr ${to.ok===false?"bad":""}"><small>THRUST</small><b>${to.ok===false?"NO GO":(db.fam==="airbus"||db.fam==="a220")?(to.flex!=null?"FLEX "+to.flex+"°":"TOGA"):(to.forceToga?"TO":to.rating+(to.flex!=null?" · "+to.flex+"°":""))}</b></div></div>
         ${bar(to.dist,+P.to.tora)}
-        <div class="perf-note">TOGA distance ${num(to.toga)} m · pressure alt ${num(to.a.pa)} ft · ISA ${Math.round(to.a.isa)}°C${to.wOver?' · <span class="neg">TOW above MTOW</span>':""}${!P.to.tora?" · enter TORA for FLEX":""}</div>
+        <div class="perf-note">${to.forceToga?"Forced full thrust — ":""}TOGA distance ${num(to.toga)} m · pressure alt ${num(to.a.pa)} ft · ISA ${Math.round(to.a.isa)}°C${to.wOver?' · <span class="neg">TOW above MTOW</span>':""}${!P.to.tora?" · enter TORA for FLEX":""}</div>
       </div>
     </section>
     <section class="card perf-sec">
@@ -2207,21 +2281,68 @@ function updateStatus(){
   $("#stFlight").textContent = h.cs||h.from ? `${acTxt} • ${h.cs||"----"} ${h.from||"----"}→${h.to||"----"}` : `${acTxt} • no flight set`;
   $("#pilotName").textContent=S.settings.pilot||"Pilot";
   renderRankBadge();
-  $("#brandSub").innerHTML=isWizz()?"Flight<br>Ops":"Global<br>Ops";
-  document.querySelectorAll("#modeSeg button").forEach(b=>b.classList.toggle("on",b.dataset.mode===S.settings.mode));
+  const P=curProf();
+  $("#brandSub").innerHTML=P?esc(P.name.length>10?P.name.slice(0,10):P.name).replace(" ","<br>"):isWizz()?"Flight<br>Ops":"Global<br>Ops";
+  renderModeSeg();
 }
-function applyMode(){ document.documentElement.dataset.mode=isWizz()?"wizz":"global"; }
+function renderModeSeg(){
+  const seg=$("#modeSeg"); if(!seg) return; const m=S.settings.mode||"wizz", P=curProf();
+  seg.innerHTML=`<button data-mode="wizz" class="${m==="wizz"?"on":""}">Wizz</button><button data-mode="global" class="${m==="global"?"on":""}">Global</button>
+   <select id="profSel" class="prof-sel ${P?"on":""}" aria-label="Profiles">
+     <option value="" ${P?"":"selected"}>${profList().length?"Profiles ▾":"+ ▾"}</option>
+     ${profList().map(p=>`<option value="p:${esc(p.id)}" ${P&&P.id===p.id?"selected":""}>● ${esc(p.name)}</option>`).join("")}
+     ${P?`<option value="__edit">✎ Edit “${esc(P.name)}”</option>`:""}
+     <option value="__new">+ New profile</option>
+   </select>`;
+  seg.querySelectorAll("button[data-mode]").forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+  const sel=$("#profSel"); sel.onchange=()=>{ const v=sel.value; if(v==="__new"){ renderModeSeg(); profileEditor(null); } else if(v==="__edit"){ renderModeSeg(); profileEditor(curProf()); } else if(v) setMode(v); else renderModeSeg(); };
+}
+function applyMode(){
+  const r=document.documentElement, P=curProf();
+  r.dataset.mode=isWizz()?"wizz":P?"custom":"global";
+  ["--mag","--mag2","--purple","--nextbg","--brandgrad"].forEach(k=>r.style.removeProperty(k));
+  if(P){ const c=profPalette(P.color); r.style.setProperty("--mag",c.mag); r.style.setProperty("--mag2",c.mag2); r.style.setProperty("--purple",c.purple); r.style.setProperty("--nextbg",c.nextbg); r.style.setProperty("--brandgrad",c.grad); }
+}
 function setMode(m){
   if(S.settings.mode===m) return;
   S.settings.mode=m; save("settings"); applyMode(); render();
-  toast(m==="global"?"Global mode — all aircraft":"Wizz mode — A320 / A321");
+  const P=curProf(); toast(P?`${P.name} profile`:m==="global"?"Global mode — all aircraft":"Wizz mode — A320 / A321");
+}
+const PROF_COLORS=["#1f9d63","#e0761f","#d4a017","#2aa7c9","#7b4ddb","#d23c3c","#c6007e","#1f6fe5"];
+function profileEditor(P){
+  const isNew=!P; P=P?JSON.parse(JSON.stringify(P)):{id:Date.now().toString(36),name:"",color:"#1f9d63",cls:[],fams:[],regs:[]};
+  const regs=Object.keys((S.acdb&&S.acdb.list)||{}).sort();
+  const ck=(name,val,on,label)=>`<label class="pchk"><input type="checkbox" name="${name}" value="${esc(val)}" ${on?"checked":""}> ${esc(label)}</label>`;
+  openModal(`<div class="modal-h"><h3>${isNew?"New profile":"Edit profile"}</h3><button class="x" data-close>×</button></div>
+  <form class="frm" id="pf" autocomplete="off">
+    <div class="full"><label>Name</label><input name="name" maxlength="18" value="${esc(P.name)}" placeholder="e.g. Air Lubéron VA"></div>
+    <div class="full"><label>Main colour</label><div class="swatches">${PROF_COLORS.map(c=>`<button type="button" class="sw ${c===P.color?"on":""}" data-c="${c}" style="background:${c}"></button>`).join("")}<input type="color" name="color" value="${esc(P.color)}"></div></div>
+    <div class="full"><label>Checklists available <span class="muted">(none ticked = all)</span></label><div class="pchks">${Object.entries(CHECKLISTS).map(([id,c])=>ck("cls",id,P.cls.includes(id),c.name)).join("")}</div></div>
+    <div class="full"><label>Aircraft families <span class="muted">(none ticked = all)</span></label><div class="pchks">${FAMILIES.map(f=>ck("fams",f.id,P.fams.includes(f.id),f.name)).join("")}</div></div>
+    <div class="full"><label>Registrations suggested <span class="muted">(from ☰ → My aircraft)</span></label><div class="pchks">${regs.length?regs.map(r=>ck("regs",r,P.regs.includes(r),r)).join(""):`<span class="muted" style="font-size:12px">No saved aircraft yet — add some in ☰ → My aircraft.</span>`}</div></div>
+    <div class="err" id="pErr"></div>
+  </form>
+  <div class="modal-f">${isNew?"":'<button class="btn danger" id="pDel">Delete</button>'}<span class="sp"></span><button class="btn ghost" data-close>Cancel</button><button class="btn mag" id="pSave">${isNew?"Create":"Save"}</button></div>`);
+  const f=$("#pf");
+  $("#modal").querySelectorAll("[data-close]").forEach(b=>b.onclick=closeModal);
+  f.querySelectorAll(".sw").forEach(b=>b.onclick=()=>{ f.color.value=b.dataset.c; f.querySelectorAll(".sw").forEach(x=>x.classList.toggle("on",x===b)); });
+  $("#pSave").onclick=()=>{
+    const name=f.name.value.trim(); if(!name){ $("#pErr").textContent="Give the profile a name."; return; }
+    const vals=n=>[...f.querySelectorAll(`input[name=${n}]:checked`)].map(x=>x.value);
+    Object.assign(P,{name,color:f.color.value,cls:vals("cls"),fams:vals("fams"),regs:vals("regs")});
+    const L=profList(), i=L.findIndex(x=>x.id===P.id); if(i>=0) L[i]=P; else L.push(P);
+    S.settings.mode="p:"+P.id; save("settings"); closeModal(); applyMode(); render(); toast(`${P.name} profile ${isNew?"created":"saved"}`);
+  };
+  const d=$("#pDel"); if(d) d.onclick=()=>confirmBox("Delete profile",`Delete “${P.name}”? Your flights and data are kept.`,"Delete",()=>{ S.settings.profiles=profList().filter(x=>x.id!==P.id); S.settings.mode="global"; save("settings"); applyMode(); render(); });
 }
 function renderDrawer(){
   $("#drawer").innerHTML=`<div class="brand" style="margin-bottom:10px">${document.querySelector(".top .logo").outerHTML}<b>EFB</b><span>${isWizz()?"Flight<br>Ops":"Global<br>Ops"}</span></div>
     <h4>Interface</h4>
     <button class="mod ${isWizz()?"on":""}" data-mode="wizz">● Wizz Air — A320 / A321</button>
-    <button class="mod ${!isWizz()?"on":""}" data-mode="global">● Global — A220 · A320 · 737 · 757 · 777</button>
-    <div class="mode-note">Both interfaces share the same flight log.</div>
+    <button class="mod ${S.settings.mode==="global"?"on":""}" data-mode="global">● Global — A220 · A320 · 737 · 757 · 777</button>
+    ${profList().map(p=>`<button class="mod ${curProf()&&curProf().id===p.id?"on":""}" data-mode="p:${esc(p.id)}"><span style="color:${esc(p.color)}">●</span> ${esc(p.name)}</button>`).join("")}
+    <button class="mod" id="newProf">＋ New profile</button>
+    <div class="mode-note">All interfaces share the same flight log.</div>
     <h4>Modules</h4>
     ${MODULES.map(m=>`<button class="mod ${m.id===current?"on":""}" data-m="${m.id}">${m.icon}${m.label}</button>`).join("")}
     <h4>Coming soon</h4>
@@ -2234,14 +2355,17 @@ function renderDrawer(){
     <button class="mod" id="impBtn">⇩ Import data</button>
     <h4>Settings</h4>
     <div class="fld"><label>Pilot name</label><input id="pilotIn" value="${esc(S.settings.pilot)}"></div>
+    ${IS_SA?`<div class="fld" style="margin-top:8px"><label>Relay URL (live weather & SimBrief)</label><input id="relIn" value="${esc(S.settings.relay||"")}" autocapitalize="off" placeholder="https://….workers.dev"></div>`:""}
     <div class="fld" style="margin-top:8px"><label>SimBrief username or Pilot ID</label><input id="sbIn" value="${esc(S.settings.sb||"")}" autocapitalize="off" placeholder="e.g. 123456"></div>
     <span style="flex:1;min-height:14px"></span>
     <button class="btn danger" id="restore">Restore original logbook</button>`;
   $("#drawer").querySelectorAll("button.mod[data-m]").forEach(b=>b.onclick=()=>{toggleDrawer(false);go(b.dataset.m)});
   $("#drawer").querySelectorAll("button.mod[data-mode]").forEach(b=>b.onclick=()=>{toggleDrawer(false);setMode(b.dataset.mode)});
+  const rli=$("#relIn"); if(rli) rli.oninput=e=>{S.settings.relay=e.target.value.trim();save("settings")};
   $("#sbIn").oninput=e=>{S.settings.sb=e.target.value.trim();save("settings")};
   $("#expBtn").onclick=()=>{ toggleDrawer(false); exportData(); };
   $("#impBtn").onclick=()=>{ toggleDrawer(false); importData(); };
+  $("#newProf").onclick=()=>{ toggleDrawer(false); profileEditor(null); };
   $("#fsMenu").onclick=()=>{ toggleDrawer(false); toggleFullscreen(); };
   $("#fleetBtn").onclick=()=>{ toggleDrawer(false); fleetModal(); };
   $("#pilotIn").oninput=e=>{S.settings.pilot=e.target.value;save("settings");updateStatus()};
@@ -2262,7 +2386,7 @@ function fleetModal(){
 /* ---------- Pilot ranks ---------- */
 function insignia(kind,w){
   w=w||52; const h=Math.round(w*0.66);
-  if(kind==="wings"){ const gl=!isWizz(), C=gl?{a:"#0b2b63",b:"#1d5fc4",ring:"#4d9bff",line:"#8cc2ff",bg:"#081a3d",pl:"#1f6fe5",id:"wgB"}:{a:"#1f1a6e",b:"#3a2a9e",ring:"#c6007e",line:"#7c5cff",bg:"#0f1240",pl:"#c6007e",id:"wgM"};
+  if(kind==="wings"){ const gl=!isWizz(), pp=curProf()?profPalette(curProf().color):null, C=pp?{a:pp.wa,b:pp.wb,ring:pp.ring,line:pp.line,bg:"#0b0d14",pl:pp.mag,id:"wgP"}:gl?{a:"#0b2b63",b:"#1d5fc4",ring:"#4d9bff",line:"#8cc2ff",bg:"#081a3d",pl:"#1f6fe5",id:"wgB"}:{a:"#1f1a6e",b:"#3a2a9e",ring:"#c6007e",line:"#7c5cff",bg:"#0f1240",pl:"#c6007e",id:"wgM"};
     return `<svg viewBox="0 0 120 52" width="${Math.round(w*1.45)}" height="${h}" aria-hidden="true"><defs><linearGradient id="${C.id}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="${C.a}"/><stop offset="1" stop-color="${C.b}"/></linearGradient></defs>
     <path d="M30 18 L114 6 L108 30 L34 40 Z" fill="url(#${C.id})" stroke="${C.ring}" stroke-width="2.4" stroke-linejoin="round"/>
     <path d="M38 22 L108 13 M38 28 L106 20 M38 34 L104 26" stroke="${C.line}" stroke-width="1.6"/>
@@ -2346,7 +2470,6 @@ $("#dscrim").onclick=()=>toggleDrawer(false);
 $("#pilotName").onclick=()=>toggleDrawer(true);
 $("#rankBadge").onclick=()=>rankModal();
 $("#fsBtn").onclick=()=>toggleFullscreen();
-document.querySelectorAll("#modeSeg button").forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
 
 function render(){
   updateTabs(); updateStatus();
