@@ -650,6 +650,28 @@ html.night img,html.night .mp-stage canvas{filter:brightness(.88)}
 .st-hours em{position:absolute;bottom:-16px;left:0;font-style:normal;font-size:9.5px;color:var(--muted);font-family:var(--mono)}
 .st-hours{margin-bottom:18px}
 
+/* landings + badges */
+.lchip{display:inline-block;border:1px solid var(--c);color:var(--c);border-radius:20px;padding:1px 8px;font-size:11px;font-weight:700;font-family:var(--mono);white-space:nowrap}
+td.blk small{display:block;margin-top:3px}
+.ld-dist{display:flex;height:10px;border-radius:5px;overflow:hidden;margin:10px 0 6px;gap:2px}
+.ld-leg{display:flex;flex-wrap:wrap;gap:10px;font-size:11px;color:var(--muted)}
+.ld-leg b{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+.ld-trend{display:flex;align-items:flex-end;gap:4px;height:70px;margin-top:12px;border-bottom:1px solid var(--line)}
+.ld-trend span{flex:1;height:100%;display:flex;align-items:flex-end}
+.ld-trend i{display:block;width:100%;border-radius:3px 3px 0 0;min-height:3px}
+.bd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.bd{background:#15161a;border:1px solid var(--line);border-radius:10px;padding:12px 10px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:3px;opacity:.55}
+.bd.on{opacity:1;border-color:color-mix(in srgb,var(--mag) 60%,var(--line));background:color-mix(in srgb,var(--mag) 9%,#15161a)}
+.bd-i{font-size:26px;line-height:1.2;filter:grayscale(1)}
+.bd.on .bd-i{filter:none}
+.bd b{font-size:13px}.bd small{font-size:10.5px;color:var(--muted);line-height:1.3}
+.bd em{font-style:normal;font-size:10.5px;font-family:var(--mono);color:var(--muted);margin-top:2px}
+.bd.on em{color:var(--green)}
+.bd-p{width:80%;height:4px;border-radius:2px;background:#2a2c33;overflow:hidden;margin-top:4px}
+.bd-p i{display:block;height:100%;background:var(--mag)}
+.bd-new{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;padding:18px}
+.bd.big{min-width:160px;padding:18px}.bd.big .bd-i{font-size:42px}
+
 /* standalone app: full bleed + safe areas */
 .app{margin:0!important;min-height:100vh;border:0!important;border-radius:0!important;box-shadow:none!important;max-width:none}
 .top{padding-top:calc(10px + env(safe-area-inset-top));padding-left:calc(16px + env(safe-area-inset-left));padding-right:calc(16px + env(safe-area-inset-right))}
@@ -2029,6 +2051,7 @@ function renderLogStats(el,vseg){
       <div class="st-prog"><i style="width:${Math.round(R.prog*100)}%"></i></div>
       <div class="st-rec"><small>All-time</small><b class="mono">${hhmm(Math.round(R.st.hours*60))}</b><span>${R.st.flights} flights · ${new Set((S.flights.list||[]).flatMap(f=>[f.from,f.to]).filter(Boolean)).size} airports</span></div>
     </div>
+    ${landingCard(list)}
     <div class="card st-card"><div class="st-h">Aircraft types</div>${hbars(topN(types,6),o=>hhmm(o.v)+" · "+o.n)}</div>
     <div class="card st-card"><div class="st-h">Airports</div>${hbars(topN(apts,6),o=>o.n+" mvt")}</div>
     <div class="card st-card"><div class="st-h">Top routes</div>${hbars(topN(routes,6),o=>o.n+"× · "+hhmm(o.v))}</div>
@@ -2037,8 +2060,71 @@ function renderLogStats(el,vseg){
     <div class="card st-card"><div class="st-h">Day of week</div>${hbars(dowRows,o=>o.n?hhmm(o.v):"–")}</div>
     <div class="card st-card st-wide"><div class="st-h">Departure time <span class="muted">(flights with times)</span></div>
       ${hours.some(Boolean)?`<div class="st-hours">${hours.map((n,i)=>`<span title="${String(i).padStart(2,"0")}:00 · ${n}"><i style="height:${Math.round(n/hmax*100)}%"></i><em>${i%3===0?String(i).padStart(2,"0"):""}</em></span>`).join("")}</div>`:`<div class="muted" style="font-size:12px">Add departure times to your flights to see this.</div>`}</div>
+    ${badgesCard()}
   </div>`;
   el.querySelectorAll(".st-per button").forEach(b=>b.onclick=()=>{ S.settings.statPer=b.dataset.p; save("settings"); render(); });
+}
+
+/* ---------- landing rating ---------- */
+const LAND=[[100,"Butter","#3ecf8e","Butter — passengers didn't feel it"],[200,"Smooth","#7fd36b","Smooth — a very good landing"],[350,"Normal","#58c7e8","Normal — a firm, safe arrival"],[500,"Firm","#f2b33d","Firm — passengers noticed"],[700,"Hard","#ff8a3d","Hard — over 500 fpm"],[1e9,"Very hard","#ff5a6a","Very hard — a real aircraft would need an inspection"]];
+function landRating(fpm){ fpm=Math.abs(+fpm); const r=LAND.find(x=>fpm<x[0]); return {name:r[1],col:r[2],desc:r[3]}; }
+function landChip(fpm,short){ const r=landRating(fpm); return `<span class="lchip" style="--c:${r.col}">${short?"":r.name+" · "}${Math.round(Math.abs(fpm))} fpm</span>`; }
+function landingCard(list){
+  const L=list.filter(f=>f.lr>0); if(!L.length) return `<div class="card st-card"><div class="st-h">Landings</div><div class="muted" style="font-size:12.5px">Enter the <b>landing rate</b> (fpm, shown by the sim or your landing-rate add-on) when you log a flight, and your landings will be rated here: Butter, Smooth, Normal, Firm, Hard.</div></div>`;
+  const avg=Math.round(L.reduce((s,f)=>s+f.lr,0)/L.length), best=L.slice().sort((a,b)=>a.lr-b.lr)[0];
+  const dist=LAND.map(([,n,c])=>[n,c,L.filter(f=>landRating(f.lr).name===n).length]);
+  const last=sortedFlights().filter(f=>f.lr>0&&L.includes(f)).slice(0,12).reverse(), mx=Math.max(400,...last.map(f=>f.lr));
+  return `<div class="card st-card"><div class="st-h">Landings <span class="muted">— ${L.length} rated</span></div>
+    <div class="st-rec"><small>Average</small><b class="mono">${avg} fpm</b><span>${landChip(avg)}</span></div>
+    <div class="st-rec"><small>Best landing</small><b class="mono">${best.lr} fpm</b><span>${[best.to||"",best.cs||"",fdate(best.date)].filter(Boolean).map(esc).join(" · ")}</span></div>
+    <div class="ld-dist">${dist.filter(d=>d[2]).map(([n,c,k])=>`<i style="flex:${k};background:${c}" title="${n}: ${k}"></i>`).join("")}</div>
+    <div class="ld-leg">${dist.filter(d=>d[2]).map(([n,c,k])=>`<span><b style="background:${c}"></b>${n} ${k}</span>`).join("")}</div>
+    ${last.length>1?`<div class="ld-trend">${last.map(f=>`<span title="${esc(f.cs||"")} ${fdate(f.date)} · ${f.lr} fpm"><i style="height:${Math.round(f.lr/mx*100)}%;background:${landRating(f.lr).col}"></i></span>`).join("")}</div><div class="muted" style="font-size:10.5px;margin-top:4px">last ${last.length} landings — lower is softer</div>`:""}</div>`;
+}
+
+/* ---------- badges ---------- */
+const ctryOf=icao=>!icao?"":/^[KCY]/.test(icao)?icao[0]:icao.slice(0,2);
+function logFacts(){
+  const L=S.flights.list||[]; const m=L.map(blockMin); const days={}, routes={};
+  L.forEach((f,i)=>{ const d=(f.date||"").slice(0,10); if(d) days[d]=(days[d]||0)+1; if(f.from&&f.to){ const k=f.from+">"+f.to; routes[k]=(routes[k]||0)+1; } });
+  const dep=f=>{ const h=/^(\d{1,2}):/.exec(f.dep||""); return h?+h[1]:null; };
+  const lr=L.filter(f=>f.lr>0).sort((a,b)=>(a.date+(a.dep||"")).localeCompare(b.date+(b.dep||"")));
+  let run=0,bestRun=0; lr.forEach(f=>{ run=f.lr<200?run+1:0; bestRun=Math.max(bestRun,run); });
+  return {n:L.length,h:m.reduce((s,x)=>s+x,0)/60,apts:new Set(L.flatMap(f=>[f.from,f.to]).filter(Boolean)).size,ctry:new Set(L.flatMap(f=>[ctryOf(f.from),ctryOf(f.to)]).filter(Boolean)).size,
+    longest:Math.max(0,...m)/60,types:new Set(L.map(f=>f.type).filter(Boolean)).size,regs:new Set(L.map(f=>f.reg).filter(Boolean)).size,
+    night:L.filter(f=>{ const h=dep(f); return h!=null&&(h>=22||h<5); }).length, early:L.filter(f=>{ const h=dep(f); return h!=null&&h>=5&&h<7; }).length,
+    streak:streaks().best, busy:Math.max(0,...Object.values(days)), route:Math.max(0,...Object.values(routes)),
+    landed:lr.length, butter:lr.filter(f=>f.lr<100).length, smoothRun:bestRun};
+}
+const BADGES=[
+ ["first","First flight","✈","Log your first flight",F=>[F.n,1]],
+ ["f10","10 sectors","🎫","Log 10 flights",F=>[F.n,10]],["f50","50 sectors","🎫","Log 50 flights",F=>[F.n,50]],["f100","Centurion","💯","Log 100 flights",F=>[F.n,100]],["f250","Road warrior","🧳","Log 250 flights",F=>[F.n,250]],
+ ["h10","10 hours","⏱","10 block hours",F=>[F.h,10]],["h50","50 hours","⏱","50 block hours",F=>[F.h,50]],["h100","100 hours","🕐","100 block hours",F=>[F.h,100]],["h250","250 hours","🕑","250 block hours",F=>[F.h,250]],["h500","500 hours","🏅","500 block hours",F=>[F.h,500]],["h1000","1000 hours","🏆","1000 block hours",F=>[F.h,1000]],
+ ["a10","Explorer","🧭","Visit 10 airports",F=>[F.apts,10]],["a25","Globetrotter","🗺","Visit 25 airports",F=>[F.apts,25]],["a50","Atlas","🌍","Visit 50 airports",F=>[F.apts,50]],
+ ["c5","5 countries","🏳","Fly to 5 countries",F=>[F.ctry,5]],["c15","15 countries","🌐","Fly to 15 countries",F=>[F.ctry,15]],
+ ["long4","Long sector","🛫","A flight of 4 h or more",F=>[F.longest,4]],["long8","Long haul","🌏","A flight of 8 h or more",F=>[F.longest,8]],
+ ["night","Red-eye","🌙","Depart between 22:00 and 05:00",F=>[F.night,1]],["early","Early bird","🌅","Depart between 05:00 and 07:00",F=>[F.early,1]],
+ ["s3","On a roll","🔥","Fly 3 days in a row",F=>[F.streak,3]],["s7","Full week","🔥","Fly 7 days in a row",F=>[F.streak,7]],
+ ["busy","Quick turns","🔄","4 flights in one day",F=>[F.busy,4]],["route","Commuter","🚌","Fly the same route 10 times",F=>[F.route,10]],
+ ["types","Type rated","🛩","Fly 3 different aircraft types",F=>[F.types,3]],["regs","Fleet tour","🔢","Fly 10 different registrations",F=>[F.regs,10]],
+ ["l1","Rated landing","🛬","Log a landing rate",F=>[F.landed,1]],["butter","Butter","🧈","A landing under 100 fpm",F=>[F.butter,1]],["butter10","Butter chef","👨‍🍳","10 landings under 100 fpm",F=>[F.butter,10]],["smooth5","Smooth operator","🎯","5 landings in a row under 200 fpm",F=>[F.smoothRun,5]]
+];
+function badgeState(){ const F=logFacts(); return BADGES.map(([id,name,ic,desc,fn])=>{ const [c,t]=fn(F); return {id,name,ic,desc,cur:c,tgt:t,ok:c>=t}; }); }
+function badgeInit(){ if(!Array.isArray(S.settings.badges)){ S.settings.badges=badgeState().filter(b=>b.ok).map(b=>b.id); save("settings"); } }
+function checkBadges(){
+  const st=badgeState(), had=new Set(S.settings.badges||[]), nw=st.filter(b=>b.ok&&!had.has(b.id));
+  S.settings.badges=st.filter(b=>b.ok).map(b=>b.id); save("settings"); if(!nw.length) return;
+  openModal(`<div class="modal-h"><h3>Badge${nw.length>1?"s":""} unlocked</h3><button class="x" data-close>×</button></div>
+    <div class="bd-new">${nw.map(b=>`<div class="bd on big"><span class="bd-i">${b.ic}</span><b>${esc(b.name)}</b><small>${esc(b.desc)}</small></div>`).join("")}</div>
+    <div class="modal-f"><span class="sp"></span><button class="btn mag" data-close>Nice!</button></div>`);
+  $("#modal").querySelectorAll("[data-close]").forEach(b=>b.onclick=closeModal);
+}
+function badgesCard(){
+  const st=badgeState(), n=st.filter(b=>b.ok).length;
+  const fmt=v=>Number.isInteger(v)?v:v.toFixed(v<10?1:0);
+  return `<div class="card st-card st-wide"><div class="st-h">Badges <span class="muted">— ${n} / ${st.length}</span></div>
+    <div class="bd-grid">${st.sort((a,b)=>(b.ok-a.ok)||(b.cur/b.tgt-a.cur/a.tgt)).map(b=>`<div class="bd ${b.ok?"on":""}" title="${esc(b.desc)}"><span class="bd-i">${b.ic}</span><b>${esc(b.name)}</b><small>${esc(b.desc)}</small>
+      ${b.ok?`<em>✓ earned</em>`:`<span class="bd-p"><i style="width:${Math.min(100,b.cur/b.tgt*100).toFixed(0)}%"></i></span><em>${fmt(Math.min(b.cur,b.tgt))} / ${b.tgt}</em>`}</div>`).join("")}</div></div>`;
 }
 
 /* =====================================================================
@@ -2471,7 +2557,7 @@ function renderLog(el){
     <tbody>${list.map(f=>`<tr class="row" data-id="${esc(f.id)}">
       <td class="c-date">${fdate(f.date)}</td><td class="c-type">${esc(f.type||"—")}${f.reg?`<small>${esc(f.reg)}</small>`:""}</td><td class="c-cs">${esc(f.cs)}</td>
       <td class="route"><b>${esc(f.from||"····")}</b><i>→</i><b>${esc(f.to||"····")}</b></td>
-      <td class="c-times">${f.dep&&f.arr?esc(f.dep)+" – "+esc(f.arr):"—"}</td><td class="blk">${hhmm(blockMin(f))}</td><td>›</td></tr>`).join("")}</tbody>
+      <td class="c-times">${f.dep&&f.arr?esc(f.dep)+" – "+esc(f.arr):"—"}</td><td class="blk">${hhmm(blockMin(f))}${f.lr?`<small>${landChip(f.lr,true)}</small>`:""}</td><td>›</td></tr>`).join("")}</tbody>
     <tfoot><tr><td colspan="5" style="text-align:right">${q?"TOTAL (filtered)":"TOTAL TIME"}</td><td colspan="2"><b>${hhmm(shown)}</b></td></tr></tfoot>
   </table></div>`:`<div class="empty">${q?"no matching flights":"no flights yet"}</div>`}`;
   vbind();
@@ -2506,6 +2592,9 @@ function flightForm(fl,prefill){
     <div><label>Departure (HH:MM)</label><input name="dep" type="time" value="${esc(f.dep)}"></div>
     <div><label>Arrival (HH:MM)</label><input name="arr" type="time" value="${esc(f.arr)}"></div>
     <div class="full"><label>Block time (H:MM) — used when departure/arrival times are empty</label><input name="durhm" value="${f.dur&&!(f.dep&&f.arr)?hhmm(Math.round(+f.dur/60)):""}" placeholder="1:45" inputmode="numeric"></div>
+    <div><label>Landing rate (fpm)</label><input name="lr" inputmode="numeric" value="${f.lr!=null&&f.lr!==""?esc(Math.abs(f.lr)):""}" placeholder="e.g. 140"></div>
+    <div><label>Touchdown G (optional)</label><input name="lg" inputmode="decimal" value="${f.lg!=null&&f.lg!==""?esc(f.lg):""}" placeholder="e.g. 1.18"></div>
+    <div class="full muted" id="lrPrev" style="font-size:12.5px;margin-top:-4px"></div>
     <div class="full"><label>Remarks</label><textarea name="rmk" rows="2" placeholder="Optional">${esc(f.rmk||"")}</textarea></div>
     <div class="full muted" id="blkPrev" style="font-size:12.5px"></div>
     <div class="err" id="ferr"></div>
@@ -2520,6 +2609,8 @@ function flightForm(fl,prefill){
   form.reg.addEventListener("input",()=>{const i=REG_INDEX[form.reg.value];if(i){form.type.value=i.type;f.eng=i.eng;form.eng.innerHTML=engOpts(i.type);form.eng.value=i.eng}});
   const prev=()=>{const m=mins(form.dep.value,form.arr.value);$("#blkPrev").textContent=form.dep.value&&form.arr.value?`Block time: ${hhmm(m)}${form.arr.value<form.dep.value?" (arrival next day)":""}`:""};
   form.dep.oninput=prev; form.arr.oninput=prev; prev();
+  const lprev=()=>{ const v=parseFloat(String(form.lr.value).replace(/[^\d.]/g,"")); $("#lrPrev").innerHTML=isFinite(v)?landChip(v)+` ${esc(landRating(v).desc)}`:""; };
+  form.lr.oninput=lprev; lprev();
   const submit=e=>{
     e&&e.preventDefault();
     const d=Object.fromEntries(new FormData(form).entries());
@@ -2528,9 +2619,10 @@ function flightForm(fl,prefill){
     if(!d.date||!d.cs){$("#ferr").textContent="Fill in at least the date and the callsign.";return}
     if((d.dep&&!d.arr)||(!d.dep&&d.arr)){$("#ferr").textContent="Enter both departure and arrival times (or neither, with a block time).";return}
     if(!(d.dep&&d.arr)){ if(dm){ const s=(+dm[1]*60+ +dm[2])*60; d.dur=(fl&&fl.dur&&Math.round(+fl.dur/60)*60===s)?fl.dur:s; } else if(!(fl&&fl.dur)){$("#ferr").textContent="Enter departure/arrival times or a block time like 1:45.";return} }
+    { const v=parseFloat(String(d.lr||"").replace(/[^\d.]/g,"")); if(isFinite(v)&&v>0&&v<3000) d.lr=Math.round(v); else delete d.lr; const g=parseFloat(String(d.lg||"").replace(",",".")); if(isFinite(g)&&g>0.5&&g<4) d.lg=Math.round(g*100)/100; else delete d.lg; if(fl){ if(d.lr==null) delete fl.lr; if(d.lg==null) delete fl.lg; } }
     if((d.from&&!/^[A-Z0-9]{4}$/.test(d.from))||(d.to&&!/^[A-Z0-9]{4}$/.test(d.to))){$("#ferr").textContent="Airports must be 4-letter ICAO codes (e.g. LFMN).";return}
     if(fl){Object.assign(fl,d)} else {S.flights.list.push(Object.assign({id:"f"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)},d))}
-    save("flights"); closeModal(); logQuery=""; go("logbook"); toast(fl?"Flight updated":"Flight added to logbook");
+    save("flights"); closeModal(); logQuery=""; go("logbook"); toast(fl?"Flight updated":"Flight added to logbook"); setTimeout(checkBadges,400);
   };
   form.onsubmit=submit; $("#fSave").onclick=submit;
   if(fl) $("#fDel").onclick=()=>confirmBox("Delete flight",`Delete ${fl.cs}${fl.from?" "+fl.from+" → "+fl.to:""} on ${fdate(fl.date)}?`,"Delete",()=>{
@@ -3747,7 +3839,7 @@ function render(){
   const m=MODULES.find(x=>x.id===current); m.render($("#view"));
 }
 window.addEventListener("hashchange",()=>go(location.hash.slice(1)));
-applyMode();
+applyMode(); badgeInit();
 document.documentElement.classList.toggle("imm",!!S.settings.imm); setTimeout(updateFsBtn,0);
 document.documentElement.classList.toggle("imm",!!S.settings.imm); setTimeout(updateFsBtn,0);
 go(location.hash.slice(1)||"briefing");
