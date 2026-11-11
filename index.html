@@ -461,6 +461,73 @@ html.lock,html.lock body{overflow:hidden}
 .pchk{display:flex;align-items:center;gap:6px;background:#17181d;border:1px solid var(--line);border-radius:16px;padding:5px 10px;font-size:12.5px;color:var(--text);margin:0!important}
 .frm label .muted{font-weight:400}
 
+/* ---------- checklist / documents switch ---------- */
+.vseg{display:inline-flex;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:3px;gap:3px;margin-bottom:14px}
+.vseg button{display:flex;align-items:center;gap:7px;background:none;border:0;border-radius:6px;padding:8px 14px;font-size:13px;font-weight:600;color:var(--muted)}
+.vseg button svg{width:15px;height:15px}
+.vseg button.on{background:var(--mag);color:#fff}
+
+/* ---------- documents library ---------- */
+.dv-libhead{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.dv-libhead b{font-size:17px}.dv-libhead .sp{flex:1}
+.dv-imp{cursor:pointer}
+.dv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.dv-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
+.dv-open{background:none;border:0;text-align:left;padding:12px;display:flex;flex-direction:column;gap:6px;flex:1}
+.dv-thumb{height:120px;border-radius:6px;background:#2b2d36 center/cover no-repeat;display:grid;place-items:center;font-weight:800;font-size:22px;letter-spacing:1px;color:#fff}
+.dv-thumb.pdf{background:linear-gradient(135deg,#3a3d48,#23252c);color:var(--mag2);border:1px solid #3a3d48}
+.dv-thumb.pdf.has{background:#fff top/cover no-repeat;position:relative}
+.dv-thumb i{font-style:normal}.dv-thumb.has i{position:absolute;right:6px;bottom:6px;font-size:10px;background:var(--mag);color:#fff;padding:2px 6px;border-radius:4px}
+.dv-nm{font-weight:700;font-size:14px;word-break:break-word}
+.dv-sub{font-size:11.5px;color:var(--muted)}
+.dv-cact{display:flex;border-top:1px solid var(--line)}
+.dv-cact button{flex:1;background:none;border:0;padding:10px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.dv-cact button+button{border-left:1px solid var(--line)}
+.dv-cact .del{color:var(--red)}
+.dv-empty{text-align:center;padding:50px 20px;color:var(--muted);border:1px dashed var(--line);border-radius:12px}
+.dv-empty svg{opacity:.6}.dv-empty p{margin:8px 0}
+
+/* ---------- viewer ---------- */
+.dv-view{display:flex;flex-direction:column;background:#0b0c0f;border:1px solid var(--line);border-radius:10px;overflow:hidden;min-height:320px}
+.dv-view.max{position:fixed;inset:0;z-index:60;border-radius:0;border:0;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+html.dv-lock,html.dv-lock body{overflow:hidden}
+.dv-bar{display:flex;align-items:center;gap:6px;padding:8px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.dv-bar .sp{flex:1}
+.dv-title{font-size:14px;max-width:34vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dv-b{background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:7px 11px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;min-height:36px}
+.dv-b.on{background:var(--mag);border-color:var(--mag);color:#fff}
+.dv-pg{font-family:var(--mono);min-width:72px;justify-content:center}
+.dv-zv{font-family:var(--mono);min-width:62px;justify-content:center}
+.dv-grp{display:inline-flex;gap:3px;align-items:center}
+.dv-tools{display:none;align-items:center;gap:10px;padding:7px 8px;background:#1a1b21;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.dv-view.ann .dv-tools{display:flex}
+.dv-t{background:none;border:1px solid transparent;border-radius:6px;padding:5px 9px;display:inline-flex;flex-direction:column;align-items:center;gap:2px;color:var(--muted);font-size:10.5px;font-weight:600;min-width:52px}
+.dv-t.on{background:var(--panel2);border-color:var(--mag);color:#fff}
+.dv-t.warn{color:var(--red)}
+.dv-cols{gap:6px;padding:0 4px}
+.dv-c{width:26px;height:26px;border-radius:50%;background:var(--c);border:2px solid #0b0c0f;box-shadow:0 0 0 1px #555}
+.dv-c.on{box-shadow:0 0 0 2px #fff}
+.dv-hint{font-size:11px;color:var(--dim);margin-left:auto}
+.dv-scroll{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;position:relative;overscroll-behavior:contain}
+.dv-pages{padding:12px;display:flex;flex-direction:column;align-items:center;gap:12px;min-width:100%}
+.dv-view.ann .dv-pages{touch-action:none}
+.dv-page{position:relative;background:#fff;box-shadow:0 2px 14px #0008;flex:none}
+.dv-page canvas,.dv-page img{position:absolute;inset:0;width:100%;height:100%;display:block;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.dv-ov{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.dv-ov .hl{mix-blend-mode:multiply}
+.dv-note{font-family:Inter,system-ui,sans-serif;font-weight:600;paint-order:stroke;stroke:#fffc;stroke-width:3px}
+.dv-view.ann .dv-page{cursor:crosshair}
+.dv-pn{position:absolute;right:-2px;bottom:-20px;font-size:10.5px;color:var(--dim);font-family:var(--mono)}
+.dv-load{padding:40px;text-align:center;color:var(--muted)}
+.dv-menu{display:flex;flex-direction:column;padding:8px}
+.dv-menu button{background:none;border:0;text-align:left;padding:14px 12px;font-size:15px;border-radius:8px}
+.dv-menu button:active{background:var(--panel2)}
+.dv-menu .warn{color:var(--red)}
+.dv-sizes{display:flex;gap:6px;align-items:center;margin-top:10px}
+.dv-sizes button{background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:6px 14px;font-weight:700}
+.dv-sizes button.on{background:var(--mag);border-color:var(--mag);color:#fff}
+@media(max-width:700px){.dv-t span{display:none}.dv-t{min-width:40px;padding:8px}.dv-hint{display:none}.dv-title{max-width:28vw}}
+
 /* standalone app: full bleed + safe areas */
 .app{margin:0!important;min-height:100vh;border:0!important;border-radius:0!important;box-shadow:none!important;max-width:none}
 .top{padding-top:calc(10px + env(safe-area-inset-top));padding-left:calc(16px + env(safe-area-inset-left));padding-right:calc(16px + env(safe-area-inset-right))}
@@ -761,6 +828,384 @@ const RANKS=[
  {abbr:"STAFF",name:"Staff Team",                     h:null, f:null,ins:"wings"}
 ];
 
+/* ===================== Documents: PDF / image viewer with annotations (tablet app) ===================== */
+const DOCS={root:null,list:[],cur:null,pdf:null,urls:[],zoom:1,mode:"read",tool:"hl",color:"#ffd400",hist:[],fut:[],obs:null,scroller:null,max:false,sizes:[],loaded:false};
+const DOC_COLORS=["#ffd400","#3ddc84","#ff5fa2","#4da3ff","#ff3b30","#111111"];
+const DOC_TOOLS=[["hl","Highlight","M4 20h16M6 15l8-8 3 3-8 8H6z"],["ul","Underline","M7 4v7a5 5 0 0010 0V4M5 20h14"],["pen","Pen","M4 20l4-1 11-11-3-3L5 16z"],["txt","Text","M5 6V4h14v2M12 4v16M9 20h6"],["era","Eraser","M8 20h12M5 14l8-8 6 6-6 6H9z"]];
+const docSvg=(d,s=17)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></svg>`;
+
+/* ---- storage (IndexedDB: survives app restarts, handles big files) ---- */
+let _docDb;
+function docDb(){ return _docDb||(_docDb=new Promise((res,rej)=>{ const r=indexedDB.open("efb-docs",1);
+  r.onupgradeneeded=()=>{ const d=r.result; if(!d.objectStoreNames.contains("files")) d.createObjectStore("files"); if(!d.objectStoreNames.contains("meta")) d.createObjectStore("meta",{keyPath:"id"}); };
+  r.onsuccess=()=>res(r.result); r.onerror=()=>{ _docDb=null; rej(r.error); }; })); }
+async function idb(store,mode,fn){ const d=await docDb(); return new Promise((res,rej)=>{ const t=d.transaction(store,mode), r=fn(t.objectStore(store)); let out;
+  if(r) r.onsuccess=()=>{ out=r.result; }; t.oncomplete=()=>res(out); t.onerror=()=>rej(t.error); t.onabort=()=>rej(t.error); }); }
+const docMetaAll=()=>idb("meta","readonly",s=>s.getAll());
+const docMetaPut=m=>idb("meta","readwrite",s=>s.put(m));
+const docFileGet=id=>idb("files","readonly",s=>s.get(id));
+const docFilePut=(id,buf)=>idb("files","readwrite",s=>s.put(buf,id));
+async function docRemove(id){ await idb("meta","readwrite",s=>s.delete(id)); await idb("files","readwrite",s=>s.delete(id)); }
+let _docSaveT; function docSaveMeta(){ clearTimeout(_docSaveT); const m=DOCS.cur; _docSaveT=setTimeout(()=>{ if(m) docMetaPut(m).catch(()=>toast("Could not save annotations")); },350); }
+
+/* ---- PDF engine (Mozilla PDF.js, files next to index.html, cached offline) ---- */
+let _pdfjs;
+function pdfjs(){ return _pdfjs||(_pdfjs=import("./pdf.min.mjs").then(m=>{ m.GlobalWorkerOptions.workerSrc="./pdf.worker.min.mjs"; return m; }).catch(e=>{ _pdfjs=null; throw e; })); }
+
+const fmtSize=b=>b>1048576?(b/1048576).toFixed(1)+" MB":Math.max(1,Math.round(b/1024))+" kB";
+const fmtDay=t=>new Date(t).toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"});
+
+/* ---- entry point from the Checklist page ---- */
+function docsMount(el,keep){
+  if(!IS_SA){ const d=document.createElement("div"); d.className="info"; d.innerHTML="The document viewer works in the <b>EFB app installed on your tablet</b> (it needs the PDF engine and the tablet's storage). Open the EFB from your home screen to import PDFs and images."; el.appendChild(d); return; }
+  if(!DOCS.root){ DOCS.root=document.createElement("div"); DOCS.root.className="dv"; docLibrary(); }
+  el.appendChild(DOCS.root);
+  if(keep&&DOCS.scroller){ DOCS.scroller.scrollTop=keep[0]; DOCS.scroller.scrollLeft=keep[1]; }
+  docFit();
+}
+function docFit(){
+  const v=DOCS.root&&DOCS.root.querySelector(".dv-view"); if(!v||!v.isConnected) return;
+  if(DOCS.max){ v.style.height=""; return; }
+  const top=v.getBoundingClientRect().top;
+  v.style.height=Math.max(320,window.innerHeight-Math.max(0,top)-12)+"px";
+}
+window.addEventListener("resize",()=>{ docFit(); if(DOCS.cur&&DOCS.scroller){ clearTimeout(DOCS._rz); DOCS._rz=setTimeout(()=>docLayout(true),200); } });
+
+/* ---------------- library ---------------- */
+async function docLibrary(){
+  docClose();
+  const R=DOCS.root;
+  try{ DOCS.list=(await docMetaAll()).sort((a,b)=>b.added-a.added); }catch(e){ R.innerHTML=`<div class="info">This device blocks local storage for the app, so documents can't be saved.</div>`; return; }
+  DOCS.loaded=true;
+  R.innerHTML=`<div class="dv-lib">
+    <div class="dv-libhead"><b>Documents</b><span class="muted">${DOCS.list.length||""}</span><span class="sp"></span>
+      <label class="btn mag dv-imp">+ Import PDF / image<input type="file" accept="application/pdf,.pdf,image/*" multiple hidden></label></div>
+    ${DOCS.list.length?`<div class="dv-grid">${DOCS.list.map(m=>`
+      <div class="dv-card" data-id="${esc(m.id)}">
+        <button class="dv-open" data-open="${esc(m.id)}"><span class="dv-thumb ${m.kind} ${m.thumb?"has":""}" data-thumb="${m.kind==="img"?esc(m.id):""}" ${m.thumb?`style="background-image:url(${m.thumb})"`:""}>${m.kind==="pdf"?`<i>PDF</i>`:""}</span>
+          <span class="dv-nm">${esc(m.name)}</span>
+          <span class="dv-sub">${m.kind==="pdf"?m.pages+" page"+(m.pages>1?"s":""):"Image"} · ${fmtSize(m.size)} · ${fmtDay(m.added)}${Object.values(m.ann||{}).some(a=>a&&a.length)?" · ✎":""}</span></button>
+        <div class="dv-cact"><button data-ren="${esc(m.id)}">✎ Rename</button><button data-del="${esc(m.id)}" class="del">Delete</button></div>
+      </div>`).join("")}</div>`
+    :`<div class="dv-empty">${docSvg("M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9zM14 3v6h6",34)}<p>No documents yet.</p><p class="muted">Import a PDF (charts, QRH, procedures…) or an image (photo, screenshot).</p></div>`}
+  </div>`;
+  const inp=R.querySelector(".dv-imp input"); inp.onchange=()=>{ const f=[...inp.files]; inp.value=""; if(f.length) docImport(f); };
+  R.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>docOpen(b.dataset.open));
+  R.querySelectorAll("[data-ren]").forEach(b=>b.onclick=()=>docRename(b.dataset.ren));
+  R.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{ const m=DOCS.list.find(x=>x.id===b.dataset.del); confirmBox("Delete document",`Delete “${m.name}” and its annotations from this tablet?`,"Delete",async()=>{ await docRemove(m.id); toast("Document deleted"); docLibrary(); }); });
+  R.querySelectorAll("[data-thumb]").forEach(async t=>{ const id=t.dataset.thumb; if(!id) return; try{ const buf=await docFileGet(id); const m=DOCS.list.find(x=>x.id===id); const u=URL.createObjectURL(new Blob([buf],{type:m.mime})); DOCS.urls.push(u); t.style.backgroundImage=`url("${u}")`; }catch(e){} });
+}
+async function docImport(files){
+  if(navigator.storage&&navigator.storage.persist) navigator.storage.persist().catch(()=>{});
+  let n=0;
+  for(const f of files){
+    const isPdf=f.type==="application/pdf"||/\.pdf$/i.test(f.name), isImg=(f.type||"").startsWith("image/")||/\.(png|jpe?g|gif|webp|heic|heif)$/i.test(f.name);
+    if(!isPdf&&!isImg){ toast(`${f.name}: not a PDF or an image`); continue; }
+    toast(`Importing ${f.name}…`);
+    try{
+      const buf=await f.arrayBuffer(); let pages=1, thumb="";
+      if(isPdf){ const lib=await pdfjs(); const lt=lib.getDocument({data:new Uint8Array(buf.slice(0))}); const pd=await lt.promise; pages=pd.numPages;
+        try{ const p1=await pd.getPage(1), v0=p1.getViewport({scale:1}), vp=p1.getViewport({scale:360/v0.width}), c=document.createElement("canvas"); c.width=Math.floor(vp.width); c.height=Math.floor(vp.height);
+          const cx=c.getContext("2d"); cx.fillStyle="#fff"; cx.fillRect(0,0,c.width,c.height); await p1.render({canvasContext:cx,viewport:vp}).promise; thumb=c.toDataURL("image/jpeg",0.7); }catch(_){}
+        lt.destroy().catch(()=>{}); }
+      const id=Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+      await docFilePut(id,buf);
+      await docMetaPut({id,name:(f.name||"Document").replace(/\.[^.]+$/,"")||"Document",kind:isPdf?"pdf":"img",mime:f.type||(isPdf?"application/pdf":"image/jpeg"),size:f.size,pages,thumb,added:Date.now(),last:1,ann:{}});
+      n++;
+    }catch(e){ console.error("doc import",e); toast(isPdf?`${f.name}: can't open this PDF${/import|fetch|module/i.test(String(e))?" (PDF engine missing — upload pdf.min.mjs & pdf.worker.min.mjs)":""}`:`${f.name}: import failed`); }
+  }
+  if(n) toast(`${n} document${n>1?"s":""} imported`);
+  docLibrary();
+}
+function docRename(id){
+  const m=(DOCS.cur&&DOCS.cur.id===id)?DOCS.cur:DOCS.list.find(x=>x.id===id); if(!m) return;
+  openModal(`<div class="modal-h"><h3>Rename document</h3><button class="x" data-close>×</button></div>
+   <div style="padding:14px 16px"><input id="dvName" class="pf-in" style="width:100%" maxlength="80" value="${esc(m.name)}"></div>
+   <div class="modal-f"><span class="sp"></span><button class="btn ghost" data-close>Cancel</button><button class="btn mag" id="dvNameOk">Save</button></div>`);
+  $("#modal").querySelectorAll("[data-close]").forEach(b=>b.onclick=closeModal);
+  const i=$("#dvName"); setTimeout(()=>{ i.focus(); i.select(); },50);
+  const ok=async()=>{ const v=i.value.trim(); if(!v) return; m.name=v; await docMetaPut(m); closeModal(); toast("Renamed");
+    if(DOCS.cur&&DOCS.cur.id===id){ const t=DOCS.root.querySelector(".dv-title"); if(t) t.textContent=v; } else docLibrary(); };
+  $("#dvNameOk").onclick=ok; i.onkeydown=e=>{ if(e.key==="Enter"){ e.preventDefault(); ok(); } };
+}
+
+/* ---------------- viewer ---------------- */
+function docClose(){
+  if(DOCS.obs){ DOCS.obs.disconnect(); DOCS.obs=null; }
+  if(DOCS.task){ try{ DOCS.task.destroy().catch(()=>{}); }catch(e){} DOCS.task=null; } DOCS.pdf=null;
+  DOCS.urls.forEach(u=>URL.revokeObjectURL(u)); DOCS.urls=[];
+  DOCS.cur=null; DOCS.hist=[]; DOCS.fut=[]; DOCS.scroller=null; DOCS.mode="read"; DOCS.max=false; DOCS.sizes=[];
+  document.documentElement.classList.remove("dv-lock");
+}
+async function docOpen(id){
+  const m=DOCS.list.find(x=>x.id===id); if(!m) return;
+  docClose(); DOCS.cur=m; m.ann=m.ann||{}; DOCS.zoom=m.zoom||1;
+  const R=DOCS.root;
+  R.innerHTML=`<div class="dv-view">
+    <div class="dv-bar">
+      <button class="dv-b" id="dvBack">‹ Library</button>
+      <b class="dv-title">${esc(m.name)}</b>
+      <span class="sp"></span>
+      <button class="dv-b dv-pg" id="dvPg">– / ${m.pages}</button>
+      <span class="dv-grp"><button class="dv-b" id="dvZo" aria-label="Zoom out">−</button><button class="dv-b dv-zv" id="dvFit">100%</button><button class="dv-b" id="dvZi" aria-label="Zoom in">+</button></span>
+      <button class="dv-b" id="dvMax" aria-label="Full view">⛶</button>
+      <button class="dv-b dv-annb" id="dvAnn">${docSvg("M4 20l4-1 11-11-3-3L5 16z",15)} Annotate</button>
+      <button class="dv-b" id="dvMore" aria-label="More">⋯</button>
+    </div>
+    <div class="dv-tools" id="dvTools">
+      <span class="dv-grp">${DOC_TOOLS.map(([k,l,d])=>`<button class="dv-t ${DOCS.tool===k?"on":""}" data-tool="${k}" title="${l}">${docSvg(d)}<span>${l}</span></button>`).join("")}</span>
+      <span class="dv-grp dv-cols">${DOC_COLORS.map(c=>`<button class="dv-c ${DOCS.color===c?"on":""}" data-col="${c}" style="--c:${c}" aria-label="colour"></button>`).join("")}</span>
+      <span class="dv-grp"><button class="dv-t" id="dvUndo" title="Undo">${docSvg("M9 14L4 9l5-5M4 9h10a6 6 0 010 12h-3")}<span>Undo</span></button><button class="dv-t" id="dvRedo" title="Redo">${docSvg("M15 14l5-5-5-5M20 9H10a6 6 0 000 12h3")}<span>Redo</span></button></span>
+      <button class="dv-t warn" id="dvClr" title="Clear this page">${docSvg("M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14")}<span>Clear page</span></button>
+      <span class="dv-hint">1 finger draws · 2 fingers scroll</span>
+    </div>
+    <div class="dv-scroll"><div class="dv-pages"></div><div class="dv-load">Opening…</div></div>
+  </div>`;
+  DOCS.scroller=R.querySelector(".dv-scroll");
+  docFit(); docBindBar();
+  try{
+    const buf=await docFileGet(id); if(!buf) throw new Error("missing");
+    if(m.kind==="pdf"){
+      const lib=await pdfjs(); DOCS.task=lib.getDocument({data:new Uint8Array(buf)}); DOCS.pdf=await DOCS.task.promise;
+      if(DOCS.cur!==m) return;
+      for(let i=1;i<=DOCS.pdf.numPages;i++){ const p=await DOCS.pdf.getPage(i); const v=p.getViewport({scale:1}); DOCS.sizes.push([v.width,v.height]); }
+      if(m.pages!==DOCS.pdf.numPages){ m.pages=DOCS.pdf.numPages; docSaveMeta(); }
+    } else {
+      const u=URL.createObjectURL(new Blob([buf],{type:m.mime})); DOCS.urls.push(u); DOCS.imgUrl=u;
+      const im=await new Promise((res,rej)=>{ const x=new Image(); x.onload=()=>res(x); x.onerror=rej; x.src=u; });
+      DOCS.sizes=[[im.naturalWidth||1000,im.naturalHeight||1000]];
+    }
+  }catch(e){ R.querySelector(".dv-load").textContent=/import|module|fetch/i.test(String(e))?"PDF engine not found — upload pdf.min.mjs and pdf.worker.min.mjs next to index.html.":"This document can't be opened."; return; }
+  if(DOCS.cur!==m) return;
+  R.querySelector(".dv-load").remove();
+  docBuildPages(); docLayout(false);
+  const last=Math.min(m.last||1,DOCS.sizes.length); if(last>1){ const pg=DOCS.root.querySelector(`.dv-page[data-p="${last}"]`); if(pg) DOCS.scroller.scrollTop=pg.offsetTop-8; }
+  docTrackPage();
+}
+function docBindBar(){
+  const R=DOCS.root, m=DOCS.cur;
+  $("#dvBack").onclick=()=>{ if(DOCS.max) docMax(false); docLibrary(); };
+  $("#dvZo").onclick=()=>docZoom(DOCS.zoom/1.25);
+  $("#dvZi").onclick=()=>docZoom(DOCS.zoom*1.25);
+  $("#dvFit").onclick=()=>docZoom(1);
+  $("#dvMax").onclick=()=>docMax(!DOCS.max);
+  $("#dvAnn").onclick=()=>docSetMode(DOCS.mode==="ann"?"read":"ann");
+  $("#dvPg").onclick=docGoto;
+  $("#dvMore").onclick=()=>{
+    openModal(`<div class="modal-h"><h3>${esc(m.name)}</h3><button class="x" data-close>×</button></div>
+     <div class="dv-menu">
+       <button id="dmRen">✎ Rename</button>
+       <button id="dmGo">↧ Go to page…</button>
+       <button id="dmClrAll" class="warn">Remove all annotations</button>
+       <button id="dmDel" class="warn">Delete document</button>
+     </div>`);
+    $("#modal").querySelectorAll("[data-close]").forEach(b=>b.onclick=closeModal);
+    $("#dmRen").onclick=()=>{ closeModal(); docRename(m.id); };
+    $("#dmGo").onclick=()=>{ closeModal(); docGoto(); };
+    $("#dmClrAll").onclick=()=>confirmBox("Remove annotations",`Remove every highlight, line and note in “${m.name}”?`,"Remove",()=>{ DOCS.hist.push({all:JSON.parse(JSON.stringify(m.ann))}); DOCS.fut=[]; m.ann={}; docSaveMeta(); docRedrawAll(); });
+    $("#dmDel").onclick=()=>confirmBox("Delete document",`Delete “${m.name}” and its annotations from this tablet?`,"Delete",async()=>{ const id=m.id; if(DOCS.max) docMax(false); docClose(); await docRemove(id); toast("Document deleted"); docLibrary(); });
+  };
+  R.querySelectorAll("[data-tool]").forEach(b=>b.onclick=()=>{ DOCS.tool=b.dataset.tool; R.querySelectorAll("[data-tool]").forEach(x=>x.classList.toggle("on",x===b)); });
+  R.querySelectorAll("[data-col]").forEach(b=>b.onclick=()=>{ DOCS.color=b.dataset.col; R.querySelectorAll("[data-col]").forEach(x=>x.classList.toggle("on",x===b)); });
+  $("#dvUndo").onclick=docUndo; $("#dvRedo").onclick=docRedo;
+  $("#dvClr").onclick=()=>{ const p=docCurPage(), a=m.ann[p]; if(!a||!a.length){ toast("Nothing to clear on this page"); return; } docCommit(p,[]); toast(`Page ${p} cleared — Undo to restore`); };
+  docSetMode(DOCS.mode);
+}
+function docMax(on){
+  DOCS.max=on; const v=DOCS.root.querySelector(".dv-view"); if(!v) return;
+  v.classList.toggle("max",on); document.documentElement.classList.toggle("dv-lock",on);
+  const b=$("#dvMax"); if(b) b.classList.toggle("on",on);
+  docFit(); docLayout(true);
+}
+function docSetMode(md){
+  DOCS.mode=md; const R=DOCS.root, v=R.querySelector(".dv-view"); if(!v) return;
+  v.classList.toggle("ann",md==="ann"); const b=$("#dvAnn"); if(b) b.classList.toggle("on",md==="ann");
+}
+function docGoto(){
+  const n=DOCS.sizes.length; if(n<2){ toast("Single page"); return; }
+  openModal(`<div class="modal-h"><h3>Go to page</h3><button class="x" data-close>×</button></div>
+   <div style="padding:14px 16px"><input id="dvGo" class="pf-in" type="number" inputmode="numeric" min="1" max="${n}" style="width:100%" placeholder="1 – ${n}"></div>
+   <div class="modal-f"><span class="sp"></span><button class="btn ghost" data-close>Cancel</button><button class="btn mag" id="dvGoOk">Go</button></div>`);
+  $("#modal").querySelectorAll("[data-close]").forEach(b=>b.onclick=closeModal);
+  const i=$("#dvGo"); setTimeout(()=>i.focus(),50);
+  const ok=()=>{ const p=Math.max(1,Math.min(n,parseInt(i.value)||1)); closeModal(); const pg=DOCS.root.querySelector(`.dv-page[data-p="${p}"]`); if(pg) DOCS.scroller.scrollTo({top:pg.offsetTop-8}); };
+  $("#dvGoOk").onclick=ok; i.onkeydown=e=>{ if(e.key==="Enter"){ e.preventDefault(); ok(); } };
+}
+
+/* ---- pages ---- */
+function docBuildPages(){
+  const box=DOCS.root.querySelector(".dv-pages"); const m=DOCS.cur;
+  box.innerHTML=DOCS.sizes.map(([w,h],i)=>{ const H=Math.round(1000*h/w);
+    return `<div class="dv-page" data-p="${i+1}">${m.kind==="img"?`<img src="${DOCS.imgUrl}" alt="" draggable="false">`:`<canvas></canvas>`}
+      <svg class="dv-ov" viewBox="0 0 1000 ${H}" preserveAspectRatio="none" data-h="${H}"></svg>${DOCS.sizes.length>1?`<span class="dv-pn">${i+1}</span>`:""}</div>`; }).join("");
+  if(DOCS.obs) DOCS.obs.disconnect();
+  DOCS.obs=new IntersectionObserver(es=>es.forEach(e=>{ const pg=e.target; pg._vis=e.isIntersecting; if(e.isIntersecting) docRenderPage(pg); else docFreePage(pg); }),{root:DOCS.scroller,rootMargin:"900px 300px"});
+  box.querySelectorAll(".dv-page").forEach(pg=>{ DOCS.obs.observe(pg); docDrawAnn(pg); });
+  docBindDraw(box); docBindPinch();
+}
+function docBaseW(){ return Math.max(200,DOCS.scroller.clientWidth-24); }
+function docLayout(rerender){
+  if(!DOCS.cur||!DOCS.scroller||!DOCS.sizes.length) return;
+  const W=docBaseW()*DOCS.zoom, box=DOCS.root.querySelector(".dv-pages"); if(!box) return;
+  box.style.width=Math.max(W+24,DOCS.scroller.clientWidth)+"px";
+  box.querySelectorAll(".dv-page").forEach(pg=>{ const [w,h]=DOCS.sizes[pg.dataset.p-1]; pg.style.width=W+"px"; pg.style.height=Math.round(W*h/w)+"px"; if(rerender&&pg._vis) docRenderPage(pg,true); });
+  const zv=$("#dvFit"); if(zv) zv.textContent=Math.round(DOCS.zoom*100)+"%";
+}
+function docZoom(z,anchor){
+  z=Math.max(0.5,Math.min(5,z)); if(!DOCS.scroller) return;
+  const sc=DOCS.scroller, old=DOCS.zoom, k=z/old;
+  const ax=anchor?anchor[0]:sc.clientWidth/2, ay=anchor?anchor[1]:sc.clientHeight/3;
+  const cx=sc.scrollLeft+ax, cy=sc.scrollTop+ay;
+  DOCS.zoom=z; if(DOCS.cur){ DOCS.cur.zoom=z; docSaveMeta(); }
+  docLayout(false);
+  sc.scrollLeft=cx*k-ax; sc.scrollTop=cy*k-ay;
+  clearTimeout(DOCS._zt); DOCS._zt=setTimeout(()=>DOCS.root.querySelectorAll(".dv-page").forEach(pg=>{ if(pg._vis) docRenderPage(pg,true); }),120);
+}
+async function docRenderPage(pg,force){
+  if(DOCS.cur&&DOCS.cur.kind==="img") return;
+  const pdf=DOCS.pdf; if(!pdf) return;
+  const cv=pg.querySelector("canvas"); const cssW=pg.clientWidth; if(!cssW) return;
+  const dpr=Math.min(window.devicePixelRatio||1,3), [w,h]=DOCS.sizes[pg.dataset.p-1];
+  let pxW=cssW*dpr; const maxArea=12e6; if(pxW*pxW*h/w>maxArea) pxW=Math.sqrt(maxArea*w/h);
+  pxW=Math.floor(pxW);
+  if(!force&&pg._rw===pxW) return;
+  pg._rw=pxW;
+  if(pg._task){ try{ pg._task.cancel(); }catch(e){} }
+  try{
+    const page=await pdf.getPage(+pg.dataset.p); if(pdf!==DOCS.pdf) return;
+    const vp=page.getViewport({scale:pxW/w});
+    const off=document.createElement("canvas"); off.width=Math.floor(vp.width); off.height=Math.floor(vp.height);
+    const task=page.render({canvasContext:off.getContext("2d"),viewport:vp}); pg._task=task; await task.promise; pg._task=null;
+    if(pg._rw!==pxW) return;
+    cv.width=off.width; cv.height=off.height; cv.getContext("2d").drawImage(off,0,0); off.width=0;
+  }catch(e){ if(!(e&&e.name==="RenderingCancelledException")) pg._rw=0; }
+}
+function docFreePage(pg){ const cv=pg.querySelector("canvas"); if(!cv) return; if(pg._task){ try{ pg._task.cancel(); }catch(e){} pg._task=null; } cv.width=0; cv.height=0; pg._rw=0; }
+function docTrackPage(){
+  const sc=DOCS.scroller; let t;
+  const upd=()=>{ const p=docCurPage(); const b=$("#dvPg"); if(b) b.textContent=`${p} / ${DOCS.sizes.length}`; if(DOCS.cur&&DOCS.cur.last!==p){ DOCS.cur.last=p; docSaveMeta(); } };
+  sc.addEventListener("scroll",()=>{ clearTimeout(t); t=setTimeout(upd,80); },{passive:true}); upd();
+}
+function docCurPage(){
+  const sc=DOCS.scroller; if(!sc) return 1; const y=sc.scrollTop+sc.clientHeight*0.35; let p=1;
+  DOCS.root.querySelectorAll(".dv-page").forEach(pg=>{ if(pg.offsetTop<=y) p=+pg.dataset.p; }); return p;
+}
+
+/* ---- annotations: stored per page in page units (width 1000), never touch the original file ---- */
+function docItemSvg(it){
+  const pts=it.d?it.d.map(q=>q.join(",")).join(" "):"";
+  if(it.t==="h") return `<polyline points="${pts}" fill="none" stroke="${it.c}" stroke-width="${it.w}" stroke-opacity=".38" stroke-linecap="${it.d.length===2?"butt":"round"}" stroke-linejoin="round" class="hl"/>`;
+  if(it.t==="u"||it.t==="p") return `<polyline points="${pts}" fill="none" stroke="${it.c}" stroke-width="${it.w}" stroke-linecap="round" stroke-linejoin="round"/>`;
+  if(it.t==="x"){ const L=String(it.s).split("\n"); return `<text x="${it.x}" y="${it.y}" font-size="${it.fs}" fill="${it.c==="#ffd400"?"#b38f00":it.c}" class="dv-note">${L.map((l,i)=>`<tspan x="${it.x}" dy="${i?it.fs*1.2:0}">${esc(l)}</tspan>`).join("")}</text>`; }
+  return "";
+}
+function docDrawAnn(pg){ const sv=pg.querySelector(".dv-ov"); const a=(DOCS.cur.ann[pg.dataset.p])||[]; sv.innerHTML=a.map(docItemSvg).join(""); }
+function docRedrawAll(){ DOCS.root.querySelectorAll(".dv-page").forEach(docDrawAnn); }
+function docCommit(p,next){
+  const m=DOCS.cur; DOCS.hist.push({p,before:(m.ann[p]||[]).slice()}); if(DOCS.hist.length>200) DOCS.hist.shift(); DOCS.fut=[];
+  if(next.length) m.ann[p]=next; else delete m.ann[p];
+  docSaveMeta(); const pg=DOCS.root.querySelector(`.dv-page[data-p="${p}"]`); if(pg) docDrawAnn(pg);
+}
+function docUndo(){ const h=DOCS.hist.pop(); if(!h){ toast("Nothing to undo"); return; } const m=DOCS.cur;
+  if(h.all){ DOCS.fut.push({all:JSON.parse(JSON.stringify(m.ann))}); m.ann=h.all; docSaveMeta(); docRedrawAll(); return; }
+  DOCS.fut.push({p:h.p,before:(m.ann[h.p]||[]).slice()}); if(h.before.length) m.ann[h.p]=h.before; else delete m.ann[h.p]; docSaveMeta();
+  const pg=DOCS.root.querySelector(`.dv-page[data-p="${h.p}"]`); if(pg) docDrawAnn(pg); }
+function docRedo(){ const h=DOCS.fut.pop(); if(!h){ toast("Nothing to redo"); return; } const m=DOCS.cur;
+  if(h.all){ DOCS.hist.push({all:JSON.parse(JSON.stringify(m.ann))}); m.ann=h.all; docSaveMeta(); docRedrawAll(); return; }
+  DOCS.hist.push({p:h.p,before:(m.ann[h.p]||[]).slice()}); if(h.before.length) m.ann[h.p]=h.before; else delete m.ann[h.p]; docSaveMeta();
+  const pg=DOCS.root.querySelector(`.dv-page[data-p="${h.p}"]`); if(pg) docDrawAnn(pg); }
+function docPt(pg,e){ const r=pg.getBoundingClientRect(), H=+pg.querySelector(".dv-ov").dataset.h; return [Math.round((e.clientX-r.left)/r.width*1000*10)/10, Math.round((e.clientY-r.top)/r.height*H*10)/10]; }
+function segDist(p,a,b){ const dx=b[0]-a[0], dy=b[1]-a[1], L=dx*dx+dy*dy; let t=L?((p[0]-a[0])*dx+(p[1]-a[1])*dy)/L:0; t=Math.max(0,Math.min(1,t)); const x=a[0]+t*dx-p[0], y=a[1]+t*dy-p[1]; return Math.sqrt(x*x+y*y); }
+function docHit(it,p,tol){
+  if(it.t==="x"){ const L=String(it.s).split("\n"), w=Math.max(...L.map(l=>l.length))*it.fs*0.58; return p[0]>=it.x-tol&&p[0]<=it.x+w+tol&&p[1]>=it.y-it.fs-tol&&p[1]<=it.y+(L.length-1)*it.fs*1.2+tol; }
+  const d=it.d; if(d.length===1) return Math.hypot(p[0]-d[0][0],p[1]-d[0][1])<=tol+it.w/2;
+  for(let i=1;i<d.length;i++) if(segDist(p,d[i-1],d[i])<=tol+it.w/2) return true; return false;
+}
+function docTextAt(pg,pt){
+  const p=pg.dataset.p, col=DOCS.color;
+  openModal(`<div class="modal-h"><h3>Add a note</h3><button class="x" data-close>×</button></div>
+   <div style="padding:14px 16px"><textarea id="dvTx" class="copybox" style="height:90px;width:100%" placeholder="Type your note"></textarea>
+   <div class="dv-sizes"><span class="muted">Size</span>${[["S",14],["M",20],["L",30]].map(([l,s],i)=>`<button data-fs="${s}" class="${i===1?"on":""}">${l}</button>`).join("")}</div></div>
+   <div class="modal-f"><span class="sp"></span><button class="btn ghost" data-close>Cancel</button><button class="btn mag" id="dvTxOk">Add</button></div>`);
+  $("#modal").querySelectorAll("[data-close]").forEach(b=>b.onclick=closeModal);
+  let fs=20; $("#modal").querySelectorAll("[data-fs]").forEach(b=>b.onclick=()=>{ fs=+b.dataset.fs; $("#modal").querySelectorAll("[data-fs]").forEach(x=>x.classList.toggle("on",x===b)); });
+  const t=$("#dvTx"); setTimeout(()=>t.focus(),50);
+  $("#dvTxOk").onclick=()=>{ const s=t.value.replace(/\s+$/,""); if(!s.trim()){ closeModal(); return; } closeModal();
+    docCommit(p,[...(DOCS.cur.ann[p]||[]),{t:"x",c:col,x:pt[0],y:pt[1]+fs*0.35,fs,s}]); };
+}
+function docBindDraw(box){
+  const ptrs=new Map(); let cur=null, scrollMid=null;
+  const mid=()=>{ const a=[...ptrs.values()]; return [(a[0][0]+a[1][0])/2,(a[0][1]+a[1][1])/2]; };
+  const cancel=()=>{ if(cur){ if(cur.el) cur.el.remove(); cur=null; } };
+  box.addEventListener("pointerdown",e=>{
+    if(DOCS.mode!=="ann") return;
+    if(e.pointerType==="mouse"&&e.button!==0) return;
+    ptrs.set(e.pointerId,[e.clientX,e.clientY]);
+    if(ptrs.size>=2){ cancel(); scrollMid=mid(); return; }
+    const pg=e.target.closest(".dv-page"); if(!pg) return;
+    e.preventDefault(); try{ box.setPointerCapture(e.pointerId); }catch(_){}
+    const p=docPt(pg,e), T=DOCS.tool;
+    if(T==="txt"){ cur={T,pg,start:p,id:e.pointerId}; return; }
+    if(T==="era"){ cur={T,pg,id:e.pointerId,removed:false,before:(DOCS.cur.ann[pg.dataset.p]||[]).slice()}; docErase(cur,p); return; }
+    const w=T==="hl"?22:T==="ul"?3:3.2;
+    const el=document.createElementNS("http://www.w3.org/2000/svg","polyline");
+    el.setAttribute("fill","none"); el.setAttribute("stroke",DOCS.color); el.setAttribute("stroke-width",w); el.setAttribute("stroke-linecap","round"); el.setAttribute("stroke-linejoin","round");
+    if(T==="hl") el.setAttribute("stroke-opacity",".38");
+    pg.querySelector(".dv-ov").appendChild(el);
+    cur={T,pg,el,w,d:[p],id:e.pointerId}; el.setAttribute("points",p.join(","));
+  });
+  box.addEventListener("pointermove",e=>{
+    if(!ptrs.has(e.pointerId)) return; ptrs.set(e.pointerId,[e.clientX,e.clientY]);
+    if(ptrs.size>=2&&scrollMid){ const m=mid(); DOCS.scroller.scrollBy(scrollMid[0]-m[0],scrollMid[1]-m[1]); scrollMid=m; return; }
+    if(!cur||cur.id!==e.pointerId) return; e.preventDefault();
+    const p=docPt(cur.pg,e);
+    if(cur.T==="era"){ docErase(cur,p); return; }
+    if(cur.T==="txt") return;
+    const l=cur.d[cur.d.length-1]; if(Math.hypot(p[0]-l[0],p[1]-l[1])<1.5) return;
+    cur.d.push(p);
+    let shown=cur.d;
+    if(cur.T==="ul"||cur.T==="hl"){ const s=docStraight(cur); if(s) shown=s; }
+    cur.el.setAttribute("points",shown.map(q=>q.join(",")).join(" "));
+  });
+  const end=e=>{
+    ptrs.delete(e.pointerId); if(ptrs.size<2) scrollMid=null;
+    if(!cur||cur.id!==e.pointerId) return;
+    const c=cur; cur=null; const p=c.pg.dataset.p;
+    if(e.type==="pointercancel"){ if(c.el) c.el.remove(); if(c.T==="era"&&c.removed) docDrawAnn(c.pg); return; }
+    if(c.T==="txt"){ docTextAt(c.pg,c.start); return; }
+    if(c.T==="era"){ if(c.removed){ const now=(DOCS.cur.ann[p]||[]).slice(); DOCS.cur.ann[p]=c.before; docCommit(p,now); } return; }
+    c.el.remove();
+    let d=c.d; if(c.T==="ul"||c.T==="hl"){ d=docStraight(c)||(c.T==="ul"?null:d); if(!d){ toast("Underline: draw a line along the text"); return; } }
+    if(c.T==="pen"&&d.length===1) d=[d[0],[d[0][0]+0.1,d[0][1]]];
+    if(c.T!=="pen"&&d.length<2) return;
+    docCommit(p,[...(DOCS.cur.ann[p]||[]),{t:c.T==="hl"?"h":c.T==="ul"?"u":"p",c:DOCS.color,w:c.w,d:docSimplify(d)}]);
+  };
+  box.addEventListener("pointerup",end); box.addEventListener("pointercancel",end);
+}
+function docStraight(c){
+  const d=c.d; if(d.length<2) return null; const xs=d.map(q=>q[0]), ys=d.map(q=>q[1]);
+  const dx=Math.max(...xs)-Math.min(...xs), dy=Math.max(...ys)-Math.min(...ys);
+  if(dx<4) return null;
+  if(c.T==="ul"||dy<=Math.max(18,dx*0.25)){ const y=Math.round(ys.reduce((a,b)=>a+b,0)/ys.length*10)/10; return [[Math.min(...xs),y],[Math.max(...xs),y]]; }
+  return null;
+}
+function docSimplify(d){ if(d.length<4) return d; const out=[d[0]]; for(let i=1;i<d.length-1;i++){ const l=out[out.length-1]; if(Math.hypot(d[i][0]-l[0],d[i][1]-l[1])>=2.5) out.push(d[i]); } out.push(d[d.length-1]); return out; }
+function docErase(c,p){
+  const k=c.pg.dataset.p, a=DOCS.cur.ann[k]; if(!a||!a.length) return;
+  const keep=a.filter(it=>!docHit(it,p,12)); if(keep.length!==a.length){ c.removed=true; if(keep.length) DOCS.cur.ann[k]=keep; else delete DOCS.cur.ann[k]; docDrawAnn(c.pg); }
+}
+function docBindPinch(){
+  const sc=DOCS.scroller, box=DOCS.root.querySelector(".dv-pages"); let st=null;
+  const dist=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
+  sc.addEventListener("touchstart",e=>{ if(e.touches.length===2){ const r=sc.getBoundingClientRect(); st={d:dist(e.touches),z:DOCS.zoom,ax:(e.touches[0].clientX+e.touches[1].clientX)/2-r.left,ay:(e.touches[0].clientY+e.touches[1].clientY)/2-r.top,k:1}; } },{passive:true});
+  sc.addEventListener("touchmove",e=>{ if(!st||e.touches.length!==2) return; if(DOCS.mode==="ann"){ st=null; return; } e.preventDefault();
+    st.k=Math.max(0.5/st.z,Math.min(5/st.z,dist(e.touches)/st.d));
+    box.style.transformOrigin=`${sc.scrollLeft+st.ax}px ${sc.scrollTop+st.ay}px`; box.style.transform=`scale(${st.k})`; },{passive:false});
+  const fin=()=>{ if(!st) return; const s=st; st=null; box.style.transform=""; if(Math.abs(s.k-1)>0.02) docZoom(s.z*s.k,[s.ax,s.ay]); };
+  sc.addEventListener("touchend",e=>{ if(e.touches.length<2) fin(); }); sc.addEventListener("touchcancel",fin);
+  sc.addEventListener("gesturestart",e=>e.preventDefault());
+}
+
 /* =====================================================================
    EFB — modular single-page app (Wizz mode + Global mode)
    To add a module: push an entry into MODULES (id, label, icon,
@@ -810,6 +1255,8 @@ function migrate(){
   if(typeof c.sec!=="object"||c.sec===null) c.sec={a320:+c.sec||0};
   Object.keys(c.c||{}).forEach(k=>{ if(!k.includes(":")){ c.c["a320:"+k]=c.c[k]; delete c.c[k]; } });
   if(!S.settings.mode) S.settings.mode="wizz";
+  if(String(S.settings.mode).startsWith("p:")) S.settings.mode="global";
+  delete S.settings.profiles;
   Object.keys(CHECKLISTS).forEach(id=>{ const v=CHECKLISTS[id].v||1; c.ver=c.ver||{};
     if((c.ver[id]||1)!==v){ Object.keys(c.c).forEach(k=>{if(k.startsWith(id+":"))delete c.c[k]}); c.sec[id]=0; c.ver[id]=v; } });
 }
@@ -891,14 +1338,8 @@ const ICON={
 
 /* ---------------- aircraft helpers ---------------- */
 const isWizz=()=>S.settings.mode==="wizz"||!S.settings.mode;
-/* ---------- custom profiles (Global behaviour + own colour / checklists / aircraft) ---------- */
-const profList=()=>S.settings.profiles||(S.settings.profiles=[]);
-const curProf=()=>{ const m=S.settings.mode||""; return m.startsWith("p:")?profList().find(p=>p.id===m.slice(2))||null:null; };
-const famAllowed=id=>{ const p=curProf(); return !p||!p.fams||!p.fams.length||p.fams.includes(id); };
-const clAllowed=id=>{ const p=curProf(); return !p||!p.cls||!p.cls.length||p.cls.includes(id); };
-function hex2hsl(h){ h=h.replace("#",""); const r=parseInt(h.slice(0,2),16)/255,g=parseInt(h.slice(2,4),16)/255,b=parseInt(h.slice(4,6),16)/255; const mx=Math.max(r,g,b),mn=Math.min(r,g,b); let H=0,Sx=0,L=(mx+mn)/2; if(mx!==mn){const d=mx-mn; Sx=L>.5?d/(2-mx-mn):d/(mx+mn); H=mx===r?(g-b)/d+(g<b?6:0):mx===g?(b-r)/d+2:(r-g)/d+4; H*=60;} return [H,Sx*100,L*100]; }
-const hsl=(h,s,l)=>`hsl(${Math.round(h)} ${Math.round(s)}% ${Math.max(0,Math.min(100,Math.round(l)))}%)`;
-function profPalette(c){ const [h,s,l]=hex2hsl(c||"#1f9d63"); return {mag:hsl(h,s,l), mag2:hsl(h,s,Math.min(78,l+14)), purple:hsl(h,Math.min(80,s),Math.max(12,l-30)), nextbg:hsl(h,Math.min(45,s),12), grad:`linear-gradient(90deg,${hsl(h,s,l)} 0%,${hsl(h,s,Math.max(18,l-14))} 55%,${hsl(h,Math.min(80,s),Math.max(10,l-30))} 100%)`, ring:hsl(h,s,Math.min(72,l+10)), wa:hsl(h,Math.min(70,s),Math.max(10,l-32)), wb:hsl(h,s,Math.max(18,l-12)), line:hsl(h,s,Math.min(85,l+25))}; }
+/* profiles removed — Wizz / Global only */
+const curProf=()=>null, famAllowed=()=>true, clAllowed=()=>true;
 function variantInfo(v){ for(const f of FAMILIES){const x=f.variants.find(y=>y.v===v); if(x) return {fam:f,var:x};} return null; }
 const enginesFor=v=>(variantInfo(v)||{var:{eng:[]}}).var.eng;
 function currentAc(){
@@ -1101,12 +1542,19 @@ function tagLabel(l){
   return esc(l).replace(/^\[AT\]\s*/,'<span class="tag at">AT</span>').replace(/^\[NO AT\]\s*/,'<span class="tag noat">NO AT</span>').replace(/^\[GPU\]\s*/,'<span class="tag gpu">GPU</span>');
 }
 
+function clViewSeg(el){
+  const v=S.checklist.view==="docs"?"docs":"cl";
+  const h=`<div class="vseg"><button data-v="cl" class="${v==="cl"?"on":""}">${ICON.check}Checklists</button><button data-v="docs" class="${v==="docs"?"on":""}">${docSvg("M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9zM14 3v6h6M8 13h8M8 17h5",16)}Documents</button></div>`;
+  return [h,()=>el.querySelectorAll(".vseg button").forEach(b=>b.onclick=()=>{ if(S.checklist.view===b.dataset.v) return; S.checklist.view=b.dataset.v; save("checklist"); render(); window.scrollTo({top:0}); })];
+}
 function renderChecklist(el){
+  const [vseg,vbind]=clViewSeg(el);
+  if(S.checklist.view==="docs"){ const sc=DOCS.scroller, keep=sc&&sc.isConnected?[sc.scrollTop,sc.scrollLeft]:null; el.innerHTML=vseg; vbind(); docsMount(el,keep); return; }
   const cl=activeCl(), C=CHECKLISTS[cl];
   const si=Math.min(S.checklist.sec[cl]||0,C.sections.length-1);
   const sec=C.sections[si], items=clItems(cl,si), [a,b]=clProgress(cl,si), [ta,tb]=clTotals(cl);
   const nextId=(items.find(x=>checkable(x)&&!S.checklist.c[x.id])||{}).id;
-  el.innerHTML=`
+  el.innerHTML=`${vseg}
   <div class="page-head"><span class="title-chip">${esc(C.title)}</span><span class="sp"></span>
     <button class="btn ghost" id="cResetAll">Reset all</button></div>
   ${isWizz()?"":`<div class="cl-pick">${Object.entries(CHECKLISTS).filter(([id])=>clAllowed(id)).sort((x,y)=>["a220","a320","b737","b757","b777"].indexOf(x[0])-["a220","a320","b737","b757","b777"].indexOf(y[0])).map(([id,c])=>`<button data-cl="${id}" class="${id===cl?"on":""}">${esc(c.name)}</button>`).join("")}</div>`}
@@ -1135,6 +1583,7 @@ function renderChecklist(el){
       </div>
     </div>
   </div>`;
+  vbind();
   const go=i=>{S.checklist.sec[cl]=i;save("checklist");render();window.scrollTo({top:0})};
   const onBtn=el.querySelector(".cl-nav button.on"); if(onBtn&&onBtn.parentElement.scrollWidth>onBtn.parentElement.clientWidth){onBtn.parentElement.scrollLeft=onBtn.offsetLeft-12}
   el.querySelectorAll(".cl-pick button").forEach(bt=>bt.onclick=()=>{S.checklist.sel=bt.dataset.cl;save("checklist");render()});
@@ -2287,15 +2736,8 @@ function updateStatus(){
 }
 function renderModeSeg(){
   const seg=$("#modeSeg"); if(!seg) return; const m=S.settings.mode||"wizz", P=curProf();
-  seg.innerHTML=`<button data-mode="wizz" class="${m==="wizz"?"on":""}">Wizz</button><button data-mode="global" class="${m==="global"?"on":""}">Global</button>
-   <select id="profSel" class="prof-sel ${P?"on":""}" aria-label="Profiles">
-     <option value="" ${P?"":"selected"}>${profList().length?"Profiles ▾":"+ ▾"}</option>
-     ${profList().map(p=>`<option value="p:${esc(p.id)}" ${P&&P.id===p.id?"selected":""}>● ${esc(p.name)}</option>`).join("")}
-     ${P?`<option value="__edit">✎ Edit “${esc(P.name)}”</option>`:""}
-     <option value="__new">+ New profile</option>
-   </select>`;
+  seg.innerHTML=`<button data-mode="wizz" class="${m==="wizz"?"on":""}">Wizz</button><button data-mode="global" class="${m==="global"?"on":""}">Global</button>`;
   seg.querySelectorAll("button[data-mode]").forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
-  const sel=$("#profSel"); sel.onchange=()=>{ const v=sel.value; if(v==="__new"){ renderModeSeg(); profileEditor(null); } else if(v==="__edit"){ renderModeSeg(); profileEditor(curProf()); } else if(v) setMode(v); else renderModeSeg(); };
 }
 function applyMode(){
   const r=document.documentElement, P=curProf();
@@ -2308,40 +2750,11 @@ function setMode(m){
   S.settings.mode=m; save("settings"); applyMode(); render();
   const P=curProf(); toast(P?`${P.name} profile`:m==="global"?"Global mode — all aircraft":"Wizz mode — A320 / A321");
 }
-const PROF_COLORS=["#1f9d63","#e0761f","#d4a017","#2aa7c9","#7b4ddb","#d23c3c","#c6007e","#1f6fe5"];
-function profileEditor(P){
-  const isNew=!P; P=P?JSON.parse(JSON.stringify(P)):{id:Date.now().toString(36),name:"",color:"#1f9d63",cls:[],fams:[],regs:[]};
-  const regs=Object.keys((S.acdb&&S.acdb.list)||{}).sort();
-  const ck=(name,val,on,label)=>`<label class="pchk"><input type="checkbox" name="${name}" value="${esc(val)}" ${on?"checked":""}> ${esc(label)}</label>`;
-  openModal(`<div class="modal-h"><h3>${isNew?"New profile":"Edit profile"}</h3><button class="x" data-close>×</button></div>
-  <form class="frm" id="pf" autocomplete="off">
-    <div class="full"><label>Name</label><input name="name" maxlength="18" value="${esc(P.name)}" placeholder="e.g. Air Lubéron VA"></div>
-    <div class="full"><label>Main colour</label><div class="swatches">${PROF_COLORS.map(c=>`<button type="button" class="sw ${c===P.color?"on":""}" data-c="${c}" style="background:${c}"></button>`).join("")}<input type="color" name="color" value="${esc(P.color)}"></div></div>
-    <div class="full"><label>Checklists available <span class="muted">(none ticked = all)</span></label><div class="pchks">${Object.entries(CHECKLISTS).map(([id,c])=>ck("cls",id,P.cls.includes(id),c.name)).join("")}</div></div>
-    <div class="full"><label>Aircraft families <span class="muted">(none ticked = all)</span></label><div class="pchks">${FAMILIES.map(f=>ck("fams",f.id,P.fams.includes(f.id),f.name)).join("")}</div></div>
-    <div class="full"><label>Registrations suggested <span class="muted">(from ☰ → My aircraft)</span></label><div class="pchks">${regs.length?regs.map(r=>ck("regs",r,P.regs.includes(r),r)).join(""):`<span class="muted" style="font-size:12px">No saved aircraft yet — add some in ☰ → My aircraft.</span>`}</div></div>
-    <div class="err" id="pErr"></div>
-  </form>
-  <div class="modal-f">${isNew?"":'<button class="btn danger" id="pDel">Delete</button>'}<span class="sp"></span><button class="btn ghost" data-close>Cancel</button><button class="btn mag" id="pSave">${isNew?"Create":"Save"}</button></div>`);
-  const f=$("#pf");
-  $("#modal").querySelectorAll("[data-close]").forEach(b=>b.onclick=closeModal);
-  f.querySelectorAll(".sw").forEach(b=>b.onclick=()=>{ f.color.value=b.dataset.c; f.querySelectorAll(".sw").forEach(x=>x.classList.toggle("on",x===b)); });
-  $("#pSave").onclick=()=>{
-    const name=f.name.value.trim(); if(!name){ $("#pErr").textContent="Give the profile a name."; return; }
-    const vals=n=>[...f.querySelectorAll(`input[name=${n}]:checked`)].map(x=>x.value);
-    Object.assign(P,{name,color:f.color.value,cls:vals("cls"),fams:vals("fams"),regs:vals("regs")});
-    const L=profList(), i=L.findIndex(x=>x.id===P.id); if(i>=0) L[i]=P; else L.push(P);
-    S.settings.mode="p:"+P.id; save("settings"); closeModal(); applyMode(); render(); toast(`${P.name} profile ${isNew?"created":"saved"}`);
-  };
-  const d=$("#pDel"); if(d) d.onclick=()=>confirmBox("Delete profile",`Delete “${P.name}”? Your flights and data are kept.`,"Delete",()=>{ S.settings.profiles=profList().filter(x=>x.id!==P.id); S.settings.mode="global"; save("settings"); applyMode(); render(); });
-}
 function renderDrawer(){
   $("#drawer").innerHTML=`<div class="brand" style="margin-bottom:10px">${document.querySelector(".top .logo").outerHTML}<b>EFB</b><span>${isWizz()?"Flight<br>Ops":"Global<br>Ops"}</span></div>
     <h4>Interface</h4>
     <button class="mod ${isWizz()?"on":""}" data-mode="wizz">● Wizz Air — A320 / A321</button>
     <button class="mod ${S.settings.mode==="global"?"on":""}" data-mode="global">● Global — A220 · A320 · 737 · 757 · 777</button>
-    ${profList().map(p=>`<button class="mod ${curProf()&&curProf().id===p.id?"on":""}" data-mode="p:${esc(p.id)}"><span style="color:${esc(p.color)}">●</span> ${esc(p.name)}</button>`).join("")}
-    <button class="mod" id="newProf">＋ New profile</button>
     <div class="mode-note">All interfaces share the same flight log.</div>
     <h4>Modules</h4>
     ${MODULES.map(m=>`<button class="mod ${m.id===current?"on":""}" data-m="${m.id}">${m.icon}${m.label}</button>`).join("")}
@@ -2365,7 +2778,6 @@ function renderDrawer(){
   $("#sbIn").oninput=e=>{S.settings.sb=e.target.value.trim();save("settings")};
   $("#expBtn").onclick=()=>{ toggleDrawer(false); exportData(); };
   $("#impBtn").onclick=()=>{ toggleDrawer(false); importData(); };
-  $("#newProf").onclick=()=>{ toggleDrawer(false); profileEditor(null); };
   $("#fsMenu").onclick=()=>{ toggleDrawer(false); toggleFullscreen(); };
   $("#fleetBtn").onclick=()=>{ toggleDrawer(false); fleetModal(); };
   $("#pilotIn").oninput=e=>{S.settings.pilot=e.target.value;save("settings");updateStatus()};
