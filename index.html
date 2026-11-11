@@ -612,6 +612,44 @@ html.night img,html.night .mp-stage canvas{filter:brightness(.88)}
 .wx-chip{display:inline-flex;align-items:center;gap:4px;background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:1px 2px 1px 9px}
 .wx-chip button{border:0;background:none;color:var(--muted);font-size:16px;width:24px;height:24px;line-height:1}
 
+/* ---------- logbook statistics ---------- */
+.st-per{display:inline-flex;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:3px;gap:2px;flex-wrap:wrap}
+.st-per button{background:none;border:0;border-radius:6px;padding:7px 12px;font-size:12.5px;font-weight:700;color:var(--muted)}
+.st-per button.on{background:var(--mag);color:#fff}
+.st-kpi .stat em{display:block;font-style:normal;font-size:11px;font-weight:700;margin-top:4px}
+.st-kpi .stat em.up{color:var(--green)}.st-kpi .stat em.dn{color:var(--red)}
+.st-cmp{font-size:12px;margin:8px 2px 14px}
+.st-card{padding:14px 16px;margin-bottom:12px}
+.st-h{font-weight:800;font-size:13px;letter-spacing:.3px;margin-bottom:10px}
+.st-h .muted{font-weight:500}
+.st-chart{display:flex;align-items:stretch;gap:3px;height:190px;padding-top:4px}
+.sc-col{flex:1;min-width:0;display:flex;flex-direction:column}
+.sc-bar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;border-bottom:1px solid var(--line)}
+.sc-bar i{display:block;width:72%;max-width:56px;background:var(--mag);opacity:.7;border-radius:3px 3px 0 0;min-height:0}
+.sc-col.hl .sc-bar i{opacity:1;background:var(--mag2)}
+.sc-v{font-family:var(--mono);font-size:10px;color:#cfd3dc;margin-bottom:3px;white-space:nowrap}
+.sc-l{font-family:var(--mono);font-size:10px;color:var(--muted);text-align:center;height:16px;line-height:16px;white-space:nowrap;overflow:visible}
+.st-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.st-grid .st-card{margin:0}
+.st-wide{grid-column:1/-1}
+@media(max-width:760px){.st-grid{grid-template-columns:1fr}.st-kpi{grid-template-columns:repeat(2,1fr)}}
+.st-rec{display:flex;flex-direction:column;padding:7px 0;border-bottom:1px solid #26282f}
+.st-rec:last-child{border-bottom:0}
+.st-rec small{font-size:10.5px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase}
+.st-rec b{font-size:18px}.st-rec span{font-size:12px;color:var(--muted)}
+.st-prog{height:6px;border-radius:3px;background:#2a2c33;overflow:hidden;margin:2px 0 6px}
+.st-prog i{display:block;height:100%;background:var(--mag)}
+.hb{display:grid;grid-template-columns:92px 1fr auto;align-items:center;gap:10px;padding:5px 0}
+.hb-k{font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hb-b{height:8px;border-radius:4px;background:#2a2c33;overflow:hidden}
+.hb-b i{display:block;height:100%;background:var(--mag);border-radius:4px}
+.hb-v{font-size:11.5px;color:var(--muted);white-space:nowrap}
+.st-hours{display:grid;grid-template-columns:repeat(24,1fr);gap:3px;height:110px;align-items:end}
+.st-hours span{display:flex;flex-direction:column;justify-content:flex-end;height:100%;position:relative}
+.st-hours i{display:block;background:var(--mag);border-radius:3px 3px 0 0;min-height:2px;opacity:.85}
+.st-hours em{position:absolute;bottom:-16px;left:0;font-style:normal;font-size:9.5px;color:var(--muted);font-family:var(--mono)}
+.st-hours{margin-bottom:18px}
+
 /* standalone app: full bleed + safe areas */
 .app{margin:0!important;min-height:100vh;border:0!important;border-radius:0!important;box-shadow:none!important;max-width:none}
 .top{padding-top:calc(10px + env(safe-area-inset-top));padding-left:calc(16px + env(safe-area-inset-left));padding-right:calc(16px + env(safe-area-inset-right))}
@@ -1909,6 +1947,100 @@ function docBindPinch(){
   sc.addEventListener("gesturestart",e=>e.preventDefault());
 }
 
+/* ===================== Flight Log → Statistics ===================== */
+const ST_PER=[["7d","7 days"],["30d","30 days"],["12m","12 months"],["ytd","This year"],["all","All time"]];
+const dISO=d=>d.toISOString().slice(0,10);
+const dParse=s=>{ const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(s||""); return m?new Date(Date.UTC(+m[1],+m[2]-1,+m[3])):null; };
+const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"], DOW=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+function statRange(p,now){
+  const t=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate())), day=864e5;
+  if(p==="7d") return [new Date(t-6*day),t];
+  if(p==="30d") return [new Date(t-29*day),t];
+  if(p==="12m") return [new Date(Date.UTC(t.getUTCFullYear(),t.getUTCMonth()-11,1)),t];
+  if(p==="ytd") return [new Date(Date.UTC(t.getUTCFullYear(),0,1)),t];
+  return null;
+}
+function prevRange(r){ if(!r) return null; const len=r[1]-r[0]+864e5; return [new Date(r[0]-len),new Date(r[0]-864e5)]; }
+function flightsIn(r){ return (S.flights.list||[]).filter(f=>{ const d=dParse(f.date); return d&&(!r||(d>=r[0]&&d<=r[1])); }); }
+function topN(map,n){ return Object.entries(map).sort((x,y)=>y[1].v-x[1].v||y[1].n-x[1].n).slice(0,n); }
+function statBuckets(p,r,list){
+  const day=864e5, out=[];
+  if(p==="7d"||p==="30d"){ for(let d=new Date(r[0]);d<=r[1];d=new Date(+d+day)) out.push({k:dISO(d),l:p==="7d"?DOW[(d.getUTCDay()+6)%7]:String(d.getUTCDate()),m:0,n:0}); list.forEach(f=>{ const b=out.find(x=>x.k===f.date.slice(0,10)); if(b){ b.m+=blockMin(f); b.n++; } }); return out; }
+  let s=r?r[0]:null, e=r?r[1]:new Date();
+  if(!s){ const ds=list.map(f=>dParse(f.date)).filter(Boolean); if(!ds.length) return out; s=new Date(Math.min(...ds)); }
+  const months=(e.getUTCFullYear()-s.getUTCFullYear())*12+e.getUTCMonth()-s.getUTCMonth()+1;
+  if(p==="all"&&months>24){ for(let y=s.getUTCFullYear();y<=e.getUTCFullYear();y++) out.push({k:String(y),l:String(y),m:0,n:0}); list.forEach(f=>{ const b=out.find(x=>x.k===f.date.slice(0,4)); if(b){ b.m+=blockMin(f); b.n++; } }); return out; }
+  for(let i=0;i<months;i++){ const d=new Date(Date.UTC(s.getUTCFullYear(),s.getUTCMonth()+i,1)); out.push({k:dISO(d).slice(0,7),l:MON[d.getUTCMonth()]+(months>12&&d.getUTCMonth()===0?" "+String(d.getUTCFullYear()).slice(2):""),m:0,n:0}); }
+  list.forEach(f=>{ const b=out.find(x=>x.k===f.date.slice(0,7)); if(b){ b.m+=blockMin(f); b.n++; } }); return out;
+}
+function streaks(){
+  const days=[...new Set((S.flights.list||[]).map(f=>(f.date||"").slice(0,10)).filter(Boolean))].sort(); let best=0,bestEnd="",cur=0,prev=null;
+  days.forEach(d=>{ const t=dParse(d); cur=prev&&(t-prev)===864e5?cur+1:1; if(cur>best){ best=cur; bestEnd=d; } prev=t; });
+  const today=dParse(dISO(new Date())); let now=0; if(prev&&(today-prev)<=864e5){ now=cur; }
+  return {best,bestEnd,now};
+}
+function barChart(bk,hl){
+  if(!bk.length) return "";
+  const max=Math.max(60,...bk.map(b=>b.m)), every=Math.ceil(bk.length/(bk.length>20?10:16)), showV=bk.length<=14;
+  return `<div class="st-chart" style="--n:${bk.length}">${bk.map((b,i)=>`<div class="sc-col ${b.k===hl?"hl":""}" title="${esc(b.k)} · ${hhmm(b.m)} · ${b.n} flight${b.n>1?"s":""}">
+    <div class="sc-bar">${showV&&b.m?`<span class="sc-v">${b.m>=600?Math.round(b.m/60)+"h":hhmm(b.m)}</span>`:""}<i style="height:${(b.m/max*100).toFixed(1)}%"></i></div>
+    <span class="sc-l">${i%every===0?esc(b.l):""}</span></div>`).join("")}</div>`;
+}
+function hbars(rows,fmt){ const max=Math.max(1,...rows.map(r=>r[1].v)); return rows.length?rows.map(([k,o])=>`<div class="hb"><span class="hb-k mono">${esc(k)}</span><span class="hb-b"><i style="width:${(o.v/max*100).toFixed(1)}%"></i></span><span class="hb-v mono">${fmt(o)}</span></div>`).join(""):`<div class="muted" style="font-size:12px">No data in this period</div>`; }
+function renderLogStats(el,vseg){
+  const p=S.settings.statPer||"30d", now=new Date(), r=statRange(p,now), list=flightsIn(r), prev=r?flightsIn(prevRange(r)):null;
+  const tot=list.reduce((s,f)=>s+blockMin(f),0), ptot=prev?prev.reduce((s,f)=>s+blockMin(f),0):null;
+  const timed=list.filter(f=>blockMin(f)>0), avg=timed.length?Math.round(tot/timed.length):0;
+  const longest=timed.slice().sort((a,b)=>blockMin(b)-blockMin(a))[0], shortest=timed.slice().sort((a,b)=>blockMin(a)-blockMin(b))[0];
+  const byDay={}; list.forEach(f=>{ const k=f.date.slice(0,10); byDay[k]=(byDay[k]||0)+blockMin(f); }); const busiest=Object.entries(byDay).sort((a,b)=>b[1]-a[1])[0];
+  const days=Object.keys(byDay).length, sk=streaks();
+  const acc=(map,k,f)=>{ if(!k) return; const o=map[k]=map[k]||{v:0,n:0}; o.v+=blockMin(f); o.n++; };
+  const types={}, regs={}, apts={}, routes={}, airl={}, dow={}; const hours=Array(24).fill(0);
+  list.forEach(f=>{ acc(types,f.type,f); acc(regs,f.reg,f); [f.from,f.to].forEach(x=>{ if(x){ const o=apts[x]=apts[x]||{v:0,n:0}; o.v++; o.n++; } }); if(f.from&&f.to) acc(routes,f.from+" → "+f.to,f);
+    const al=(f.cs||"").match(/^[A-Z]{3}(?=\d)/); acc(airl,al&&al[0],f); const d=dParse(f.date); if(d){ const k=DOW[(d.getUTCDay()+6)%7]; const o=dow[k]=dow[k]||{v:0,n:0}; o.v+=blockMin(f); o.n++; }
+    const h=/^(\d{1,2}):/.exec(f.dep||""); if(h) hours[+h[1]]++; });
+  const dowRows=DOW.map(k=>[k,dow[k]||{v:0,n:0}]);
+  const pct=(a,b)=>b?Math.round((a-b)/b*100):null, dTot=ptot!=null?pct(tot,ptot):null, dN=prev?pct(list.length,prev.length):null;
+  const delta=d=>d==null?"":`<em class="${d>=0?"up":"dn"}">${d>=0?"▲":"▼"} ${Math.abs(d)}%</em>`;
+  const R=rankInfo();
+  const fl=f=>f?`<b class="mono">${hhmm(blockMin(f))}</b><span>${[f.from||f.to?esc(f.from||"····")+" → "+esc(f.to||"····"):"",esc(f.cs||""),fdate(f.date),esc(f.type||"")].filter(Boolean).join(" · ")}</span>`:`<b>—</b>`;
+  const hmax=Math.max(1,...hours);
+  el.innerHTML=`${vseg}
+  <div class="page-head"><span class="title-chip">Statistics</span><span class="sp"></span>
+    <div class="st-per">${ST_PER.map(([k,l])=>`<button data-p="${k}" class="${k===p?"on":""}">${l}</button>`).join("")}</div></div>
+  <div class="stats st-kpi">
+    <div class="stat"><small>Flights</small><b>${list.length}</b>${delta(dN)}</div>
+    <div class="stat"><small>Block time</small><b>${hhmm(tot)}</b>${delta(dTot)}</div>
+    <div class="stat"><small>Average flight</small><b>${avg?hhmm(avg):"—"}</b></div>
+    <div class="stat"><small>Days flown</small><b>${days}</b></div>
+  </div>
+  ${prev?`<div class="muted st-cmp">Compared with the previous ${esc(ST_PER.find(x=>x[0]===p)[1].toLowerCase())}: ${prev.length} flights · ${hhmm(ptot)}</div>`:""}
+  <div class="card st-card"><div class="st-h">Activity <span class="muted">— block hours ${p==="7d"||p==="30d"?"per day":p==="all"&&statBuckets(p,r,list)[0]&&statBuckets(p,r,list)[0].k.length===4?"per year":"per month"}</span></div>
+    ${list.length?barChart(statBuckets(p,r,list),p==="7d"||p==="30d"?dISO(now):dISO(now).slice(0,7)):`<div class="empty">No flights in this period</div>`}</div>
+  <div class="st-grid">
+    <div class="card st-card"><div class="st-h">Records</div>
+      <div class="st-rec"><small>Longest flight</small>${fl(longest)}</div>
+      <div class="st-rec"><small>Shortest flight</small>${fl(shortest&&shortest!==longest?shortest:null)}</div>
+      <div class="st-rec"><small>Busiest day</small>${busiest?`<b class="mono">${hhmm(busiest[1])}</b><span>${fdate(busiest[0])} · ${list.filter(f=>f.date.slice(0,10)===busiest[0]).length} flights</span>`:"<b>—</b>"}</div>
+      <div class="st-rec"><small>Flying streak</small><b class="mono">${sk.now} day${sk.now===1?"":"s"}</b><span>current · best ${sk.best} day${sk.best===1?"":"s"}${sk.bestEnd?" (until "+fdate(sk.bestEnd)+")":""}</span></div>
+    </div>
+    <div class="card st-card"><div class="st-h">Career</div>
+      <div class="st-rec"><small>Rank</small><b>${esc(R.cur.name||R.cur.code||"")}</b><span>${R.next?`next: ${esc(R.next.name||R.next.code)} — ${esc(R.need)} to go`:"highest rank reached"}</span></div>
+      <div class="st-prog"><i style="width:${Math.round(R.prog*100)}%"></i></div>
+      <div class="st-rec"><small>All-time</small><b class="mono">${hhmm(Math.round(R.st.hours*60))}</b><span>${R.st.flights} flights · ${new Set((S.flights.list||[]).flatMap(f=>[f.from,f.to]).filter(Boolean)).size} airports</span></div>
+    </div>
+    <div class="card st-card"><div class="st-h">Aircraft types</div>${hbars(topN(types,6),o=>hhmm(o.v)+" · "+o.n)}</div>
+    <div class="card st-card"><div class="st-h">Airports</div>${hbars(topN(apts,6),o=>o.n+" mvt")}</div>
+    <div class="card st-card"><div class="st-h">Top routes</div>${hbars(topN(routes,6),o=>o.n+"× · "+hhmm(o.v))}</div>
+    <div class="card st-card"><div class="st-h">Registrations</div>${hbars(topN(regs,6),o=>o.n+"× · "+hhmm(o.v))}</div>
+    <div class="card st-card"><div class="st-h">Airlines (callsign)</div>${hbars(topN(airl,6),o=>o.n+"× · "+hhmm(o.v))}</div>
+    <div class="card st-card"><div class="st-h">Day of week</div>${hbars(dowRows,o=>o.n?hhmm(o.v):"–")}</div>
+    <div class="card st-card st-wide"><div class="st-h">Departure time <span class="muted">(flights with times)</span></div>
+      ${hours.some(Boolean)?`<div class="st-hours">${hours.map((n,i)=>`<span title="${String(i).padStart(2,"0")}:00 · ${n}"><i style="height:${Math.round(n/hmax*100)}%"></i><em>${i%3===0?String(i).padStart(2,"0"):""}</em></span>`).join("")}</div>`:`<div class="muted" style="font-size:12px">Add departure times to your flights to see this.</div>`}</div>
+  </div>`;
+  el.querySelectorAll(".st-per button").forEach(b=>b.onclick=()=>{ S.settings.statPer=b.dataset.p; save("settings"); render(); });
+}
+
 /* =====================================================================
    EFB — modular single-page app (Wizz mode + Global mode)
    To add a module: push an entry into MODULES (id, label, icon,
@@ -2307,7 +2439,14 @@ function renderChecklist(el){
 /* ================= MODULE: FLIGHT LOG (shared by both modes) ================= */
 let logQuery="";
 function sortedFlights(){return [...S.flights.list].sort((a,b)=>(b.date+b.dep).localeCompare(a.date+a.dep))}
+function logViewSeg(el){
+  const v=S.settings.logView==="stats"?"stats":"log";
+  const h=`<div class="vseg"><button data-v="log" class="${v==="log"?"on":""}">${ICON.log}Logbook</button><button data-v="stats" class="${v==="stats"?"on":""}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Statistics</button></div>`;
+  return [h,()=>el.querySelectorAll(".vseg button").forEach(b=>b.onclick=()=>{ if(v===b.dataset.v) return; S.settings.logView=b.dataset.v; save("settings"); render(); window.scrollTo({top:0}); })];
+}
 function renderLog(el){
+  const [vseg,vbind]=logViewSeg(el);
+  if(S.settings.logView==="stats"){ renderLogStats(el,vseg); vbind(); return; }
   const all=sortedFlights();
   const q=logQuery.trim().toUpperCase();
   const list=q?all.filter(f=>[f.cs,f.from,f.to,f.type,f.reg,f.eng,fdate(f.date),f.rmk].join(" ").toUpperCase().includes(q)):all;
@@ -2316,7 +2455,7 @@ function renderLog(el){
   const apts=new Set(all.flatMap(f=>[f.from,f.to]).filter(Boolean));
   const tc={}; all.forEach(f=>{if(f.type)tc[f.type]=(tc[f.type]||0)+1});
   const topType=Object.entries(tc).sort((a,b)=>b[1]-a[1])[0];
-  el.innerHTML=`
+  el.innerHTML=`${vseg}
   <div class="page-head"><span class="title-chip">Flight Logbook</span><span class="sp"></span>
     <button class="btn ghost" id="lCsv">Export</button>
     <button class="btn primary" id="lAdd">+ Add flight</button></div>
@@ -2335,6 +2474,7 @@ function renderLog(el){
       <td class="c-times">${f.dep&&f.arr?esc(f.dep)+" – "+esc(f.arr):"—"}</td><td class="blk">${hhmm(blockMin(f))}</td><td>›</td></tr>`).join("")}</tbody>
     <tfoot><tr><td colspan="5" style="text-align:right">${q?"TOTAL (filtered)":"TOTAL TIME"}</td><td colspan="2"><b>${hhmm(shown)}</b></td></tr></tfoot>
   </table></div>`:`<div class="empty">${q?"no matching flights":"no flights yet"}</div>`}`;
+  vbind();
   const s=$("#lSearch");
   s.addEventListener("input",()=>{logQuery=s.value;const pos=s.selectionStart;render();const n=$("#lSearch");n.focus();n.setSelectionRange(pos,pos)});
   el.querySelectorAll("tr.row").forEach(tr=>tr.onclick=()=>flightForm(S.flights.list.find(f=>f.id===tr.dataset.id)));
