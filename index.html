@@ -558,7 +558,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left;margin:0}
 .lg-w,.lg-cl{color:#ffd400}
 .mp-attr{position:absolute;right:6px;bottom:4px;font-size:9.5px;color:#8a90a0;background:rgba(10,11,14,.7);padding:2px 6px;border-radius:4px;max-width:90%;text-align:right}
 .mp-attr a{color:#a9b3c6}
-.mp-empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:30px;color:var(--muted);font-size:13px;background:rgba(11,12,15,.6)}
+.mp-empty{position:absolute;left:50%;top:60px;transform:translateX(-50%);width:min(460px,86%);display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:14px 18px;color:var(--muted);font-size:12.5px;background:rgba(14,15,19,.92);border:1px solid var(--line);border-radius:10px;pointer-events:none}
 .mp-empty b{color:#fff;font-size:16px}.mp-empty span{max-width:420px}
 .mp-strip{display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap;font-size:12px;min-height:44px}
 .mp-pill{font-weight:800;font-size:11px;letter-spacing:.5px;padding:4px 9px;border-radius:20px;white-space:nowrap}
@@ -590,6 +590,27 @@ html.night .title-chip{background:#8d919c;color:#0a0b0d}
 html.night .btn.primary{background:#7d8396}
 html.night .dv-page,html.night .dv-thumb.pdf.has{filter:brightness(.82)}
 html.night img,html.night .mp-stage canvas{filter:brightness(.88)}
+
+/* ATC / pilot popups */
+.at-list{padding:6px 12px 14px;max-height:70vh;overflow:auto}
+.at-row{border-bottom:1px solid #26282f;padding:10px 4px}
+.at-h{display:flex;align-items:center;gap:10px}
+.at-h b{font-size:14px}
+.at-f{margin-left:auto;background:#123342;color:#58c7e8;font-weight:800;padding:3px 9px;border-radius:5px;font-size:13px}
+.at-code{background:#f2b33d;color:#111;font-weight:800;border-radius:4px;padding:1px 7px;font-size:12px}
+.at-m{font-size:12px;color:var(--muted);margin-top:3px}
+.at-atis{white-space:pre-wrap;font-family:var(--mono);font-size:11.5px;background:#15161a;border:1px solid var(--line);border-radius:6px;padding:8px;margin:8px 0 0;color:#cfd3dc;max-height:220px;overflow:auto}
+.pl-prog{display:flex;align-items:center;gap:10px;margin:2px 0 4px}
+.pl-bar{flex:1;height:6px;border-radius:3px;background:#2a2c33;position:relative}
+.pl-bar i{position:absolute;left:0;top:0;bottom:0;background:#ff5fa2;border-radius:3px}
+.pl-bar span{position:absolute;top:-9px;transform:translateX(-50%) rotate(90deg);font-size:15px;color:#ff5fa2}
+.pl-sub{font-size:11.5px;margin:4px 0 10px}
+.pl-h{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.6px;text-transform:uppercase;margin-top:10px}
+
+.wx-del{margin-left:8px;width:30px;height:30px;border-radius:6px;border:1px solid var(--line);background:var(--panel2);color:var(--muted);font-size:18px;line-height:1;display:grid;place-items:center}
+.wx-del:active{color:var(--red);border-color:var(--red)}
+.wx-chip{display:inline-flex;align-items:center;gap:4px;background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:1px 2px 1px 9px}
+.wx-chip button{border:0;background:none;color:var(--muted);font-size:16px;width:24px;height:24px;line-height:1}
 
 /* standalone app: full bleed + safe areas */
 .app{margin:0!important;min-height:100vh;border:0!important;border-radius:0!important;box-shadow:none!important;max-width:none}
@@ -900,7 +921,7 @@ const MAP={root:null,view:"2d",cv:null,ctx:null,w:0,h:0,dpr:1,c:null,z:5,tiles:n
   vat:null,vatAt:0,vatErr:"",vatBusy:false,disp:null,trail:[],land:null,landErr:"",rot:null,gk:1,tick:0,dirty:true,raf:0,sel:null,samples:[],ptrs:new Map(),gest:null};
 const LEVELS=[[1000,360],[925,2500],[850,4780],[700,9880],[600,13800],[500,18280],[400,23570],[300,30070],[250,33980],[200,38620],[150,44650]];
 const NM=3440.065, D2R=Math.PI/180;
-const mapCfg=()=>{ S.wx.map=S.wx.map||{}; const m=S.wx.map; m.view=m.view||"2d"; m.layers=m.layers||{wx:true,clouds:true,radar:false}; m.est=m.est||{on:true,t0:null}; return m; };
+const mapCfg=()=>{ S.wx.map=S.wx.map||{}; const m=S.wx.map; m.view=m.view||"2d"; m.layers=m.layers||{wx:true,clouds:true,radar:false}; if(m.layers.traffic===undefined) m.layers.traffic=true; if(m.layers.atc===undefined) m.layers.atc=true; m.est=m.est||{on:true,t0:null}; return m; };
 const mapSave=()=>save("wx");
 
 /* ---------- geometry ---------- */
@@ -1000,7 +1021,7 @@ function mapMount(el){
   el.appendChild(MAP.root); if(fresh) mapBuild(); mapFit();
   const R0=routeGeo(), rk=R0?R0.pts.length+":"+R0.dist.toFixed(1):""; if(rk!==MAP.rk){ MAP.rk=rk; MAP.c=null; MAP.trail=[]; MAP.vat=null; MAP.om=null; if(S.wx.rwx&&R0&&S.wx.rwx.key!==(R0.dep&&R0.arr?R0.dep.id+R0.arr.id+R0.pts.length+(flightT0(R0)||0):"x")){ /* stale */ } }
   mapSyncUi(); MAP.dirty=true; mapLoop(true);
-  omFetch(false); if(routeGeo()&&IS_SA) vatPoll();
+  omFetch(false); const L=mapCfg().layers; if(IS_SA&&(L.traffic||L.atc)){ trafficPoll(); if(L.atc) vspyLoad(); } else if(routeGeo()&&IS_SA) vatPoll();
   if(mapCfg().layers.radar) rvFetch();
 }
 function mapVisible(){ return MAP.root&&MAP.root.isConnected&&document.visibilityState!=="hidden"; }
@@ -1008,7 +1029,7 @@ function mapLoop(start){
   if(start&&MAP.raf) return;
   const step=ts=>{ if(!mapVisible()){ MAP.raf=0; return; }
     if(!MAP._lt||ts-MAP._lt>=250||MAP.dirty){ MAP._lt=ts; MAP.dirty=false; mapDraw(); }
-    if(!MAP._vt||ts-MAP._vt>15000){ MAP._vt=ts; if(IS_SA&&routeGeo()&&MAP._vt0) vatPoll(); MAP._vt0=1; }
+    if(!MAP._vt||ts-MAP._vt>20000){ MAP._vt=ts; const L=mapCfg().layers; if(IS_SA&&MAP._vt0){ if(L.traffic||L.atc) trafficPoll(); else if(routeGeo()) vatPoll(); } MAP._vt0=1; }
     if(ts-(MAP._st||0)>1000){ MAP._st=ts; mapStatus(); }
     MAP.raf=requestAnimationFrame(step); };
   MAP.raf=requestAnimationFrame(step);
@@ -1024,7 +1045,7 @@ function mapBuild(){
   MAP.root.innerHTML=`<div class="mp-view">
     <div class="mp-bar">
       <span class="mp-seg">${[["2d","2D map"],["globe","Globe"],["prof","Profile"]].map(([k,l])=>`<button data-v="${k}">${l}</button>`).join("")}</span>
-      <span class="mp-chips"><button data-l="wx" title="Wind & temperature on the route">Wind/Temp</button><button data-l="clouds" title="Forecast clouds">Clouds</button><button data-l="radar" title="Rain radar (RainViewer)">Radar</button></span>
+      <span class="mp-chips"><button data-l="wx" title="Wind & temperature on the route">Wind/Temp</button><button data-l="clouds" title="Forecast clouds">Clouds</button><button data-l="radar" title="Rain radar (RainViewer)">Radar</button><button data-l="traffic" title="VATSIM traffic">Traffic</button><button data-l="atc" title="Online VATSIM controllers">ATC</button></span>
       <span class="sp"></span>
       <button class="mp-b" id="mpPos" title="Position source">${ic("M12 2v3M12 19v3M2 12h3M19 12h3M12 8a4 4 0 100 8 4 4 0 000-8z")}<span>Position</span></button>
       <button class="mp-b" id="mpFol" title="Follow aircraft">${ic("M12 3l7 18-7-4-7 4z")}<span>Follow</span></button>
@@ -1043,7 +1064,7 @@ function mapBuild(){
   MAP.cv=MAP.root.querySelector("canvas"); MAP.ctx=MAP.cv.getContext("2d");
   const cfg=mapCfg(); MAP.view=cfg.view;
   MAP.root.querySelectorAll("[data-v]").forEach(b=>b.onclick=()=>{ MAP.view=cfg.view=b.dataset.v; mapSave(); mapSyncUi(); MAP.dirty=true; if(MAP.view==="globe") landLoad(); });
-  MAP.root.querySelectorAll("[data-l]").forEach(b=>b.onclick=()=>{ const k=b.dataset.l; cfg.layers[k]=!cfg.layers[k]; mapSave(); mapSyncUi(); if(k==="radar"&&cfg.layers.radar) rvFetch(); MAP.dirty=true; });
+  MAP.root.querySelectorAll("[data-l]").forEach(b=>b.onclick=()=>{ const k=b.dataset.l; cfg.layers[k]=!cfg.layers[k]; mapSave(); mapSyncUi(); if(k==="radar"&&cfg.layers.radar) rvFetch(); if((k==="traffic"||k==="atc")&&cfg.layers[k]&&IS_SA){ trafficPoll(); if(k==="atc") vspyLoad(); } MAP.dirty=true; });
   $("#mpFol").onclick=()=>{ MAP.follow=!MAP.follow; mapSyncUi(); MAP.dirty=true; };
   $("#mpFitB").onclick=()=>{ MAP.follow=false; mapFitRoute(); mapSyncUi(); };
   $("#mpRef").onclick=()=>{ omFetch(true); if(cfg.layers.radar) rvFetch(true); if(IS_SA) vatPoll(); toast("Updating route weather…"); };
@@ -1055,7 +1076,7 @@ function mapBuild(){
 function mapSyncUi(){
   const cfg=mapCfg(); if(!MAP.root) return;
   MAP.root.querySelectorAll("[data-v]").forEach(b=>b.classList.toggle("on",b.dataset.v===MAP.view));
-  MAP.root.querySelectorAll("[data-l]").forEach(b=>{ b.classList.toggle("on",!!cfg.layers[b.dataset.l]); b.style.display=(b.dataset.l==="radar"&&MAP.view!=="2d")?"none":""; });
+  MAP.root.querySelectorAll("[data-l]").forEach(b=>{ b.classList.toggle("on",!!cfg.layers[b.dataset.l]); b.style.display=((b.dataset.l==="radar"&&MAP.view!=="2d")||(MAP.view==="prof"&&(b.dataset.l==="traffic"||b.dataset.l==="atc")))?"none":""; });
   $("#mpFol").classList.toggle("on",MAP.follow); $("#mpFol").style.display=MAP.view==="prof"?"none":""; $("#mpFitB").style.display=MAP.view==="prof"?"none":"";
   MAP.root.querySelector(".mp-zoom").style.display=MAP.view==="prof"?"none":"";
   const R=routeGeo(), em=$("#mpEmpty");
@@ -1064,7 +1085,7 @@ function mapSyncUi(){
   const at=[];
   if(MAP.view==="2d") at.push(mapKey()?"© OpenStreetMap · © CARTO":"Natural Earth"); if(MAP.view==="2d"&&cfg.layers.radar) at.push(`<a href="https://www.rainviewer.com" target="_blank" rel="noopener">Weather data by RainViewer</a>`);
   if(cfg.layers.wx||cfg.layers.clouds||MAP.view==="prof") at.push(`<a href="https://open-meteo.com" target="_blank" rel="noopener">Forecast: Open-Meteo</a>`);
-  if(MAP.view==="globe") at.push("Natural Earth"); at.push("VATSIM");
+  if(MAP.view==="globe") at.push("Natural Earth"); at.push(cfg.layers.atc?"VATSIM · VAT-Spy data":"VATSIM");
   $("#mpAttr").innerHTML=at.join(" · ");
   mapLegend(); mapStatus();
 }
@@ -1075,7 +1096,7 @@ function mapLegend(){
   L.innerHTML=parts.join(" "); L.style.display=parts.length?"":"none";
 }
 function mapStatus(){
-  const st=$("#mpStrip"); if(!st) return; const R=routeGeo(); if(!R){ st.innerHTML=""; return; }
+  const st=$("#mpStrip"); if(!st) return; const R=routeGeo(); if(!R){ const T=MAP.tr, L=mapCfg().layers; st.innerHTML=(L.traffic||L.atc)&&IS_SA?`<span class="mp-pill off">○ NO ROUTE</span><span class="mp-wxs">${esc(T?T.p.length+" pilots · "+T.c.length+" ATC":(MAP.trErr||"VATSIM…"))}</span>`:""; return; }
   const p=curPos(R), cfg=mapCfg(); let src;
   if(p&&p.src==="live") src=`<span class="mp-pill live">● LIVE · VATSIM ${p.age}s</span>`;
   else if(p&&p.src==="est") src=`<span class="mp-pill est">◌ ESTIMATED${p.ground==="dep"?" · before take-off":p.ground==="arr"?" · arrived":""}</span>`;
@@ -1086,7 +1107,8 @@ function mapStatus(){
     const eta=p.gs>60?new Date(Date.now()+rem/p.gs*3600e3):null;
     info=`<span><small>GS</small><b>${Math.round(p.gs)} kt</b></span><span><small>ALT</small><b>${p.alt>18000?"FL"+String(Math.round(p.alt/100)).padStart(3,"0"):Math.round(p.alt).toLocaleString("en-US")+" ft"}</b></span><span><small>HDG</small><b>${String(Math.round(p.hdg)%360).padStart(3,"0")}°</b></span>${nx?`<span><small>NEXT</small><b>${esc(nx.id)} ${Math.round(nx.d-at.d)} NM</b></span>`:""}<span><small>${esc(R.arr?R.arr.id:"DEST")}</small><b>${Math.round(rem)} NM${eta?" · "+String(eta.getUTCHours()).padStart(2,"0")+":"+String(eta.getUTCMinutes()).padStart(2,"0")+"Z":""}</b></span>`; }
   const om=omData(), wxs=MAP.omBusy?"weather…":MAP.omErr?MAP.omErr:om?`weather ${Math.round((Date.now()-(om.at||0))/60000)} min ago`:"";
-  st.innerHTML=`${src}${why?`<span class="mp-why">${esc(why)}</span>`:""}<span class="mp-info">${info}</span><span class="mp-wxs">${esc(wxs)}</span>`;
+  const L=cfg.layers, T=MAP.tr; const trs=(L.traffic||L.atc)&&IS_SA?(T?`${T.p.length} pilots · ${T.c.length} ATC`:(MAP.trErr||"VATSIM…")):"";
+  st.innerHTML=`${src}${why?`<span class="mp-why">${esc(why)}</span>`:""}<span class="mp-info">${info}</span><span class="mp-wxs">${esc([trs,wxs].filter(Boolean).join(" · "))}</span>`;
 }
 function posModal(){
   const R=routeGeo(), cfg=mapCfg(), e=cfg.est, t0=R&&flightT0(R);
@@ -1160,7 +1182,8 @@ function draw2d(ctx,R){
   baseLayer(`m|${MAP.c[0].toFixed(5)}|${MAP.c[1].toFixed(5)}|${MAP.z.toFixed(4)}|${W}|${H}|${MAP.land?1:0}`,c=>drawLand2d(c,W,H));
   if(mapKey()) drawTiles(ctx,cartoUrl,18,1,"c"+mapKey().slice(0,6));
   if(cfg.layers.radar&&MAP.rv) drawTiles(ctx,(z,x,y)=>`${MAP.rv.host}${MAP.rv.path}/256/${z}/${x}/${y}/2/1_1.png`,7,0.65,"r"+MAP.rv.path);
-  if(!R) return;
+  if(cfg.layers.atc) drawAtc2d(ctx,W,H); else { MAP.hitA=[]; MAP.hitS=[]; }
+  if(!R){ if(cfg.layers.traffic) drawTraffic2d(ctx,W,H,null); else MAP.hitP=[]; return; }
   const mag=cssVar("--mag"), om=omData(), cr=cruiseFt(R);
   if(R.altn&&R.arr){ ctx.setLineDash([6,6]); ctx.strokeStyle="rgba(255,255,255,.45)"; ctx.lineWidth=1.6; ctx.beginPath(); gcLine(ctx,[R.arr.lat,R.arr.lon],[R.altn.lat,R.altn.lon]); ctx.stroke(); ctx.setLineDash([]); }
   ctx.lineCap="round"; ctx.lineJoin="round";
@@ -1184,6 +1207,7 @@ function draw2d(ctx,R){
       if(sm.cape>800){ ctx.font="800 15px Inter,system-ui"; halo(ctx,"⚡",s[0]+12,s[1]-18,"#ffd400"); ctx.font="600 11px Inter,system-ui,sans-serif"; } }
     if(cfg.layers.wx&&m&&m.ws!=null&&(i%(MAP.z<4.5?3:MAP.z<6?2:1)===0)){ const x=s[0]+ (i%2?18:-18), y=s[1]+off; windArrow(ctx,x,y,m.wd||0,18,"#fff");
       ctx.font="700 10.5px 'JetBrains Mono',monospace"; halo(ctx,`${Math.round(m.ws)}kt ${Math.round(m.t)}°`,x+9,y,"#fff"); ctx.font="600 11px Inter,system-ui,sans-serif"; } });
+  if(cfg.layers.traffic) drawTraffic2d(ctx,W,H,R); else MAP.hitP=[];
   const p=smoothPos(curPos(R)); if(p){ const s=m2s(p.lat,p.lon); planeIcon(ctx,s[0],s[1],p.hdg,p.src,1.25); if(MAP.follow&&!MAP.gest&&(Math.abs(MAP.c[0]-p.lat)>1e-4||Math.abs(MAP.c[1]-p.lon)>1e-4)){ MAP.c=[p.lat,p.lon]; MAP.dirty=true; } }
 }
 function drawLand2d(ctx,W,H){
@@ -1245,8 +1269,9 @@ function drawGlobe(ctx,R){
     if(MAP.ctry){ c.beginPath(); pth(MAP.ctry); c.strokeStyle="rgba(200,210,230,.22)"; c.lineWidth=0.7; c.stroke(); }
     else if(MAP.land){ c.beginPath(); pth(MAP.land); c.strokeStyle="rgba(200,210,230,.35)"; c.lineWidth=0.8; c.stroke(); }
     c.beginPath(); pth({type:"Sphere"}); c.strokeStyle="rgba(120,160,230,.45)"; c.lineWidth=1.5; c.stroke(); });
+  const C=[-MAP.rot[0],-MAP.rot[1]], vis=(lat,lon)=>d3g.geoDistance([lon,lat],C)<Math.PI/2-0.01; MAP.proj=proj;
+  drawAtcTrafficGlobe(ctx,proj,path,vis);
   if(!R){ if(!MAP.land&&MAP.landErr){ ctx.fillStyle="#9aa"; ctx.font="12px Inter"; ctx.textAlign="center"; ctx.fillText(MAP.landErr,W/2,H-20); } return; }
-  const C=[-MAP.rot[0],-MAP.rot[1]], vis=(lat,lon)=>d3g.geoDistance([lon,lat],C)<Math.PI/2-0.01;
   const line={type:"LineString",coordinates:R.pts.map(p=>[p.lon,p.lat])};
   ctx.lineCap="round"; ctx.beginPath(); path(line); ctx.strokeStyle="rgba(0,0,0,.6)"; ctx.lineWidth=6; ctx.stroke();
   const om=omData(), cfg=mapCfg();
@@ -1320,8 +1345,15 @@ function mapBindGestures(){
   cv.addEventListener("gesturestart",e=>e.preventDefault());
 }
 function mapTap(p){
+  if(MAP.view!=="prof"){
+    const near=(arr,r)=>{ let b=null; (arr||[]).forEach(h=>{ const d=Math.hypot(h.x-p[0],h.y-p[1]); if(d<r&&(!b||d<b.d)) b={d,h}; }); return b&&b.h; };
+    const pl=near(MAP.hitP,16); if(pl){ pilotModal(pl.p); return; }
+    const ap=near(MAP.hitA,20); if(ap){ if(ap.A) airportAtcModal(ap.A); else if(ap.s) sectorModal(ap.s); return; }
+  }
   let best=null; MAP.samples.forEach(s=>{ const d=MAP.view==="prof"?(p[0]>=s.xa&&p[0]<=s.xb?0:99):Math.hypot(s.x-p[0],s.y-p[1]); if(d<36&&(!best||d<best.d)) best={d,s}; });
-  if(best) sampleModal(best.s.sm);
+  if(best){ sampleModal(best.s.sm); return; }
+  if(MAP.view!=="prof"&&MAP.hitS&&MAP.hitS.length){ let ll=null; if(MAP.view==="2d") ll=s2m(p[0],p[1]); else if(MAP.proj&&MAP.proj.invert){ const q=MAP.proj.invert(p); if(q) ll=[q[1],q[0]]; }
+    if(ll){ const hits=MAP.hitS.filter(s=>ll[0]>=s.b.bb[0]&&ll[0]<=s.b.bb[1]&&ll[1]>=s.b.bb[2]&&ll[1]<=s.b.bb[3]&&inPoly(ll[0],ll[1],s.b.geom)); if(hits.length){ hits.sort((a,b)=>(a.fss?1:0)-(b.fss?1:0)); sectorModal(hits[0]); } } }
 }
 function sampleModal(s){
   const R=routeGeo(), cr=R?cruiseFt(R):35000, hm=u=>{ const d=new Date(u*1000); return String(d.getUTCHours()).padStart(2,"0")+":"+String(d.getUTCMinutes()).padStart(2,"0")+"Z"; };
@@ -1356,6 +1388,147 @@ function dimModal(){
   r.oninput=()=>set(+r.value);
   $("#dimN").onchange=e=>{ st.night=e.target.checked; applyDim(); save("settings"); };
   $("#modal").querySelectorAll("[data-dp]").forEach(b=>b.onclick=()=>{ const x=+b.dataset.dp; set(x); st.night=x<=45; $("#dimN").checked=st.night; applyDim(); save("settings"); });
+}
+
+/* ===================== VATSIM traffic + online ATC (like VATSIM Radar) ===================== */
+const FAC={1:"FSS",2:"DEL",3:"GND",4:"TWR",5:"APP",6:"CTR"}, RAT={1:"OBS",2:"S1",3:"S2",4:"S3",5:"C1",6:"C2",7:"C3",8:"I1",9:"I2",10:"I3",11:"SUP",12:"ADM"};
+function compactFeed(d){
+  const fx=(v,n)=>Math.round(v*10**n)/10**n;
+  return {t:d.general&&d.general.update_timestamp,
+    p:(d.pilots||[]).map(p=>{ const f=p.flight_plan||{}; return [p.callsign,fx(p.latitude,4),fx(p.longitude,4),p.altitude,p.groundspeed,p.heading,f.aircraft_short||"",f.departure||"",f.arrival||"",p.cid]; }),
+    c:(d.controllers||[]).filter(c=>c.facility>0).map(c=>[c.callsign,c.frequency,c.facility,c.rating,c.name,c.logon_time,(c.text_atis||[]).join("\n"),c.cid]),
+    a:(d.atis||[]).map(c=>[c.callsign,c.frequency,c.atis_code||"",(c.text_atis||[]).join("\n"),c.logon_time])};
+}
+async function trafficPoll(){
+  if(MAP.trBusy) return; MAP.trBusy=true; let j=null; const rel=relayUrl();
+  if(rel){ try{ const r=await fetch(rel+"/traffic"); if(r.ok){ j=await r.json(); if(!j||!j.p) j=null; } }catch(_){} }
+  if(!j){ try{ const r=await fetch("https://data.vatsim.net/v3/vatsim-data.json"); if(r.ok){ const d=await r.json(); MAP.raw=d; j=compactFeed(d); } }catch(_){} }
+  if(j){ MAP.tr=Object.assign(j,{at:Date.now()}); MAP.trErr=""; MAP.atc=null;
+    const R=routeGeo(); if(R&&R.cs){ const me=j.p.find(x=>String(x[0]).toUpperCase()===R.cs); const now=Date.now();
+      if(me){ MAP.vat={lat:me[1],lon:me[2],alt:me[3]||0,gs:me[4]||0,hdg:me[5]||0,at:now}; MAP.vatAt=now; MAP.vatErr="";
+        const l=MAP.trail[MAP.trail.length-1]; if(!l||hav([l[0],l[1]],[me[1],me[2]])>0.3) MAP.trail.push([me[1],me[2],me[3]||0]); if(MAP.trail.length>600) MAP.trail.shift(); }
+      else { MAP.vatErr=`${R.cs} not connected to VATSIM`; if(MAP.vat&&now-MAP.vatAt>120e3) MAP.vat=null; } }
+    if(mapCfg().layers.atc) vspyLoad(); }
+  else MAP.trErr=rel?"VATSIM traffic unavailable":"Traffic needs the relay";
+  MAP.trBusy=false; MAP.dirty=true; mapStatus();
+}
+/* VAT-Spy data (sectors + airports), cached by the app for offline use */
+function vspyLoad(){
+  if(MAP.vs||MAP._vsBusy) return; MAP._vsBusy=true;
+  const base="https://cdn.jsdelivr.net/gh/vatsimnetwork/vatspy-data-project@master/";
+  Promise.all([fetch(base+"VATSpy.dat").then(r=>{ if(!r.ok) throw 0; return r.text(); }),fetch(base+"Boundaries.geojson").then(r=>{ if(!r.ok) throw 0; return r.json(); })])
+   .then(([dat,geo])=>{ MAP.vs=parseVspy(dat,geo); MAP.atc=null; MAP.vsErr=""; })
+   .catch(()=>{ MAP.vsErr="ATC sectors unavailable"; }).finally(()=>{ MAP._vsBusy=false; MAP.dirty=true; });
+}
+function geoBbox(g){ let a=90,b=-90,c=180,d=-180; const walk=x=>{ if(typeof x[0]==="number"){ c=Math.min(c,x[0]); d=Math.max(d,x[0]); a=Math.min(a,x[1]); b=Math.max(b,x[1]); } else x.forEach(walk); }; walk(g.coordinates); return [a,b,c,d]; }
+function parseVspy(dat,geo){
+  const sec={}; let cur="";
+  dat.split(/\r?\n/).forEach(l=>{ l=l.trim(); if(!l||l[0]===";") return; const m=l.match(/^\[(.+)\]$/); if(m){ cur=m[1]; sec[cur]=sec[cur]||[]; return; } if(sec[cur]) sec[cur].push(l.split("|")); });
+  const apt={}, alt={};
+  (sec.Airports||[]).forEach(a=>{ const o={icao:a[0],name:a[1],lat:+a[2],lon:+a[3],iata:a[4]||"",fir:a[5]||"",pseudo:a[6]==="1"}; if(!isFinite(o.lat)) return; if(!apt[o.icao]||apt[o.icao].pseudo) apt[o.icao]=o; if(o.iata&&!alt[o.iata]) alt[o.iata]=o; });
+  const byPre={}, byIcao={};
+  (sec.FIRs||[]).forEach(f=>{ const o={icao:f[0],name:f[1],prefix:(f[2]||"").toUpperCase(),bnd:f[3]||f[0]}; if(o.prefix) byPre[o.prefix]=byPre[o.prefix]||o; if(!byIcao[o.icao]||!o.prefix) byIcao[o.icao]=o; });
+  const uirs={}; (sec.UIRs||[]).forEach(u=>uirs[u[0].toUpperCase()]={id:u[0],name:u[1],firs:(u[2]||"").split(",").map(s=>s.trim()).filter(Boolean)});
+  const bnd={}; (geo.features||[]).forEach(f=>{ const p=f.properties||{}; if(!f.geometry) return; bnd[p.id]={id:p.id,oceanic:String(p.oceanic)==="1",lat:+p.label_lat,lon:+p.label_lon,geom:f.geometry,bb:geoBbox(f.geometry)}; });
+  return {apt,alt,byPre,byIcao,uirs,bnd};
+}
+function ctrMatch(cs){
+  const V=MAP.vs, parts=cs.toUpperCase().split("_"); parts.pop();
+  for(let n=parts.length;n>=1;n--){ for(const j of ["_","-"]){ const pre=parts.slice(0,n).join(j);
+      const f=V.byPre[pre]||(n===1?V.byIcao[pre]:null); if(f) return {name:f.name,ids:[f.bnd]};
+      const u=V.uirs[pre]; if(u) return {name:u.name,ids:u.firs.map(id=>(V.byIcao[id]||{bnd:id}).bnd),uir:1}; } }
+  return null;
+}
+const aptFor=cs=>{ const V=MAP.vs, k=cs.toUpperCase().split("_")[0]; return V.apt[k]||V.alt[k]||null; };
+function atcModel(){
+  const V=MAP.vs, T=MAP.tr; if(!V||!T) return null; if(MAP.atc&&MAP.atc.at===T.at) return MAP.atc;
+  const sectors={}, airports={}, ap=a=>airports[a.icao]=airports[a.icao]||{a,list:[],atis:[]};
+  T.c.forEach(c=>{ const cs=String(c[0]), suf=cs.split("_").pop().toUpperCase();
+    if(c[2]===6||c[2]===1||suf==="CTR"||suf==="FSS"){ const m=ctrMatch(cs); if(m) m.ids.forEach(id=>{ const b=V.bnd[id]; if(!b) return; const s=sectors[id]=sectors[id]||{b,name:m.name,list:[],fss:false}; s.list.push(c); if(suf==="FSS"||m.uir) s.fss=true; }); }
+    else { const a=aptFor(cs); if(a) ap(a).list.push(c); } });
+  T.a.forEach(c=>{ const a=aptFor(String(c[0])); if(a) ap(a).atis.push(c); });
+  MAP.atc={at:T.at,sectors,airports}; return MAP.atc;
+}
+function trPos(p,now){ const dt=Math.min(30,(now-MAP.tr.at)/1000); if((p[4]||0)<40) return [p[1],p[2]]; return destPt([p[1],p[2]],p[5]||0,(p[4]||0)*dt/3600); }
+function polysOf(g){ return g.type==="Polygon"?[g.coordinates]:g.type==="MultiPolygon"?g.coordinates:[]; }
+function drawAtc2d(ctx,W,H){
+  const M=atcModel(); if(!M) return; MAP.hitA=[]; MAP.hitS=[];
+  const tl=s2m(0,0), br=s2m(W,H), vis=bb=>!(bb[3]<tl[1]-1||bb[2]>br[1]+1||bb[1]<br[0]-1||bb[0]>tl[0]+1);
+  Object.values(M.sectors).forEach(s=>{ if(!vis(s.b.bb)) return; const col=s.fss?"242,179,61":"88,199,232";
+    polysOf(s.b.geom).forEach(p=>{ ctx.beginPath(); p.forEach(r=>r.forEach((q,i)=>{ const v=m2s(q[1],q[0]); i?ctx.lineTo(v[0],v[1]):ctx.moveTo(v[0],v[1]); })); ctx.fillStyle=`rgba(${col},.07)`; ctx.fill("evenodd"); ctx.strokeStyle=`rgba(${col},.65)`; ctx.lineWidth=1.3; ctx.stroke(); });
+    MAP.hitS.push(s); });
+  ctx.textAlign="center"; ctx.textBaseline="middle";
+  Object.values(M.sectors).forEach(s=>{ if(!vis(s.b.bb)||!isFinite(s.b.lat)) return; const v=m2s(s.b.lat,s.b.lon), t=s.b.id, col=s.fss?"#f2b33d":"#58c7e8";
+    ctx.font="800 11px Inter,system-ui"; const w=ctx.measureText(t).width+12; ctx.fillStyle="rgba(10,12,16,.85)"; ctx.strokeStyle=col; ctx.lineWidth=1.2; rrect(ctx,v[0]-w/2,v[1]-9,w,18,4); ctx.fill(); ctx.stroke(); ctx.fillStyle=col; ctx.fillText(t,v[0],v[1]+0.5); MAP.hitA.push({x:v[0],y:v[1],s}); });
+  const pxNm=nm=>{ const a=m2s(MAP.c[0],MAP.c[1]), b=m2s(MAP.c[0]+nm/60,MAP.c[1]); return Math.abs(a[1]-b[1]); };
+  Object.values(M.airports).forEach(A=>{ const a=A.a; const v=m2s(a.lat,a.lon); if(v[0]<-80||v[1]<-80||v[0]>W+80||v[1]>H+80) return;
+    const has=f=>A.list.some(c=>c[2]===f); 
+    if(has(5)){ const r=pxNm(30); ctx.setLineDash([5,4]); ctx.strokeStyle="rgba(88,199,232,.7)"; ctx.lineWidth=1.4; ctx.beginPath(); ctx.arc(v[0],v[1],r,0,7); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle="rgba(88,199,232,.05)"; ctx.fill(); }
+    const bad=[[2,"D","#4da3ff"],[3,"G","#3ecf8e"],[4,"T","#ff5a6a"],[5,"A","#58c7e8"]].filter(b=>has(b[0])); if(A.atis.length) bad.push([0,"i","#f2b33d"]);
+    ctx.font="800 10.5px Inter,system-ui"; const bw=14, tw=ctx.measureText(a.icao).width+10, W2=tw+bad.length*(bw+2); let x=v[0]-W2/2, y=v[1]-24;
+    ctx.fillStyle="rgba(10,12,16,.88)"; ctx.strokeStyle="rgba(255,255,255,.35)"; ctx.lineWidth=1; rrect(ctx,x-2,y-2,W2+4,18,4); ctx.fill(); ctx.stroke();
+    ctx.fillStyle="#fff"; ctx.textAlign="left"; ctx.fillText(a.icao,x+4,y+7.5); x+=tw;
+    bad.forEach(b=>{ ctx.fillStyle=b[2]; rrect(ctx,x,y,bw,14,3); ctx.fill(); ctx.fillStyle="#0b0c0f"; ctx.textAlign="center"; ctx.fillText(b[1],x+bw/2,y+7.5); x+=bw+2; });
+    ctx.fillStyle="#fff"; ctx.beginPath(); ctx.arc(v[0],v[1],2.5,0,7); ctx.fill();
+    MAP.hitA.push({x:v[0],y:v[1]-17,A}); });
+  ctx.textAlign="left";
+}
+function rrect(ctx,x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+function trafficIcon(ctx,x,y,hdg,col,s){ ctx.save(); ctx.translate(x,y); ctx.rotate(hdg*D2R); ctx.scale(s,s); ctx.beginPath(); ctx.moveTo(0,-9); ctx.lineTo(1.4,-3); ctx.lineTo(8,1.5); ctx.lineTo(8,3); ctx.lineTo(1.4,1.2); ctx.lineTo(1.2,6); ctx.lineTo(3.5,7.8); ctx.lineTo(3.5,9); ctx.lineTo(0,8); ctx.lineTo(-3.5,9); ctx.lineTo(-3.5,7.8); ctx.lineTo(-1.2,6); ctx.lineTo(-1.4,1.2); ctx.lineTo(-8,3); ctx.lineTo(-8,1.5); ctx.lineTo(-1.4,-3); ctx.closePath(); ctx.fillStyle=col; ctx.fill(); ctx.lineWidth=1; ctx.strokeStyle="rgba(0,0,0,.6)"; ctx.stroke(); ctx.restore(); }
+function drawTraffic2d(ctx,W,H,R){
+  const T=MAP.tr; MAP.hitP=[]; if(!T) return; const now=Date.now(), me=R&&R.cs, sel=MAP.selCs;
+  const lbl=MAP.z>=6.5; ctx.font="700 10px 'JetBrains Mono',monospace"; ctx.textBaseline="middle"; ctx.textAlign="left";
+  let selP=null;
+  T.p.forEach(p=>{ if(me&&String(p[0]).toUpperCase()===me) return; const q=trPos(p,now), v=m2s(q[0],q[1]); if(v[0]<-20||v[1]<-20||v[0]>W+20||v[1]>H+20) return;
+    const ground=(p[4]||0)<50, isSel=sel===p[0]; if(isSel) selP={p,v};
+    trafficIcon(ctx,v[0],v[1],p[5]||0,isSel?"#ff5fa2":ground?"#8a90a0":"#dfe6f2",ground?0.7:0.95);
+    if(lbl&&!ground||isSel) halo(ctx,p[0],v[0]+9,v[1]-7,isSel?"#ff5fa2":"#cfd6e4");
+    MAP.hitP.push({x:v[0],y:v[1],p}); });
+  if(selP&&MAP.vs){ const p=selP.p, d=MAP.vs.apt[p[7]], a=MAP.vs.apt[p[8]]; ctx.setLineDash([4,4]); ctx.lineWidth=1.6;
+    if(d){ ctx.strokeStyle="rgba(255,95,162,.45)"; ctx.beginPath(); gcLine(ctx,[d.lat,d.lon],[p[1],p[2]]); ctx.stroke(); }
+    if(a){ ctx.strokeStyle="rgba(255,95,162,.9)"; ctx.beginPath(); gcLine(ctx,[p[1],p[2]],[a.lat,a.lon]); ctx.stroke(); } ctx.setLineDash([]); }
+}
+function drawAtcTrafficGlobe(ctx,proj,path,vis){
+  const cfg=mapCfg(); MAP.hitP=[]; MAP.hitA=[]; MAP.hitS=[];
+  if(cfg.layers.atc){ const M=atcModel(); if(M){ Object.values(M.sectors).forEach(s=>{ const col=s.fss?"242,179,61":"88,199,232"; ctx.beginPath(); path(s.b.geom); ctx.fillStyle=`rgba(${col},.08)`; ctx.fill(); ctx.strokeStyle=`rgba(${col},.6)`; ctx.lineWidth=1; ctx.stroke(); MAP.hitS.push(s); });
+      Object.values(M.airports).forEach(A=>{ if(!vis(A.a.lat,A.a.lon)) return; const v=proj([A.a.lon,A.a.lat]); ctx.fillStyle="#58c7e8"; ctx.beginPath(); ctx.arc(v[0],v[1],3,0,7); ctx.fill(); MAP.hitA.push({x:v[0],y:v[1],A}); }); } }
+  if(cfg.layers.traffic&&MAP.tr){ const now=Date.now(), me=routeGeo()&&routeGeo().cs; ctx.fillStyle="rgba(223,230,242,.85)";
+    MAP.tr.p.forEach(p=>{ if(me&&String(p[0]).toUpperCase()===me) return; const q=trPos(p,now); if(!vis(q[0],q[1])) return; const v=proj([q[1],q[0]]);
+      if(MAP.gk>3) trafficIcon(ctx,v[0],v[1],p[5]||0,p[0]===MAP.selCs?"#ff5fa2":"#dfe6f2",0.75); else { ctx.fillStyle=p[0]===MAP.selCs?"#ff5fa2":"rgba(223,230,242,.85)"; ctx.fillRect(v[0]-1.2,v[1]-1.2,2.4,2.4); }
+      MAP.hitP.push({x:v[0],y:v[1],p}); }); }
+}
+function inPoly(lat,lon,g){ return polysOf(g).some(p=>{ let ins=false; p.forEach(r=>{ for(let i=0,j=r.length-1;i<r.length;j=i++){ const xi=r[i][0],yi=r[i][1],xj=r[j][0],yj=r[j][1]; if(((yi>lat)!==(yj>lat))&&(lon<(xj-xi)*(lat-yi)/(yj-yi)+xi)) ins=!ins; } }); return ins; }); }
+function onlineFor(iso){ if(!iso) return "–"; const m=Math.max(0,Math.round((Date.now()-new Date(iso))/60000)); return `${Math.floor(m/60)}h${String(m%60).padStart(2,"0")}`; }
+function atcRows(list){ return list.slice().sort((a,b)=>(b[2]||0)-(a[2]||0)).map(c=>`<div class="at-row"><div class="at-h"><b class="mono">${esc(c[0])}</b><span class="at-f mono">${esc(c[1])}</span></div>
+  <div class="at-m">${esc(FAC[c[2]]||"")}${c[3]?" · "+esc(RAT[c[3]]||c[3]):""}${c[4]?" · "+esc(c[4]):""} · online ${onlineFor(c[5])}</div>${c[6]?`<pre class="at-atis">${esc(c[6])}</pre>`:""}</div>`).join(""); }
+function atisRows(list){ return list.map(c=>`<div class="at-row"><div class="at-h"><b class="mono">${esc(c[0])}</b>${c[2]?`<span class="at-code">${esc(c[2])}</span>`:""}<span class="at-f mono">${esc(c[1])}</span></div>${c[3]?`<pre class="at-atis">${esc(c[3])}</pre>`:""}</div>`).join(""); }
+function sectorModal(s){
+  openModal(`<div class="modal-h"><h3>${esc(s.b.id)} · ${esc(s.name||"")}</h3><button class="x" data-close>×</button></div><div class="at-list">${atcRows(s.list)}</div>`);
+  $("#modal").querySelectorAll("[data-close]").forEach(b=>b.onclick=closeModal);
+}
+function airportAtcModal(A){
+  openModal(`<div class="modal-h"><h3>${esc(A.a.icao)} · ${esc(A.a.name||"")}</h3><button class="x" data-close>×</button></div><div class="at-list">${atcRows(A.list)}${atisRows(A.atis)}</div>`);
+  $("#modal").querySelectorAll("[data-close]").forEach(b=>b.onclick=closeModal);
+}
+async function pilotModal(p){
+  MAP.selCs=p[0]; MAP.dirty=true;
+  const V=MAP.vs, dep=V&&V.apt[p[7]], arr=V&&V.apt[p[8]];
+  const body=f=>{ const fp=(f&&f.flight_plan)||{}; const rmk=fp.remarks||"", reg=(rmk.match(/\bREG\/([A-Z0-9-]+)/)||[])[1]||"", sel=(rmk.match(/\bSEL\/([A-Z]+)/)||[])[1]||"";
+    let prog=""; if(dep&&arr){ const tot=hav([dep.lat,dep.lon],[arr.lat,arr.lon]), done=hav([dep.lat,dep.lon],[p[1],p[2]]), rem=hav([p[1],p[2]],[arr.lat,arr.lon]); const pc=Math.max(0,Math.min(100,done/Math.max(1,done+rem)*100));
+      prog=`<div class="pl-prog"><b class="mono">${esc(p[7])}</b><div class="pl-bar"><i style="width:${pc}%"></i><span style="left:${pc}%">✈</span></div><b class="mono">${esc(p[8])}</b></div><div class="muted pl-sub">${Math.round(done)} NM flown · ${Math.round(rem)} NM to go${p[4]>60?" · ETA "+new Date(Date.now()+rem/p[4]*3600e3).toISOString().slice(11,16)+"Z":""}</div>`; }
+    const kv=(k,v)=>v||v===0?`<span><small>${k}</small><b class="mono">${esc(v)}</b></span>`:"";
+    return `${prog}<div class="mp-kv">${kv("Aircraft",fp.aircraft_short||p[6]||"")}${kv("Registration",reg)}${kv("Pilot",f&&f.name)}${kv("CID",p[9])}${kv("Altitude",(p[3]||0).toLocaleString("en-US")+" ft")}${kv("Ground speed",(p[4]||0)+" kt")}${kv("Heading",String(p[5]||0).padStart(3,"0")+"°")}
+      ${kv("Squawk",f&&f.transponder)}${kv("Assigned",fp.assigned_transponder&&fp.assigned_transponder!=="0000"?fp.assigned_transponder:"")}${kv("Rules",fp.flight_rules==="I"?"IFR":fp.flight_rules==="V"?"VFR":fp.flight_rules)}${kv("Cruise",fp.altitude?"FL"+String(Math.round(+fp.altitude/100)).padStart(3,"0"):"")}${kv("TAS",fp.cruise_tas?fp.cruise_tas+" kt":"")}
+      ${kv("Departure",fp.departure||p[7])}${kv("Arrival",fp.arrival||p[8])}${kv("Alternate",fp.alternate)}${kv("Dep time",fp.deptime?fp.deptime+"Z":"")}${kv("Enroute",fp.enroute_time?fp.enroute_time.slice(0,2)+"h"+fp.enroute_time.slice(2):"")}${kv("Online",f&&f.logon_time?onlineFor(f.logon_time):"")}${kv("SELCAL",sel)}</div>
+      ${dep||arr?`<div class="muted pl-sub">${dep?esc(dep.name):""}${dep&&arr?" → ":""}${arr?esc(arr.name):""}</div>`:""}
+      ${fp.route?`<div class="pl-h">Route</div><pre class="at-atis">${esc(fp.route)}</pre>`:""}${rmk?`<div class="pl-h">Remarks</div><pre class="at-atis">${esc(rmk)}</pre>`:""}
+      ${f?"":`<div class="muted pl-sub" id="plLoad">Loading flight plan…</div>`}`; };
+  const show=f=>{ const el=$("#plBody"); if(el) el.innerHTML=body(f); };
+  openModal(`<div class="modal-h"><h3>${esc(p[0])}</h3><button class="x" data-close>×</button></div><div id="plBody" style="padding:12px 16px">${body(null)}</div>`);
+  $("#modal").querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>{ MAP.selCs=null; MAP.dirty=true; closeModal(); });
+  let full=MAP.raw&&(MAP.raw.pilots||[]).find(x=>x.callsign===p[0]);
+  if(!full){ const rel=relayUrl(); if(rel){ try{ const r=await fetch(`${rel}/vatsim/pilot?cs=${encodeURIComponent(p[0])}`); if(r.ok){ const j=await r.json(); if(j&&j.callsign) full=j; } }catch(_){} } }
+  show(full||{}); const l=$("#plLoad"); if(l) l.remove();
 }
 
 /* ===================== Documents: PDF / image viewer with annotations (tablet app) ===================== */
@@ -2712,7 +2885,7 @@ function renderWeather(el){
   <div class="card imp">
     <div class="imp-grid">
       <div class="fld"><label>Other airports (en-route alternates…)</label><input id="wxExtra" class="big" value="${esc(S.wx.extra||"")}" placeholder="LOWW LKPR" autocapitalize="characters"></div>
-      <div class="muted" style="font-size:12px">${aps.length?aps.map(a=>`<b class="mono">${a.icao}</b> ${a.role}`).join(" · "):"Fill the flight in the briefing or import an OFP."}</div>
+      <div class="muted" style="font-size:12px">${aps.length?aps.map(a=>a.role==="EXTRA"?`<span class="wx-chip"><b class="mono">${a.icao}</b><button data-wxdel="${a.icao}" aria-label="Remove ${a.icao}">×</button></span>`:`<b class="mono">${a.icao}</b> ${a.role}`).join(" · "):"Fill the flight in the briefing or import an OFP."}</div>
     </div>
     <textarea id="wxIn" class="copybox" style="height:64px;margin-top:10px" placeholder="② Tap here → Paste the live weather page. It updates automatically."></textarea>
     <div class="err" id="wxErr"></div>
@@ -2723,7 +2896,7 @@ function renderWeather(el){
     if(m&&rh!=null&&m.wspd!=null&&!m.vrb){ const c=windComp(rh,m.wdir,m.wspd), g=m.gust?windComp(rh,m.wdir,m.gust):null;
       comp=`<div class="wx-comp"><span>RWY ${esc(a.rwy)}</span><b class="${c.head<0?"neg":""}">${c.head<0?"TAIL "+(-c.head):"HEAD "+c.head}${g?"/"+Math.abs(g.head):""} kt</b><b>X ${Math.abs(c.cross)}${g?"/"+Math.abs(g.cross):""} kt ${c.cross>0?"R":c.cross<0?"L":""}</b></div>`; }
     return `<div class="wx-card">
-      <div class="wx-h"><span class="role-t">${a.role}</span><b class="mono">${a.icao}</b>${m?catBadge(m.cat):""}<span class="sp"></span><span class="wx-age ${w.age!=null&&w.age>METAR_MAX_MIN?"old":""}">${w.src?w.src.toUpperCase():""}${w.age!=null?" · "+(w.age<120?w.age+" min":Math.round(w.age/60)+" h"):""}${w.age!=null&&w.age>METAR_MAX_MIN?" · outdated":""}</span></div>
+      <div class="wx-h"><span class="role-t">${a.role}</span><b class="mono">${a.icao}</b>${m?catBadge(m.cat):""}<span class="sp"></span><span class="wx-age ${w.age!=null&&w.age>METAR_MAX_MIN?"old":""}">${w.src?w.src.toUpperCase():""}${w.age!=null?" · "+(w.age<120?w.age+" min":Math.round(w.age/60)+" h"):""}${w.age!=null&&w.age>METAR_MAX_MIN?" · outdated":""}</span>${a.role==="EXTRA"?`<button class="wx-del" data-wxdel="${a.icao}" title="Remove ${a.icao}" aria-label="Remove ${a.icao}">×</button>`:""}</div>
       ${m?`<div class="wx-grid">
         <div><small>Wind</small><b>${m.wspd==null?"—":m.vrb?"VRB "+m.wspd:String(m.wdir).padStart(3,"0")+"° / "+m.wspd+(m.gust?"G"+m.gust:"")} kt</b></div>
         <div><small>Visibility</small><b>${m.cavok?"CAVOK":kmOrM(m.vis)}</b></div>
@@ -2744,6 +2917,7 @@ function renderWeather(el){
   if(canLive&&stale.length){ const due=stale.filter(x=>{ const f=wxFor(x.icao).fetched; return !f||Date.now()-new Date(f)>10*60e3; }).map(x=>x.icao); if(due.length) setTimeout(()=>wxFetchLive(due,false),50); }
   else if(canLive&&rel&&!SIG.text&&aps.length) setTimeout(()=>sigmetFetch().then(()=>{ if(current==="wx"){const y=window.scrollY;render();window.scrollTo(0,y);} }),50);
   vbind();
+  el.querySelectorAll("[data-wxdel]").forEach(b=>b.onclick=()=>{ const k=b.dataset.wxdel; S.wx.extra=(S.wx.extra||"").toUpperCase().split(/[\s,]+/).filter(x=>x&&x!==k).join(" "); if(S.wx.live) delete S.wx.live[k]; save("wx"); const y=window.scrollY; render(); window.scrollTo(0,y); toast(`${k} removed`); });
   const ex=$("#wxExtra"); ex.addEventListener("change",()=>{S.wx.extra=ex.value.toUpperCase();save("wx");render()});
   const wi=$("#wxIn"); wi.addEventListener("paste",()=>setTimeout(()=>importWx(wi.value),50));
 }
