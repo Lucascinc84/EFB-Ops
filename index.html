@@ -784,6 +784,18 @@ html.night .nl-page{filter:brightness(.8)}
 
 .mp-base button{padding:7px 10px}
 
+.sty-cust{font-size:10px;color:var(--amber);font-weight:700;margin-left:6px;text-transform:uppercase;letter-spacing:.5px}
+
+.fl-list{display:flex;flex-direction:column;gap:4px;max-height:220px;overflow:auto;margin-bottom:8px}
+.fl-row{display:grid;grid-template-columns:90px 1fr 1.4fr 50px 30px;gap:8px;align-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:6px 8px;font-size:12.5px}
+.fl-row span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fl-row button{width:26px;height:26px;border-radius:5px;border:1px solid var(--line);background:none;color:var(--muted)}
+.fl-add{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 70px auto;gap:6px}
+.fl-add input,.fl-add select{background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:6px;padding:8px;font-size:13px;min-width:0}
+.fl-paste{margin-top:8px;font-size:12.5px;color:var(--muted)}.fl-paste summary{cursor:pointer;padding:4px 0}
+.fl-paste textarea{width:100%;height:90px;background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:6px;padding:8px;font-family:var(--mono);font-size:12px;margin:6px 0}
+@media(max-width:700px){.fl-add{grid-template-columns:1fr 1fr}.fl-row{grid-template-columns:80px 1fr 40px 26px}.fl-row span.muted{display:none}}
+
 /* standalone app: full bleed + safe areas */
 .app{margin:0!important;min-height:100vh;border:0!important;border-radius:0!important;box-shadow:none!important;max-width:none}
 .top{padding-top:calc(10px + env(safe-area-inset-top));padding-left:calc(16px + env(safe-area-inset-left));padding-right:calc(16px + env(safe-area-inset-right))}
@@ -2293,7 +2305,7 @@ function tbBar(){
   b.innerHTML=`<div class="tb-l">${home?`<b class="tb-time">${clk(now)}</b><span class="tb-z">${clk(now,true)}Z</span>`:`<button class="tb-home" id="tbHome"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>Home</button>`}</div>
     <div class="tb-c">${home?`<span class="tb-date">${now.toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long"})}</span>`:`<span class="tb-ai" style="--a:${app?appCol(app)[0]:"var(--mag)"};--b:${app?appCol(app)[1]:"var(--purple)"}">${app?TG(app.g):""}</span><b>${esc(app?app.name:"")}</b>`}</div>
     <div class="tb-r">${!home?`<span class="tb-z">${clk(now,true)}Z</span>`:""}${h.cs||h.from?`<span class="tb-fl mono">${esc(h.cs||"")} ${esc(h.from||"")}${h.to?"→"+esc(h.to):""}</span>`:""}<span class="tb-sig" title="${navigator.onLine?"online":"offline"}">${navigator.onLine?"●●●●":"○○○○"}</span>
-      <button class="tb-btn tb-pal ${iconProfile()?"on":""}" id="tbPal" aria-label="App icon colours" title="App icons: ${iconProfile()?(curStyle()?curStyle().name:isWizz()?"Wizz":"Global"):"Standard"}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 100 18c1 0 1.6-.8 1.6-1.7 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-.9.8-1.7 1.7-1.7H16a5 5 0 005-5C21 6.5 17 3 12 3z"/><circle cx="7.5" cy="11" r="1.2" fill="currentColor"/><circle cx="10.5" cy="7" r="1.2" fill="currentColor"/><circle cx="15.5" cy="7.5" r="1.2" fill="currentColor"/></svg><span>${iconProfile()?(curStyle()?esc(curStyle().short||curStyle().name):isWizz()?"Wizz":"Global"):"Standard"}</span></button>
+      <button class="tb-btn tb-pal ${iconProfile()?"on":""}" id="tbPal" aria-label="App icon colours" title="App icons: ${iconProfile()?(curCustom()?curCustom().name:isWizz()?"Wizz":"Global"):"Standard"}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 100 18c1 0 1.6-.8 1.6-1.7 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-.9.8-1.7 1.7-1.7H16a5 5 0 005-5C21 6.5 17 3 12 3z"/><circle cx="7.5" cy="11" r="1.2" fill="currentColor"/><circle cx="10.5" cy="7" r="1.2" fill="currentColor"/><circle cx="15.5" cy="7.5" r="1.2" fill="currentColor"/></svg><span>${iconProfile()?(curCustom()?esc(curCustom().short||curCustom().name):isWizz()?"Wizz":"Global"):"Standard"}</span></button>
       <button class="tb-btn" id="tbNight" aria-label="Night mode"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 14.5A8 8 0 019.5 4 8 8 0 1020 14.5z"/></svg></button>
       <button class="tb-btn" id="tbClassic" aria-label="Classic view" title="Classic view"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 9v11"/></svg></button></div>`;
   const hb=$("#tbHome"); if(hb) hb.onclick=()=>tabGo("home");
@@ -2328,7 +2340,11 @@ const STY_PRESETS=[
 const STY_BG={charcoal:["#0f1013","#16171b","#1f2026","#262830","#33353f"],midnight:["#0a0f1c","#0f1626","#172034","#1d2840","#2a3652"],forest:["#0a120f","#0f1a16","#16241f","#1c2e27","#2a3f36"],wine:["#140b0f","#1c1015","#28161e","#321c26","#452a36"],black:["#000000","#07080a","#111216","#18191e","#26282f"],warm:["#14110e","#1b1714","#25201c","#2e2823","#403831"]};
 const STY_FONTS={modern:"Inter,system-ui,sans-serif",system:"-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif",rounded:"ui-rounded,'SF Pro Rounded','Nunito',system-ui,sans-serif",classic:"Georgia,'Times New Roman',serif",technical:"'JetBrains Mono',ui-monospace,monospace"};
 const styList=()=>S.settings.styles||(S.settings.styles=[]);
-const curStyle=()=>{ const m=String(S.settings.mode||""); return m.startsWith("s:")?styList().find(s=>s.id===m.slice(2))||null:null; };
+const BUILTIN={wizz:{id:"wizz",name:"Wizz",short:"EFB",sub:"Flight Ops",base:"wizz",c:{pri:"#c6007e",sec:"#3a2a6e",acc:"#e2238f"},bg:"charcoal",font:"modern",bar:"gradient",logo:"",builtin:"wizz"},
+  global:{id:"global",name:"Global",short:"EFB",sub:"Global Ops",base:"global",c:{pri:"#1f6fe5",sec:"#0b2b63",acc:"#5aa2ff"},bg:"charcoal",font:"modern",bar:"gradient",logo:"",builtin:"global"}};
+const builtinOv=()=>S.settings.builtinOv||(S.settings.builtinOv={});
+const curCustom=()=>{ const m=String(S.settings.mode||""); return m.startsWith("s:")?styList().find(s=>s.id===m.slice(2))||null:null; };
+const curStyle=()=>{ const c=curCustom(); if(c) return c; const m=S.settings.mode==="global"?"global":"wizz"; return builtinOv()[m]||null; };
 function hexMix(a,b,t){ const p=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)), A=p(a), B=p(b); return "#"+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,"0")).join(""); }
 function styVars(st){
   const c=st.c, bg=STY_BG[st.bg]||STY_BG.charcoal;
@@ -2347,8 +2363,13 @@ function applyStyle(st){
   if(st&&st.logo){ if(!img&&logo){ img=document.createElement("img"); img.id="brandImg"; img.alt=""; logo.after(img); } if(img){ img.src=st.logo; img.style.display=""; } if(logo) logo.style.display="none"; }
   else { if(img) img.style.display="none"; if(logo) logo.style.display=""; }
 }
+/* company fleet (custom styles that work like Global) */
+const fleetOf=()=>{ const c=curCustom(); return c&&c.base!=="wizz"&&Array.isArray(c.fleet)?c.fleet:[]; };
+function fleetFind(reg){ reg=(reg||"").toUpperCase().trim(); return fleetOf().find(a=>a.reg===reg)||null; }
+function variantFam(v){ for(const f of FAMILIES){ const x=f.variants.find(y=>y.v.toLowerCase()===String(v).toLowerCase()); if(x) return {fam:f.id,variant:x.v,eng:x.eng[0]||""}; } return null; }
+function fleetRowsHTML(fl){ return fl.length?fl.map((a,i)=>`<div class="fl-row"><b class="mono">${esc(a.reg)}</b><span>${esc(a.variant)}</span><span class="muted">${esc(a.eng||"")}</span><span class="mono">${a.year?esc(a.year):"—"}</span><button data-fdel="${i}" aria-label="Remove">×</button></div>`).join(""):`<div class="muted" style="font-size:12.5px;padding:6px 2px">No aircraft yet — add them below or paste a list.</div>`; }
 function styleModeSeg(){
-  const L=styList(); if(!L.length) return ""; const cur=curStyle();
+  const L=styList(); if(!L.length) return ""; const cur=curCustom();
   return `<select class="sty-sel ${cur?"on":""}" id="stySel" aria-label="Company style"><option value="">${cur?"":"Styles…"}</option>${L.map(s=>`<option value="${s.id}" ${cur&&cur.id===s.id?"selected":""}>${esc(s.name)}</option>`).join("")}</select>`;
 }
 function bindStyleSeg(){ const s=$("#stySel"); if(s) s.onchange=()=>{ if(s.value) setMode("s:"+s.value); }; }
@@ -2358,12 +2379,14 @@ async function styLogoFile(f){
   const k=Math.min(1,128/Math.max(im.width,im.height)), c=document.createElement("canvas"); c.width=Math.max(1,Math.round(im.width*k)); c.height=Math.max(1,Math.round(im.height*k));
   c.getContext("2d").drawImage(im,0,0,c.width,c.height); return c.toDataURL("image/png");
 }
-function styleEditor(orig){
-  const isNew=!orig, prevMode=S.settings.mode;
-  const st=orig?JSON.parse(JSON.stringify(orig)):{id:Date.now().toString(36),name:"My Airline",short:"EFB",sub:"Flight Ops",base:"global",c:{pri:"#0f7ad8",sec:"#0a2c5c",acc:"#47a8ff"},bg:"charcoal",font:"modern",bar:"gradient",logo:""};
+function styleEditor(orig,bkey){
+  if(bkey) orig=builtinOv()[bkey]||BUILTIN[bkey];
+  const isNew=!orig&&!bkey;
+  if(bkey&&(S.settings.mode==="global"?"global":"wizz")!==bkey||bkey&&curCustom()){ S.settings.mode=bkey; save("settings"); applyMode(); render(); }
+  const st=orig?Object.assign(JSON.parse(JSON.stringify(orig)),bkey?{builtin:bkey,base:bkey,id:bkey}:{}):{id:Date.now().toString(36),name:"My Airline",short:"EFB",sub:"Flight Ops",base:"global",c:{pri:"#0f7ad8",sec:"#0a2c5c",acc:"#47a8ff"},bg:"charcoal",font:"modern",bar:"gradient",logo:""};
   const preview=()=>{ applyStyle(st); const p=$("#styPrev"); if(p){ p.querySelector(".sp-b b").textContent=st.short||"EFB"; p.querySelector(".sp-b span").innerHTML=esc(st.sub||"").split(/\s+/).slice(0,3).join("<br>"); const li=p.querySelector(".sp-logo"); li.innerHTML=st.logo?`<img src="${st.logo}" alt="">`:document.querySelector(".top .logo").outerHTML; } };
   const sw=(k,v)=>`<label class="sty-col"><span>${k==="pri"?"Primary":k==="sec"?"Secondary":"Accent"}</span><input type="color" data-col="${k}" value="${v}"></label>`;
-  openModal(`<div class="modal-h"><h3>${isNew?"New company style":"Edit · "+esc(st.name)}</h3><button class="x" data-close>×</button></div>
+  openModal(`<div class="modal-h"><h3>${isNew?"New company style":bkey?"Edit the "+(bkey==="wizz"?"Wizz":"Global")+" design":"Edit · "+esc(st.name)}</h3><button class="x" data-close>×</button></div>
    <div class="sty-ed">
     <div class="sty-prev" id="styPrev">
       <div class="sp-b"><span class="sp-logo"></span><b></b><span></span></div>
@@ -2371,11 +2394,18 @@ function styleEditor(orig){
       <div class="sp-row"><span class="sp-tile" style="background:linear-gradient(145deg,var(--mag),var(--purple))"></span><span class="sp-bar"><i></i></span></div>
     </div>
     <div class="frm sty-frm">
-      <div><label>Company name</label><input id="syName" value="${esc(st.name)}" maxlength="30"></div>
+      ${bkey?"":`<div><label>Company name</label><input id="syName" value="${esc(st.name)}" maxlength="30"></div>`}
       <div><label>Brand (top bar)</label><input id="syShort" value="${esc(st.short)}" maxlength="8" placeholder="EFB"></div>
       <div><label>Subtitle</label><input id="sySub" value="${esc(st.sub)}" maxlength="24" placeholder="Flight Ops"></div>
-      <div><label>Works like</label><select id="syBase"><option value="global" ${st.base!=="wizz"?"selected":""}>Global — all aircraft</option><option value="wizz" ${st.base==="wizz"?"selected":""}>Wizz fleet — A320 / A321 & registrations</option></select></div>
+      ${bkey?"":`<div><label>Works like</label><select id="syBase"><option value="global" ${st.base!=="wizz"?"selected":""}>Global — all aircraft</option><option value="wizz" ${st.base==="wizz"?"selected":""}>Wizz fleet — A320 / A321 & registrations</option></select></div>`}
     </div>
+    ${bkey?"":`<div id="syFleetBox" style="${st.base==="wizz"?"display:none":""}"><h4 class="sty-h">Company fleet <span id="syFleetN">(${(st.fleet||[]).length})</span></h4>
+      <div class="fl-list" id="syFleet">${fleetRowsHTML(st.fleet||[])}</div>
+      <div class="fl-add"><input id="flReg" placeholder="Reg. e.g. EC-MLE" maxlength="10" autocapitalize="characters">
+        <select id="flFam"><option value="">Family</option>${FAMILIES.map(f=>`<option value="${f.id}">${esc(f.name)}</option>`).join("")}</select>
+        <select id="flVar" disabled><option value="">Variant</option></select><select id="flEng" disabled><option value="">Engine</option></select>
+        <input id="flYear" placeholder="Year" inputmode="numeric" maxlength="4"><button class="btn mag" id="flAdd">Add</button></div>
+      <details class="fl-paste"><summary>Paste a list</summary><textarea id="flPaste" placeholder="One aircraft per line: REG VARIANT YEAR\nEC-MLE A320neo 2019\nEC-NFJ A321neo 2021"></textarea><button class="btn ghost" id="flPasteBtn">Add these aircraft</button></details></div>`}
     <h4 class="sty-h">Colour presets</h4>
     <div class="sty-pre">${STY_PRESETS.map(([n,p,s,a])=>`<button data-pre="${p},${s},${a}" title="${n}"><i style="background:linear-gradient(135deg,${p},${s})"></i><span>${n}</span></button>`).join("")}</div>
     <h4 class="sty-h">Colours</h4>
@@ -2388,19 +2418,31 @@ function styleEditor(orig){
       <div class="full"><label>Logo (your own image, optional)</label><div class="sty-logo"><label class="btn ghost">Choose image<input type="file" id="syLogo" accept="image/*" hidden></label>${st.logo?`<button class="btn ghost" id="syLogoX">Remove logo</button>`:""}<span class="muted">Square PNG works best — shown in the top bar.</span></div></div>
     </div>
    </div>
-   <div class="modal-f">${isNew?"":`<button class="btn ghost" id="syDel" style="color:var(--red)">Delete</button><button class="btn ghost" id="syDup">Duplicate</button>`}<span class="sp"></span><button class="btn ghost" id="syCancel">Cancel</button><button class="btn mag" id="sySave">${isNew?"Create & apply":"Save"}</button></div>`);
+   <div class="modal-f">${bkey?(builtinOv()[bkey]?`<button class="btn ghost" id="syRst" style="color:var(--amber)">Restore original</button>`:""):isNew?"":`<button class="btn ghost" id="syDel" style="color:var(--red)">Delete</button><button class="btn ghost" id="syDup">Duplicate</button>`}<span class="sp"></span><button class="btn ghost" id="syCancel">Cancel</button><button class="btn mag" id="sySave">${isNew?"Create & apply":"Save"}</button></div>`);
   const M=$("#modal"), restore=()=>{ applyMode(); };
   const close=()=>{ closeModal(); restore(); };
   M.querySelectorAll("[data-close]").forEach(b=>b.onclick=close); $("#syCancel").onclick=close;
   const tx=(id,k)=>{ $(id).oninput=e=>{ st[k]=e.target.value; preview(); }; };
-  tx("#syName","name"); tx("#syShort","short"); tx("#sySub","sub");
-  $("#syBase").onchange=e=>st.base=e.target.value; $("#syFont").onchange=e=>{ st.font=e.target.value; preview(); }; $("#syBar").onchange=e=>{ st.bar=e.target.value; preview(); };
+  if(!bkey){ tx("#syName","name"); $("#syBase").onchange=e=>{ st.base=e.target.value; $("#syFleetBox").style.display=st.base==="wizz"?"none":""; };
+    st.fleet=st.fleet||[];
+    const drawFl=()=>{ $("#syFleet").innerHTML=fleetRowsHTML(st.fleet); $("#syFleetN").textContent=`(${st.fleet.length})`; M.querySelectorAll("[data-fdel]").forEach(b=>b.onclick=()=>{ st.fleet.splice(+b.dataset.fdel,1); drawFl(); }); };
+    drawFl();
+    const fam=$("#flFam"), vr=$("#flVar"), en=$("#flEng");
+    fam.onchange=()=>{ const f=FAMILIES.find(x=>x.id===fam.value); vr.innerHTML=`<option value="">Variant</option>`+(f?f.variants.map(x=>`<option>${esc(x.v)}</option>`).join(""):""); vr.disabled=!f; en.innerHTML=`<option value="">Engine</option>`; en.disabled=true; };
+    vr.onchange=()=>{ const e=enginesFor(vr.value); en.innerHTML=e.map(x=>`<option>${esc(x)}</option>`).join("")||`<option value="">—</option>`; en.disabled=!e.length; };
+    const addOne=(reg,f,v,e,y)=>{ reg=reg.toUpperCase().trim(); if(!reg||!v) return false; const o={reg,fam:f,variant:v,eng:e||"",year:/^(19|20)\d\d$/.test(y||"")?y:""}; const i=st.fleet.findIndex(a=>a.reg===reg); if(i>=0) st.fleet[i]=o; else st.fleet.push(o); return true; };
+    $("#flAdd").onclick=()=>{ const reg=$("#flReg").value; if(!reg.trim()){ toast("Enter a registration"); return; } if(!vr.value){ toast("Choose the variant"); return; } addOne(reg,fam.value,vr.value,en.value,$("#flYear").value.trim()); $("#flReg").value=""; $("#flYear").value=""; drawFl(); $("#flReg").focus(); };
+    $("#flPasteBtn").onclick=()=>{ let ok=0,bad=[]; $("#flPaste").value.split(/\n+/).map(l=>l.trim()).filter(Boolean).forEach(l=>{ const p=l.split(/[\s,;\t]+/), reg=p[0], y=p.find(x=>/^(19|20)\d\d$/.test(x)); let m=null; for(const t of p.slice(1)){ m=variantFam(t); if(m) break; } if(m&&addOne(reg,m.fam,m.variant,m.eng,y)) ok++; else bad.push(reg); });
+      drawFl(); $("#flPaste").value=bad.join("\n"); toast(`${ok} aircraft added${bad.length?` · ${bad.length} not recognised (variant names like A320neo, 737-800, 777-300ER)`:""}`); };
+  } tx("#syShort","short"); tx("#sySub","sub"); $("#syFont").onchange=e=>{ st.font=e.target.value; preview(); }; $("#syBar").onchange=e=>{ st.bar=e.target.value; preview(); };
   M.querySelectorAll("[data-col]").forEach(i=>i.oninput=()=>{ st.c[i.dataset.col]=i.value; preview(); });
   M.querySelectorAll("[data-pre]").forEach(b=>b.onclick=()=>{ const [p,s,a]=b.dataset.pre.split(","); st.c={pri:p,sec:s,acc:a}; M.querySelector('[data-col="pri"]').value=p; M.querySelector('[data-col="sec"]').value=s; M.querySelector('[data-col="acc"]').value=a; preview(); });
   M.querySelectorAll("[data-bg]").forEach(b=>b.onclick=()=>{ st.bg=b.dataset.bg; M.querySelectorAll("[data-bg]").forEach(x=>x.classList.toggle("on",x===b)); preview(); });
   $("#syLogo").onchange=async e=>{ const f=e.target.files[0]; if(!f) return; try{ st.logo=await styLogoFile(f); preview(); toast("Logo added — save to keep it"); }catch(_){ toast("This image can't be used"); } };
   const lx=$("#syLogoX"); if(lx) lx.onclick=()=>{ st.logo=""; lx.remove(); preview(); };
-  $("#sySave").onclick=()=>{ st.name=(st.name||"").trim()||"My Airline"; const L=styList(); const i=L.findIndex(x=>x.id===st.id); if(i>=0) L[i]=st; else L.push(st);
+  const rst=$("#syRst"); if(rst) rst.onclick=()=>confirmBox("Restore original",`Go back to the original ${bkey==="wizz"?"Wizz":"Global"} design?`,"Restore",()=>{ delete builtinOv()[bkey]; save("settings"); applyMode(); render(); toast("Original design restored"); });
+  $("#sySave").onclick=()=>{ if(!bkey&&st.fleet&&st.fleet.length){ S.acdb.list=S.acdb.list||{}; st.fleet.forEach(a=>{ if(a.year){ const r=S.acdb.list[a.reg]=S.acdb.list[a.reg]||{}; r.year=String(a.year); } }); save("acdb"); }
+    if(bkey){ builtinOv()[bkey]=st; S.settings.mode=bkey; save("settings"); closeModal(); applyMode(); render(); toast(`${bkey==="wizz"?"Wizz":"Global"} design saved`); return; } st.name=(st.name||"").trim()||"My Airline"; const L=styList(); const i=L.findIndex(x=>x.id===st.id); if(i>=0) L[i]=st; else L.push(st);
     S.settings.mode="s:"+st.id; save("settings"); closeModal(); applyMode(); render(); toast(`${st.name} style applied`); };
   const del=$("#syDel"); if(del) del.onclick=()=>confirmBox("Delete style",`Delete the “${st.name}” style?`,"Delete",()=>{ S.settings.styles=styList().filter(x=>x.id!==st.id); if(String(S.settings.mode)==="s:"+st.id) S.settings.mode=st.base==="wizz"?"wizz":"global"; save("settings"); applyMode(); render(); toast("Style deleted"); });
   const dup=$("#syDup"); if(dup) dup.onclick=()=>{ const c=JSON.parse(JSON.stringify(st)); c.id=Date.now().toString(36); c.name=st.name+" copy"; styList().push(c); S.settings.mode="s:"+c.id; save("settings"); closeModal(); applyMode(); render(); toast("Style duplicated"); };
@@ -2765,10 +2807,11 @@ function aircraftRowHTML(){
   const g=h.g, fam=FAMILIES.find(f=>f.id===g.fam);
   const vars=fam?fam.variants:[], engs=g.variant?enginesFor(g.variant):[];
   return `<div class="ac-row">
+    ${fleetOf().length?`<div class="fld"><label>${esc(curCustom().name)} fleet</label><select class="big" id="gFleet"><option value="">— pick an aircraft —</option>${fleetOf().map(x=>`<option value="${esc(x.reg)}" ${g.reg===x.reg?"selected":""}>${esc(x.reg)} · ${esc(x.variant)}</option>`).join("")}</select></div>`:""}
     <div class="fld"><label>Family</label><select data-g="fam"><option value="">— family —</option>${FAMILIES.filter(f=>famAllowed(f.id)).map(f=>opt(f.id,f.name,g.fam)).join("")}</select></div>
     <div class="fld"><label>Variant</label><select class="big" data-g="variant" ${vars.length?"":"disabled"}><option value="">${vars.length?"— variant —":"select a family first"}</option>${vars.map(x=>opt(x.v,x.v,g.variant)).join("")}</select></div>
     <div class="fld"><label>Engine</label><select data-g="eng" ${engs.length?"":"disabled"}><option value="">${engs.length?"— engine —":"—"}</option>${engs.map(e=>opt(e,e,g.eng)).join("")}</select></div>
-    <div class="fld"><label>Registration</label><input class="big" data-g="reg" list="profRegs" value="${esc(g.reg||"")}" placeholder="F-GSQA"><datalist id="profRegs">${((curProf()&&curProf().regs&&curProf().regs.length)?curProf().regs:Object.keys((S.acdb&&S.acdb.list)||{})).map(r=>`<option value="${esc(r)}">`).join("")}</datalist></div>
+    <div class="fld"><label>Registration</label><input class="big" data-g="reg" list="profRegs" value="${esc(g.reg||"")}" placeholder="F-GSQA"><datalist id="profRegs">${[...new Set([...fleetOf().map(x=>x.reg),...Object.keys((S.acdb&&S.acdb.list)||{})])].map(r=>`<option value="${esc(r)}">`).join("")}</datalist></div>
   </div>
   <div id="photoSlot">${photoLinks(g.reg)}</div>`;
 }
@@ -2833,11 +2876,12 @@ function renderBriefing(el){
     });
   });
   // Global aircraft selectors
+  const gf=$("#gFleet"); if(gf) gf.onchange=()=>{ const fa=fleetFind(gf.value); if(!fa) return; Object.assign(S.briefing.hdr.g,{reg:fa.reg,fam:fa.fam,variant:fa.variant,eng:fa.eng}); const fm=FAMILIES.find(f=>f.id===fa.fam); if(fm) S.checklist.sel=fm.cl; save("briefing"); save("checklist"); render(); toast(`${fa.reg} · ${fa.variant}`); };
   el.querySelectorAll("[data-g]").forEach(inp=>{
     const ev=inp.tagName==="SELECT"?"change":"input";
     inp.addEventListener(ev,()=>{
       const g=S.briefing.hdr.g, k=inp.dataset.g;
-      if(k==="reg"){ inp.value=inp.value.toUpperCase(); g.reg=inp.value; save("briefing"); updateStatus(); const ps=$("#photoSlot"); if(ps) ps.innerHTML=photoLinks(g.reg); return; }
+      if(k==="reg"){ inp.value=inp.value.toUpperCase(); g.reg=inp.value; const fa=fleetFind(g.reg); if(fa&&(g.variant!==fa.variant||g.eng!==fa.eng)){ Object.assign(g,{fam:fa.fam,variant:fa.variant,eng:fa.eng}); const fm=FAMILIES.find(f=>f.id===fa.fam); if(fm) S.checklist.sel=fm.cl; save("briefing"); save("checklist"); render(); return; } save("briefing"); updateStatus(); const ps=$("#photoSlot"); if(ps) ps.innerHTML=photoLinks(g.reg); return; }
       if(k==="fam"){ g.fam=inp.value; g.variant=""; g.eng=""; }
       if(k==="variant"){ g.variant=inp.value; g.eng=(enginesFor(g.variant)[0])||""; }
       if(k==="eng"){ g.eng=inp.value; }
@@ -4147,15 +4191,15 @@ function applyMode(){
 function setMode(m){
   if(S.settings.mode===m) return;
   S.settings.mode=m; save("settings"); applyMode(); render();
-  const ST=curStyle(); toast(ST?`${ST.name} style`:m==="global"?"Global mode — all aircraft":"Wizz mode — A320 / A321");
+  const ST=curCustom(); toast(ST?`${ST.name} style`:m==="global"?"Global mode — all aircraft":"Wizz mode — A320 / A321");
 }
 function renderDrawer(){
   $("#drawer").innerHTML=`<div class="brand" style="margin-bottom:10px">${document.querySelector(".top .logo").outerHTML}<b>EFB</b><span>${isWizz()?"Flight<br>Ops":"Global<br>Ops"}</span></div>
     <h4>Interface</h4>
-    <button class="mod ${S.settings.mode==="wizz"||!S.settings.mode?"on":""}" data-mode="wizz">● Wizz Air — A320 / A321</button>
-    <button class="mod ${S.settings.mode==="global"?"on":""}" data-mode="global">● Global — A220 · A320 · 737 · 757 · 777</button>
+    <div class="sty-item"><button class="mod ${S.settings.mode==="wizz"||!S.settings.mode?"on":""}" data-mode="wizz">● Wizz Air — A320 / A321${builtinOv().wizz?' <small class="sty-cust">customised</small>':""}</button><button class="sty-ed-b" data-bed="wizz" aria-label="Edit Wizz design">✎</button></div>
+    <div class="sty-item"><button class="mod ${S.settings.mode==="global"?"on":""}" data-mode="global">● Global — A220 · A320 · 737 · 757 · 777${builtinOv().global?' <small class="sty-cust">customised</small>':""}</button><button class="sty-ed-b" data-bed="global" aria-label="Edit Global design">✎</button></div>
     <h4>Company styles</h4>
-    ${styList().map(s=>`<div class="sty-item ${curStyle()&&curStyle().id===s.id?"on":""}"><button class="mod" data-sty="${s.id}"><i class="sty-dot" style="background:linear-gradient(135deg,${s.c.pri},${s.c.sec})"></i>${esc(s.name)}</button><button class="sty-ed-b" data-styed="${s.id}" aria-label="Edit">✎</button></div>`).join("")}
+    ${styList().map(s=>`<div class="sty-item ${curCustom()&&curCustom().id===s.id?"on":""}"><button class="mod" data-sty="${s.id}"><i class="sty-dot" style="background:linear-gradient(135deg,${s.c.pri},${s.c.sec})"></i>${esc(s.name)}</button><button class="sty-ed-b" data-styed="${s.id}" aria-label="Edit">✎</button></div>`).join("")}
     <button class="mod" id="styNew">＋ New company style</button>
     <h4>View</h4>
     <button class="mod ${isTab()?"on":""}" id="uiTog">▦ ${isTab()?"Tablet view (on) — switch to classic":"Tablet view"}</button>
@@ -4182,6 +4226,7 @@ function renderDrawer(){
   $("#drawer").querySelectorAll("[data-sty]").forEach(b=>b.onclick=()=>{ toggleDrawer(false); setMode("s:"+b.dataset.sty); });
   $("#drawer").querySelectorAll("[data-styed]").forEach(b=>b.onclick=()=>{ toggleDrawer(false); styleEditor(styList().find(s=>s.id===b.dataset.styed)); });
   $("#styNew").onclick=()=>{ toggleDrawer(false); styleEditor(null); };
+  $("#drawer").querySelectorAll("[data-bed]").forEach(b=>b.onclick=()=>{ toggleDrawer(false); styleEditor(null,b.dataset.bed); });
   const rli=$("#relIn"); if(rli) rli.oninput=e=>{S.settings.relay=e.target.value.trim();save("settings")};
   const mki=$("#mkIn"); if(mki) mki.oninput=e=>{S.settings.mapKey=e.target.value.trim();save("settings");MAP.tiles.clear();MAP.baseKey=null;MAP.dirty=true};
   $("#sbIn").oninput=e=>{S.settings.sb=e.target.value.trim();save("settings")};
