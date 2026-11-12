@@ -2440,21 +2440,24 @@ function setUi(m){
 }
 function applyUi(){ document.documentElement.classList.toggle("tabv",isTab()); applyWall(); }
 /* wallpaper for the tablet home screen (kept on this device only) */
-let WALL; const wallLoad=()=>{ if(WALL===undefined){ try{ WALL=localStorage.getItem(LS+"wall"); }catch(e){ WALL=null; } } return WALL; };
+/* one wallpaper per interface profile: wizz, global, and each company style (s:<id>) */
+let WALL, WALLK; const wallKey=()=>LS+"wall:"+(S.settings.mode||"wizz");
+const wallLoad=()=>{ const k=wallKey(); if(WALLK!==k){ WALLK=k; try{ const old=localStorage.getItem(LS+"wall"); if(old){ if(!localStorage.getItem(k)) localStorage.setItem(k,old); localStorage.removeItem(LS+"wall"); } WALL=localStorage.getItem(k); }catch(e){ WALL=null; } } return WALL; };
+const wallName=()=>{ const c=typeof curCustom==="function"&&curCustom(); return c?c.name:S.settings.mode==="global"?"Global":"Wizz"; };
 function applyWall(){ wallLoad(); const r=document.documentElement; r.classList.toggle("wallhome",!!(WALL&&isTab()&&current==="home")); if(WALL) r.style.setProperty("--wall",`url("${WALL}")`); else r.style.removeProperty("--wall"); }
 function wallPick(){
   const inp=document.createElement("input"); inp.type="file"; inp.accept="image/*";
   inp.onchange=()=>{ const f=inp.files&&inp.files[0]; if(!f) return; const url=URL.createObjectURL(f), img=new Image();
-    img.onload=()=>{ const M=2200, k=Math.min(1,M/Math.max(img.width,img.height)), c=document.createElement("canvas"); c.width=Math.round(img.width*k); c.height=Math.round(img.height*k);
+    img.onload=()=>{ const M=1800, k=Math.min(1,M/Math.max(img.width,img.height)), c=document.createElement("canvas"); c.width=Math.round(img.width*k); c.height=Math.round(img.height*k);
       c.getContext("2d").drawImage(img,0,0,c.width,c.height); URL.revokeObjectURL(url);
-      let d=c.toDataURL("image/jpeg",0.85); if(d.length>3.2e6) d=c.toDataURL("image/jpeg",0.7);
-      try{ localStorage.setItem(LS+"wall",d); WALL=d; applyWall(); render(); toast("Wallpaper set"); }catch(e){ toast("Image too large — try a smaller one"); } };
+      let d=c.toDataURL("image/jpeg",0.82); if(d.length>1.4e6) d=c.toDataURL("image/jpeg",0.65);
+      try{ localStorage.setItem(wallKey(),d); WALLK=wallKey(); WALL=d; applyWall(); render(); toast("Wallpaper set for "+wallName()); }catch(e){ toast("Storage full — remove another profile's wallpaper or use a smaller image"); } };
     img.onerror=()=>{ URL.revokeObjectURL(url); toast("Unsupported image"); }; img.src=url; };
   inp.click();
 }
-function wallClear(){ try{ localStorage.removeItem(LS+"wall"); }catch(e){} WALL=null; applyWall(); render(); toast("Wallpaper removed"); }
+function wallClear(){ try{ localStorage.removeItem(wallKey()); }catch(e){} WALL=null; applyWall(); render(); toast("Wallpaper removed for "+wallName()); }
 function wallMenu(){ if(!WALL){ wallPick(); return; }
-  openModal(`<div class="modal-h"><h3>Wallpaper</h3><button class="x" data-close>×</button></div><div class="confirm-txt">Home screen wallpaper of the tablet view (saved on this device).</div><img src="${WALL}" alt="" style="width:100%;max-height:220px;object-fit:cover;border-radius:12px;margin:4px 0 10px"><div class="modal-f"><button class="btn ghost" id="wRm">Remove</button><span class="sp"></span><button class="btn ghost" data-close>Cancel</button><button class="btn mag" id="wCh">Change image</button></div>`);
+  openModal(`<div class="modal-h"><h3>Wallpaper</h3><button class="x" data-close>×</button></div><div class="confirm-txt">Home screen wallpaper for the <b>${esc(wallName())}</b> profile (saved on this device). Each profile and company style has its own.</div><img src="${WALL}" alt="" style="width:100%;max-height:220px;object-fit:cover;border-radius:12px;margin:4px 0 10px"><div class="modal-f"><button class="btn ghost" id="wRm">Remove</button><span class="sp"></span><button class="btn ghost" data-close>Cancel</button><button class="btn mag" id="wCh">Change image</button></div>`);
   $("#modal").querySelectorAll("[data-close]").forEach(b=>b.onclick=closeModal);
   $("#wRm").onclick=()=>{ closeModal(); wallClear(); }; $("#wCh").onclick=()=>{ closeModal(); wallPick(); }; }
 function tabGo(id){ current=id; if(location.hash!=="#"+id) history.replaceState(null,"","#"+id); render(); window.scrollTo({top:0}); }
