@@ -782,6 +782,8 @@ html.night .nl-page{filter:brightness(.8)}
 .sty-col input{width:38px;height:30px;border:0;background:none;padding:0}
 .sty-logo{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 
+.mp-base button{padding:7px 10px}
+
 /* standalone app: full bleed + safe areas */
 .app{margin:0!important;min-height:100vh;border:0!important;border-radius:0!important;box-shadow:none!important;max-width:none}
 .top{padding-top:calc(10px + env(safe-area-inset-top));padding-left:calc(16px + env(safe-area-inset-left));padding-right:calc(16px + env(safe-area-inset-right))}
@@ -1220,6 +1222,7 @@ function mapBuild(){
       <span class="mp-seg">${[["2d","2D map"],["globe","Globe"],["prof","Profile"]].map(([k,l])=>`<button data-v="${k}">${l}</button>`).join("")}</span>
       <span class="mp-chips"><button data-l="wx" title="Wind & temperature on the route">Wind/Temp</button><button data-l="clouds" title="Forecast clouds">Clouds</button><button data-l="radar" title="Rain radar (RainViewer)">Radar</button><button data-l="traffic" title="VATSIM traffic">Traffic</button><button data-l="atc" title="Online VATSIM controllers">ATC</button></span>
       <span class="sp"></span>
+      <span class="mp-seg mp-base"><button data-base="dark">Dark</button><button data-base="sat">Satellite</button></span>
       <button class="mp-b" id="mpPos" title="Position source">${ic("M12 2v3M12 19v3M2 12h3M19 12h3M12 8a4 4 0 100 8 4 4 0 000-8z")}<span>Position</span></button>
       <button class="mp-b" id="mpFol" title="Follow aircraft">${ic("M12 3l7 18-7-4-7 4z")}<span>Follow</span></button>
       <button class="mp-b" id="mpFitB" title="Show whole route">${ic("M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5")}<span>Route</span></button>
@@ -1237,6 +1240,7 @@ function mapBuild(){
   MAP.cv=MAP.root.querySelector("canvas"); MAP.ctx=MAP.cv.getContext("2d");
   const cfg=mapCfg(); MAP.view=cfg.view;
   MAP.root.querySelectorAll("[data-v]").forEach(b=>b.onclick=()=>{ MAP.view=cfg.view=b.dataset.v; mapSave(); mapSyncUi(); MAP.dirty=true; if(MAP.view==="globe") landLoad(); });
+  MAP.root.querySelectorAll("[data-base]").forEach(b=>b.onclick=()=>{ cfg.base=b.dataset.base; mapSave(); mapSyncUi(); MAP.dirty=true; });
   MAP.root.querySelectorAll("[data-l]").forEach(b=>b.onclick=()=>{ const k=b.dataset.l; cfg.layers[k]=!cfg.layers[k]; mapSave(); mapSyncUi(); if(k==="radar"&&cfg.layers.radar) rvFetch(); if((k==="traffic"||k==="atc")&&cfg.layers[k]&&IS_SA){ trafficPoll(); if(k==="atc") vspyLoad(); } MAP.dirty=true; });
   $("#mpFol").onclick=()=>{ MAP.follow=!MAP.follow; mapSyncUi(); MAP.dirty=true; };
   $("#mpFitB").onclick=()=>{ MAP.follow=false; mapFitRoute(); mapSyncUi(); };
@@ -1249,6 +1253,7 @@ function mapBuild(){
 function mapSyncUi(){
   const cfg=mapCfg(); if(!MAP.root) return;
   MAP.root.querySelectorAll("[data-v]").forEach(b=>b.classList.toggle("on",b.dataset.v===MAP.view));
+  MAP.root.querySelectorAll("[data-base]").forEach(b=>b.classList.toggle("on",(cfg.base||"dark")===b.dataset.base)); MAP.root.querySelector(".mp-base").style.display=MAP.view==="2d"?"":"none";
   MAP.root.querySelectorAll("[data-l]").forEach(b=>{ b.classList.toggle("on",!!cfg.layers[b.dataset.l]); b.style.display=((b.dataset.l==="radar"&&MAP.view!=="2d")||(MAP.view==="prof"&&(b.dataset.l==="traffic"||b.dataset.l==="atc")))?"none":""; });
   $("#mpFol").classList.toggle("on",MAP.follow); $("#mpFol").style.display=MAP.view==="prof"?"none":""; $("#mpFitB").style.display=MAP.view==="prof"?"none":"";
   MAP.root.querySelector(".mp-zoom").style.display=MAP.view==="prof"?"none":"";
@@ -1256,7 +1261,7 @@ function mapSyncUi(){
   em.style.display=R?"none":""; em.innerHTML=R?"":`<b>No route yet</b><span>Import your SimBrief OFP (OFP tab → Fetch). If you imported it before this update, fetch it once more so the map gets the waypoint positions.</span>`;
   if(R&&!MAP.c) mapFitRoute();
   const at=[];
-  if(MAP.view==="2d") at.push(mapKey()?"© OpenStreetMap · © CARTO":"Natural Earth"); if(MAP.view==="2d"&&cfg.layers.radar) at.push(`<a href="https://www.rainviewer.com" target="_blank" rel="noopener">Weather data by RainViewer</a>`);
+  if(MAP.view==="2d") at.push(cfg.base==="sat"?`<a href="https://s2maps.eu" target="_blank" rel="noopener">Sentinel-2 cloudless - https://s2maps.eu</a> by <a href="https://eox.at" target="_blank" rel="noopener">EOX IT Services GmbH</a> (Contains modified Copernicus Sentinel data 2024) · Overlay © OpenStreetMap contributors`:mapKey()?"© OpenStreetMap · © CARTO":"Natural Earth"); if(MAP.view==="2d"&&cfg.layers.radar) at.push(`<a href="https://www.rainviewer.com" target="_blank" rel="noopener">Weather data by RainViewer</a>`);
   if(cfg.layers.wx||cfg.layers.clouds||MAP.view==="prof") at.push(`<a href="https://open-meteo.com" target="_blank" rel="noopener">Forecast: Open-Meteo</a>`);
   if(MAP.view==="globe") at.push("Natural Earth"); at.push(cfg.layers.atc?"VATSIM · VAT-Spy data":"VATSIM");
   $("#mpAttr").innerHTML=at.join(" · ");
@@ -1353,7 +1358,10 @@ function cloudGlyph(ctx,x,y,s,a,col){ ctx.save(); ctx.globalAlpha=a; ctx.fillSty
 function draw2d(ctx,R){
   const W=MAP.w,H=MAP.h, cfg=mapCfg(); ctx.fillStyle="#0e1014"; ctx.fillRect(0,0,W,H);
   baseLayer(`m|${MAP.c[0].toFixed(5)}|${MAP.c[1].toFixed(5)}|${MAP.z.toFixed(4)}|${W}|${H}|${MAP.land?1:0}`,c=>drawLand2d(c,W,H));
-  if(mapKey()) drawTiles(ctx,cartoUrl,18,1,"c"+mapKey().slice(0,6));
+  if(cfg.base==="sat"){ drawTiles(ctx,(z,x,y)=>`https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless-2024_3857/default/g/${z}/${y}/${x}.jpg`,14,1,"s");
+    ctx.fillStyle="rgba(5,8,14,.18)"; ctx.fillRect(0,0,W,H);
+    drawTiles(ctx,(z,x,y)=>`https://tiles.maps.eox.at/wmts/1.0.0/overlay_bright_3857/default/g/${z}/${y}/${x}.png`,16,0.85,"o"); }
+  else if(mapKey()) drawTiles(ctx,cartoUrl,18,1,"c"+mapKey().slice(0,6));
   if(cfg.layers.radar&&MAP.rv) drawTiles(ctx,(z,x,y)=>`${MAP.rv.host}${MAP.rv.path}/256/${z}/${x}/${y}/2/1_1.png`,7,0.65,"r"+MAP.rv.path);
   if(cfg.layers.atc) drawAtc2d(ctx,W,H); else { MAP.hitA=[]; MAP.hitS=[]; }
   if(!R){ if(cfg.layers.traffic) drawTraffic2d(ctx,W,H,null); else MAP.hitP=[]; return; }
