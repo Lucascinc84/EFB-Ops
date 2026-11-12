@@ -3768,7 +3768,7 @@ function acYearEdit(reg){
   $("#yOk").onclick=()=>{ const v=parseInt($("#yIn").value); if(!(v>1960&&v<=NOW_YEAR)){toast("Enter a year like 2016");return;} closeModal(); acdbSet(reg,v); };
   const d=$("#yDel"); if(d) d.onclick=()=>{ delete S.acdb.list[reg]; save("acdb"); closeModal(); render(); };
 }
-function pfFromAge(age){ return age<1?0:age<4?1:age<8?2:age<12?3:age<16?4:5; }
+function pfFromAge(age){ return age<3?0:age<6?0.5:age<10?1:age<14?1.5:age<18?2:2.5; }
 function pfReg(){ const s=S.ofp&&S.ofp.sum; const pa=S.perf.ac; return ((pa&&pa.mode==="manual"&&pa.reg)||currentAc().reg||(s&&s.reg)||"").toUpperCase().trim(); }
 function pfAutoInfo(){ const reg=pfReg(); const y=acYear(reg); if(!y) return {reg,year:null}; const age=Math.max(0,NOW_YEAR-y.year); return {reg,year:y.year,src:y.src,age,pf:pfFromAge(age)}; }
 function pfVal(){
@@ -3776,7 +3776,7 @@ function pfVal(){
   const v=parseFloat(S.perf.pf); return isNaN(v)?0:Math.max(-5,Math.min(15,v));
 }
 function pfExtraBurn(){ const s=S.ofp&&S.ofp.sum; if(!s||!s.fuel.trip) return 0; return Math.round(+s.fuel.trip*pfVal()/100); }
-const PF_PRESETS=[[0,"New aircraft","book values"],[1,"Young aircraft","~1–3 years"],[2,"Average fleet","~4–8 years"],[3,"Older aircraft","~8–12 years"],[4,"Old aircraft","12+ years / engine wash due"],[5,"Degraded","heavy deterioration"]];
+const PF_PRESETS=[[0,"New aircraft","0–2 years · book values"],[0.5,"Young aircraft","~3–5 years"],[1,"Average fleet","~6–9 years"],[1.5,"Older aircraft","~10–13 years"],[2,"Old aircraft","~14–17 years"],[2.5,"Very old","18+ years"],[3.5,"Degraded","engine wash due / known deterioration"]];
 function pfTableHTML(){ const pf=pfVal(); const set=S.perf.pf!==""&&S.perf.pf!=null;
   return `<table class="pf-tbl"><thead><tr><th>Factor</th><th>Typical case</th><th></th></tr></thead><tbody>${PF_PRESETS.map(p=>`<tr data-pf="${p[0]}" class="${set&&pf===p[0]?"on":""}"><td class="mono">${p[0]?"+":""}${p[0].toFixed(1)} %</td><td><b>${p[1]}</b> <span>${p[2]}</span></td><td class="pick">${set&&pf===p[0]?"✓":""}</td></tr>`).join("")}</tbody></table>`; }
 function pfInputHTML(id){ const pf=pfVal(), x=pfExtraBurn(), s=S.ofp&&S.ofp.sum, u=s&&s.units==="lbs"?"lb":"kg";
