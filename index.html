@@ -937,6 +937,10 @@ html.tabv.wallhome .tb-bar{background:rgba(10,11,14,.35)}
 .dv-rs{color:var(--muted);overflow:hidden;text-overflow:ellipsis}
 .dv-rs mark{background:#ffe14d;color:#111;border-radius:2px;padding:0 1px}
 @media(max-width:600px){.dv-libhead{flex-wrap:wrap}.dv-ls{order:5;max-width:none;flex-basis:100%}}
+.ocr-bar{height:8px;background:var(--panel2);border-radius:6px;overflow:hidden;margin:12px 2px 0}
+.ocr-bar i{display:block;height:100%;width:0;background:var(--mag);transition:width .3s}
+.dv-ocrb{font-size:12px;min-height:30px;padding:5px 10px;border-color:var(--mag)!important;color:var(--text)}
+.dv-fc:has(.dv-ocrb){min-width:0}
 
 /* standalone app: full bleed + safe areas */
 .app{margin:0!important;min-height:100vh;border:0!important;border-radius:0!important;box-shadow:none!important;max-width:none}
@@ -1908,6 +1912,8 @@ let _docSaveT; function docSaveMeta(){ clearTimeout(_docSaveT); const m=DOCS.cur
 
 /* ---- PDF engine (Mozilla PDF.js, files next to index.html, cached offline) ---- */
 let _pdfjs;
+function docGetDoc(lib,buf){ const v=lib.version||"6.2.108", cdn=`https://cdn.jsdelivr.net/npm/pdfjs-dist@${v}/`;
+  return lib.getDocument({data:new Uint8Array(buf), cMapUrl:cdn+"cmaps/", cMapPacked:true, standardFontDataUrl:cdn+"standard_fonts/", wasmUrl:cdn+"wasm/", useSystemFonts:true}); }
 function pdfjs(){ return _pdfjs||(_pdfjs=import("./pdf.min.mjs").then(m=>{ m.GlobalWorkerOptions.workerSrc="./pdf.worker.min.mjs"; return m; }).catch(e=>{ _pdfjs=null; throw e; })); }
 
 const fmtSize=b=>b>1048576?(b/1048576).toFixed(1)+" MB":Math.max(1,Math.round(b/1024))+" kB";
@@ -1966,7 +1972,7 @@ async function docImport(files){
     toast(`Importing ${f.name}…`);
     try{
       const buf=await f.arrayBuffer(); let pages=1, thumb="";
-      if(isPdf){ const lib=await pdfjs(); const lt=lib.getDocument({data:new Uint8Array(buf.slice(0))}); const pd=await lt.promise; pages=pd.numPages;
+      if(isPdf){ const lib=await pdfjs(); const lt=docGetDoc(lib,buf.slice(0)); const pd=await lt.promise; pages=pd.numPages;
         try{ const p1=await pd.getPage(1), v0=p1.getViewport({scale:1}), vp=p1.getViewport({scale:360/v0.width}), c=document.createElement("canvas"); c.width=Math.floor(vp.width); c.height=Math.floor(vp.height);
           const cx=c.getContext("2d"); cx.fillStyle="#fff"; cx.fillRect(0,0,c.width,c.height); await p1.render({canvasContext:cx,viewport:vp}).promise; thumb=c.toDataURL("image/jpeg",0.7); }catch(_){}
         lt.destroy().catch(()=>{}); }
@@ -2035,7 +2041,7 @@ async function docOpen(id,opt){
   try{
     const buf=await docFileGet(id); if(!buf) throw new Error("missing");
     if(m.kind==="pdf"){
-      const lib=await pdfjs(); DOCS.task=lib.getDocument({data:new Uint8Array(buf)}); DOCS.pdf=await DOCS.task.promise;
+      const lib=await pdfjs(); DOCS.task=docGetDoc(lib,buf); DOCS.pdf=await DOCS.task.promise;
       if(DOCS.cur!==m) return;
       for(let i=1;i<=DOCS.pdf.numPages;i++){ const p=await DOCS.pdf.getPage(i); const v=p.getViewport({scale:1}); DOCS.sizes.push([v.width,v.height]); }
       if(m.pages!==DOCS.pdf.numPages){ m.pages=DOCS.pdf.numPages; docSaveMeta(); }
@@ -2067,12 +2073,14 @@ function docBindBar(){
      <div class="dv-menu">
        <button id="dmRen">✎ Rename</button>
        <button id="dmGo">↧ Go to page…</button>
+       ${m.kind==="pdf"?`<button id="dmOcr">🔍 ${m.ocrDone?"Re-scan text (OCR)":"Recognize text in scanned pages (OCR)"}</button>`:""}
        <button id="dmClrAll" class="warn">Remove all annotations</button>
        <button id="dmDel" class="warn">Delete document</button>
      </div>`);
     $("#modal").querySelectorAll("[data-close]").forEach(b=>b.onclick=closeModal);
     $("#dmRen").onclick=()=>{ closeModal(); docRename(m.id); };
     $("#dmGo").onclick=()=>{ closeModal(); docGoto(); };
+    { const o=$("#dmOcr"); if(o) o.onclick=()=>{ closeModal(); docOcr(m,null,true); }; }
     $("#dmClrAll").onclick=()=>confirmBox("Remove annotations",`Remove every highlight, line and note in “${m.name}”?`,"Remove",()=>{ DOCS.hist.push({all:JSON.parse(JSON.stringify(m.ann))}); DOCS.fut=[]; m.ann={}; docSaveMeta(); docRedrawAll(); });
     $("#dmDel").onclick=()=>confirmBox("Delete document",`Delete “${m.name}” and its annotations from this tablet?`,"Delete",async()=>{ const id=m.id; if(DOCS.max) docMax(false); docClose(); await docRemove(id); toast("Document deleted"); docLibrary(); });
   };
@@ -2281,8 +2289,16 @@ function docBindPinch(){
 /* ---------------- text search (PDF text layer; scanned PDFs have no text) ---------------- */
 const DOC_TC={}; // id -> {p: {str, nrm, map:[[item,char]], items:[[x,y,w,h,len]]}}
 const docNorm=s=>[...s].map(ch=>(ch.normalize("NFD")[0]||" ").toLowerCase()[0]).join("");
+function docOcrData(words){
+  let str="", map=[], items=[];
+  words.forEach(([s,x,y,w,h],ii)=>{ if(str) { str+=" "; map.push(null); } items.push([x,y,w,h,[...s].length,s]); [...s].forEach((ch,ci)=>{ str+=ch; map.push([ii,ci]); }); });
+  return {str,nrm:docNorm(str),map,items,ocr:true};
+}
 async function docPageData(pdf,id,p){
   const c=DOC_TC[id]||(DOC_TC[id]={}); if(c[p]) return c[p];
+  const meta=DOCS.list.find(x=>x.id===id);
+  if(meta&&meta.ocr&&meta.ocr[p]) return c[p]=docOcrData(meta.ocr[p]);
+  if(!pdf) throw new Error("nopdf");
   const page=await pdf.getPage(p), vp=page.getViewport({scale:1}), tc=await page.getTextContent(), W=vp.width, k=1000/W;
   let str="", map=[], items=[], prev=null;
   const lib=await pdfjs();
@@ -2334,7 +2350,9 @@ async function docFindRun(raw,fromPage){
     docFindIn(d,q).forEach(([a,b])=>F.hits.push({p,rects:docRangeRects(d,a,b),ctx:d.str.slice(Math.max(0,a-30),b+30)}));
   }
   F.busy=false;
-  if(!F.hits.length){ fc.textContent=any?"No match":"No text in this PDF (scanned)"; docFindPaint(); return; }
+  if(!F.hits.length){ docFindPaint();
+    if(any){ fc.textContent="No match"; return; }
+    fc.innerHTML=`<button class="dv-b dv-ocrb" id="dvOcrGo">Scanned PDF — recognize text (OCR)</button>`; $("#dvOcrGo").onclick=()=>docOcr(m,()=>docFindRun(raw,fromPage)); return; }
   const start=fromPage||docCurPage(); let i=F.hits.findIndex(h=>h.p>=start); if(i<0) i=0;
   F.i=i; docFindShow();
 }
@@ -2355,7 +2373,7 @@ async function docLibSearch(raw){
   const box=DOCS.root.querySelector(".dv-res"); if(!box) return; const q=docQ(raw);
   if(q.length<2){ box.innerHTML=""; box.hidden=true; return; }
   const tok=DOCS.libTok={}; box.hidden=false; box.innerHTML=`<div class="muted">Searching…</div>`;
-  const pdfs=DOCS.list.filter(m=>m.kind==="pdf"), res=[]; let scanned=0;
+  const pdfs=DOCS.list.filter(m=>m.kind==="pdf"), res=[], scanned=[];
   let lib; try{ lib=await pdfjs(); }catch(e){ box.innerHTML=`<div class="muted">PDF engine not found.</div>`; return; }
   for(const m of pdfs){
     if(DOCS.libTok!==tok) return;
@@ -2364,22 +2382,64 @@ async function docLibSearch(raw){
     try{
       const c=DOC_TC[m.id]; let pdf=null;
       for(let p=1;p<=(m.pages||1);p++){
-        let d=c&&c[p]; if(!d){ if(!pdf){ const buf=await docFileGet(m.id); task=lib.getDocument({data:new Uint8Array(buf)}); pdf=await task.promise; } if(p>pdf.numPages) break; d=await docPageData(pdf,m.id,p); }
+        let d=c&&c[p]; if(!d&&m.ocr&&m.ocr[p]) d=await docPageData(null,m.id,p); if(!d){ if(!pdf){ const buf=await docFileGet(m.id); task=docGetDoc(lib,buf); pdf=await task.promise; } if(p>pdf.numPages) break; d=await docPageData(pdf,m.id,p); }
         if(d.str.trim()) hasText=true;
         docFindIn(d,q).forEach(([a,b])=>hits.push({p,pre:d.str.slice(Math.max(0,a-40),a),hit:d.str.slice(a,b),post:d.str.slice(b,b+50)}));
       }
     }catch(e){}
     if(task){ try{ task.destroy().catch(()=>{}); }catch(e){} }
-    if(!hasText) scanned++;
+    if(!hasText) scanned.push(m);
     if(hits.length) res.push({m,hits});
   }
   if(DOCS.libTok!==tok) return;
   const total=res.reduce((s,r)=>s+r.hits.length,0);
-  box.innerHTML=`<div class="dv-rh"><b>${total} result${total>1?"s":""}</b> for “${esc(raw.trim())}”${scanned?` <span class="muted">· ${scanned} scanned PDF${scanned>1?"s":""} without text not searchable</span>`:""}<span class="sp"></span><button class="dv-b" id="dvResX">✕</button></div>`+
+  box.innerHTML=`<div class="dv-rh"><b>${total} result${total>1?"s":""}</b> for “${esc(raw.trim())}”${scanned.length?` <span class="muted">· ${scanned.length} scanned PDF${scanned.length>1?"s":""} not searched</span> <button class="dv-b dv-ocrb" id="dvLibOcr">Recognize text (OCR)</button>`:""}<span class="sp"></span><button class="dv-b" id="dvResX">✕</button></div>`+
     (res.length?res.map(({m,hits})=>`<div class="dv-rd"><div class="dv-rn">${esc(m.name)} <span class="muted">· ${hits.length}</span></div>${hits.slice(0,30).map(h=>`<button class="dv-ri" data-rid="${esc(m.id)}" data-rp="${h.p}"><span class="dv-rp">p. ${h.p}</span><span class="dv-rs">…${esc(h.pre)}<mark>${esc(h.hit)}</mark>${esc(h.post)}…</span></button>`).join("")}${hits.length>30?`<div class="muted" style="padding:4px 8px">+ ${hits.length-30} more — open the document to see them all</div>`:""}</div>`).join(""):`<div class="muted" style="padding:6px 2px">No match${pdfs.length?"":" — no PDF in the library"}.</div>`);
   box.querySelectorAll("[data-rid]").forEach(b=>b.onclick=()=>docOpen(b.dataset.rid,{q:raw,page:+b.dataset.rp}));
+  { const o=$("#dvLibOcr"); if(o) o.onclick=async()=>{ for(const m of scanned){ const ok=await new Promise(r=>docOcr(m,()=>r(true),false,()=>r(false))); if(!ok) break; } docLibSearch(raw); }; }
   const x=$("#dvResX"); if(x) x.onclick=()=>{ box.hidden=true; DOCS.libQ=""; const i=DOCS.root.querySelector(".dv-ls"); if(i) i.value=""; };
 }
+
+/* ---------------- OCR for scanned PDFs (Tesseract.js, free, runs on the device) ---------------- */
+let _tess;
+function tessLib(){ return _tess||(_tess=new Promise((res,rej)=>{ if(window.Tesseract) return res(window.Tesseract);
+  const s=document.createElement("script"); s.src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"; s.onload=()=>window.Tesseract?res(window.Tesseract):rej(new Error("tess")); s.onerror=()=>{ _tess=null; rej(new Error("net")); }; document.head.appendChild(s); })); }
+async function docOcr(m,after,force,onCancel){
+  const n=m.pages||1; m.ocr=force?{}:(m.ocr||{});
+  let stop=false, worker=null, task=null;
+  openModal(`<div class="modal-h"><h3>Recognize text (OCR)</h3><button class="x" id="ocrX">×</button></div>
+    <div class="confirm-txt"><b>${esc(m.name)}</b><br>Reading the scanned pages on this device so you can search them. The first time it downloads the OCR engine (~15 MB, then works offline).</div>
+    <div class="ocr-bar"><i id="ocrFill"></i></div><div class="muted" id="ocrTxt" style="font-size:12.5px;margin:6px 2px 4px">Loading the OCR engine…</div>
+    <div class="modal-f"><span class="sp"></span><button class="btn ghost" id="ocrStop">Cancel</button></div>`);
+  const fin=ok=>{ stop=true; try{ worker&&worker.terminate(); }catch(e){} if(task){ try{ task.destroy().catch(()=>{}); }catch(e){} } if(!ok&&onCancel) onCancel(); };
+  $("#ocrX").onclick=$("#ocrStop").onclick=()=>{ fin(false); closeModal(); docSaveMetaNow(m); toast("OCR stopped — pages done so far are searchable"); };
+  const txt=s=>{ const e=$("#ocrTxt"); if(e) e.textContent=s; }, bar=f=>{ const e=$("#ocrFill"); if(e) e.style.width=Math.round(f*100)+"%"; };
+  try{
+    const T=await tessLib(); if(stop) return;
+    let cur=0;
+    worker=await T.createWorker(["eng","fra"],1,{logger:L=>{ if(L.status==="recognizing text") bar((cur-1+L.progress)/n); else if(!cur) txt("Loading the OCR engine… "+(L.progress?Math.round(L.progress*100)+"%":"")); }});
+    if(stop) return;
+    const lib=await pdfjs(), buf=await docFileGet(m.id); task=docGetDoc(lib,buf); const pdf=await task.promise;
+    for(let p=1;p<=pdf.numPages;p++){
+      if(stop) return; cur=p; txt(`Page ${p} / ${pdf.numPages}…`); bar((p-1)/pdf.numPages);
+      if(!force&&m.ocr[p]) continue;
+      const page=await pdf.getPage(p);
+      const tc=await page.getTextContent(); if(!force&&tc.items.some(i=>i.str&&i.str.trim())){ page.cleanup(); continue; } // page already has real text
+      const v0=page.getViewport({scale:1}), sc=Math.min(3,2200/v0.width), vp=page.getViewport({scale:sc});
+      const cv=document.createElement("canvas"); cv.width=Math.floor(vp.width); cv.height=Math.floor(vp.height);
+      const cx=cv.getContext("2d"); cx.fillStyle="#fff"; cx.fillRect(0,0,cv.width,cv.height);
+      await page.render({canvasContext:cx,viewport:vp}).promise; page.cleanup();
+      if(stop) return;
+      const r=await worker.recognize(cv); const k=1000/cv.width;
+      const words=((r&&r.data&&r.data.words)||[]).filter(w=>w.text&&w.text.trim()&&(w.confidence==null||w.confidence>30)).map(w=>{ const b=w.bbox; return [w.text.trim(),+(b.x0*k).toFixed(1),+(b.y0*k).toFixed(1),+((b.x1-b.x0)*k).toFixed(1),+((b.y1-b.y0)*k).toFixed(1)]; });
+      m.ocr[p]=words; cv.width=0; cv.height=0; if(DOC_TC[m.id]) delete DOC_TC[m.id][p];
+      docSaveMetaNow(m);
+    }
+    m.ocrDone=true; docSaveMetaNow(m); fin(true); closeModal(); delete DOC_TC[m.id];
+    toast("Text recognized — the document is now searchable"); if(after) after();
+  }catch(e){ if(stop) return; fin(false); closeModal(); toast(/net|tess|fetch|import|load/i.test(String(e&&e.message||e))?"OCR engine unavailable — connect to the internet once to download it":"OCR failed on this document"); }
+}
+function docSaveMetaNow(m){ docMetaPut(m).catch(()=>{}); }
 
 /* ===================== Flight Log → Statistics ===================== */
 const ST_PER=[["7d","7 days"],["30d","30 days"],["12m","12 months"],["ytd","This year"],["all","All time"]];
