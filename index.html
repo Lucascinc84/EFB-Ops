@@ -917,6 +917,27 @@ html.tabv.wallhome .tb-bar{background:rgba(10,11,14,.35)}
 
 .eq-reg{background:#d2d3d6;color:#333;letter-spacing:.06em}
 
+/* ---- PDF search ---- */
+.dv-hl{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;mix-blend-mode:multiply}
+.dv-hl rect{fill:#ffe14d;opacity:.75}
+.dv-hl rect.cur{fill:#ff8a00;opacity:.9}
+.dv-find{display:flex;align-items:center;gap:6px;padding:7px 8px;background:var(--panel2);border-bottom:1px solid var(--line)}
+.dv-find[hidden]{display:none}
+.dv-find input{flex:1;min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:7px;color:var(--text);padding:8px 10px;font-size:15px}
+.dv-fc{font-size:12px;color:var(--muted);white-space:nowrap;min-width:54px;text-align:right}
+.dv-b.on{border-color:var(--mag);color:var(--text)}
+.dv-ls{flex:1;min-width:120px;max-width:340px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--text);padding:9px 11px;font-size:14px}
+.dv-res{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px;margin:-4px 0 14px;max-height:55vh;overflow:auto}
+.dv-res[hidden]{display:none}
+.dv-rh{display:flex;align-items:center;gap:8px;font-size:13px;margin-bottom:6px;flex-wrap:wrap}.dv-rh .sp{flex:1}
+.dv-rd{margin-top:8px}
+.dv-rn{font-weight:700;font-size:13.5px;padding:4px 2px}
+.dv-ri{display:flex;gap:10px;width:100%;text-align:left;background:var(--panel2);border:1px solid var(--line);border-radius:7px;padding:8px 10px;margin:4px 0;font-size:13px;color:var(--text)}
+.dv-rp{color:var(--mag);font-weight:700;white-space:nowrap}
+.dv-rs{color:var(--muted);overflow:hidden;text-overflow:ellipsis}
+.dv-rs mark{background:#ffe14d;color:#111;border-radius:2px;padding:0 1px}
+@media(max-width:600px){.dv-libhead{flex-wrap:wrap}.dv-ls{order:5;max-width:none;flex-basis:100%}}
+
 /* standalone app: full bleed + safe areas */
 .app{margin:0!important;min-height:100vh;border:0!important;border-radius:0!important;box-shadow:none!important;max-width:none}
 .top{padding-top:calc(10px + env(safe-area-inset-top));padding-left:calc(16px + env(safe-area-inset-left));padding-right:calc(16px + env(safe-area-inset-right))}
@@ -1916,6 +1937,7 @@ async function docLibrary(){
   DOCS.loaded=true;
   R.innerHTML=`<div class="dv-lib">
     <div class="dv-libhead"><b>Documents</b><span class="muted">${DOCS.list.length||""}</span><span class="sp"></span>
+      <input class="dv-ls" type="search" placeholder="Search in all PDFs…" enterkeyhint="search" value="${esc(DOCS.libQ||"")}">
       <label class="btn mag dv-imp">+ Import PDF / image<input type="file" accept="application/pdf,.pdf,image/*" multiple hidden></label></div>
     ${DOCS.list.length?`<div class="dv-grid">${DOCS.list.map(m=>`
       <div class="dv-card" data-id="${esc(m.id)}">
@@ -1925,7 +1947,10 @@ async function docLibrary(){
         <div class="dv-cact"><button data-ren="${esc(m.id)}">✎ Rename</button><button data-del="${esc(m.id)}" class="del">Delete</button></div>
       </div>`).join("")}</div>`
     :`<div class="dv-empty">${docSvg("M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9zM14 3v6h6",34)}<p>No documents yet.</p><p class="muted">Import a PDF (charts, QRH, procedures…) or an image (photo, screenshot).</p></div>`}
+    <div class="dv-res" hidden></div>
   </div>`;
+  { const ls=R.querySelector(".dv-ls"); let tm; ls.onkeydown=e=>{ if(e.key==="Enter"){ e.preventDefault(); clearTimeout(tm); DOCS.libQ=ls.value; docLibSearch(ls.value); } };
+    ls.oninput=()=>{ clearTimeout(tm); DOCS.libQ=ls.value; tm=setTimeout(()=>docLibSearch(ls.value),600); }; if(DOCS.libQ) docLibSearch(DOCS.libQ); }
   const inp=R.querySelector(".dv-imp input"); inp.onchange=()=>{ const f=[...inp.files]; inp.value=""; if(f.length) docImport(f); };
   R.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>docOpen(b.dataset.open));
   R.querySelectorAll("[data-ren]").forEach(b=>b.onclick=()=>docRename(b.dataset.ren));
@@ -1971,10 +1996,10 @@ function docClose(){
   if(DOCS.obs){ DOCS.obs.disconnect(); DOCS.obs=null; }
   if(DOCS.task){ try{ DOCS.task.destroy().catch(()=>{}); }catch(e){} DOCS.task=null; } DOCS.pdf=null;
   DOCS.urls.forEach(u=>URL.revokeObjectURL(u)); DOCS.urls=[];
-  DOCS.cur=null; DOCS.hist=[]; DOCS.fut=[]; DOCS.scroller=null; DOCS.mode="read"; DOCS.max=false; DOCS.sizes=[];
+  DOCS.cur=null; DOCS.find=null; DOCS.hist=[]; DOCS.fut=[]; DOCS.scroller=null; DOCS.mode="read"; DOCS.max=false; DOCS.sizes=[];
   document.documentElement.classList.remove("dv-lock");
 }
-async function docOpen(id){
+async function docOpen(id,opt){
   const m=DOCS.list.find(x=>x.id===id); if(!m) return;
   docClose(); DOCS.cur=m; m.ann=m.ann||{}; DOCS.zoom=m.zoom||1;
   const R=DOCS.root;
@@ -1985,9 +2010,16 @@ async function docOpen(id){
       <span class="sp"></span>
       <button class="dv-b dv-pg" id="dvPg">– / ${m.pages}</button>
       <span class="dv-grp"><button class="dv-b" id="dvZo" aria-label="Zoom out">−</button><button class="dv-b dv-zv" id="dvFit">100%</button><button class="dv-b" id="dvZi" aria-label="Zoom in">+</button></span>
+      ${m.kind==="pdf"?`<button class="dv-b" id="dvFind" aria-label="Search in document" title="Search in document">${docSvg("M10.5 4a6.5 6.5 0 110 13 6.5 6.5 0 010-13zM15.5 15.5L20 20",16)}</button>`:""}
       <button class="dv-b" id="dvMax" aria-label="Full view">⛶</button>
       <button class="dv-b dv-annb" id="dvAnn">${docSvg("M4 20l4-1 11-11-3-3L5 16z",15)} Annotate</button>
       <button class="dv-b" id="dvMore" aria-label="More">⋯</button>
+    </div>
+    <div class="dv-find" id="dvFindBar" hidden>
+      <input id="dvQ" type="search" placeholder="Search in this document…" autocomplete="off" enterkeyhint="search">
+      <span class="dv-fc" id="dvFc"></span>
+      <button class="dv-b" id="dvFp" aria-label="Previous match">▲</button><button class="dv-b" id="dvFn" aria-label="Next match">▼</button>
+      <button class="dv-b" id="dvFx" aria-label="Close search">✕</button>
     </div>
     <div class="dv-tools" id="dvTools">
       <span class="dv-grp">${DOC_TOOLS.map(([k,l,d])=>`<button class="dv-t ${DOCS.tool===k?"on":""}" data-tool="${k}" title="${l}">${docSvg(d)}<span>${l}</span></button>`).join("")}</span>
@@ -2018,6 +2050,7 @@ async function docOpen(id){
   docBuildPages(); docLayout(false);
   const last=Math.min(m.last||1,DOCS.sizes.length); if(last>1){ const pg=DOCS.root.querySelector(`.dv-page[data-p="${last}"]`); if(pg) DOCS.scroller.scrollTop=pg.offsetTop-8; }
   docTrackPage();
+  if(opt&&opt.q&&m.kind==="pdf") docFindOpen(opt.q,opt.page||1);
 }
 function docBindBar(){
   const R=DOCS.root, m=DOCS.cur;
@@ -2028,6 +2061,7 @@ function docBindBar(){
   $("#dvMax").onclick=()=>docMax(!DOCS.max);
   $("#dvAnn").onclick=()=>docSetMode(DOCS.mode==="ann"?"read":"ann");
   $("#dvPg").onclick=docGoto;
+  if($("#dvFind")) docFindBind();
   $("#dvMore").onclick=()=>{
     openModal(`<div class="modal-h"><h3>${esc(m.name)}</h3><button class="x" data-close>×</button></div>
      <div class="dv-menu">
@@ -2073,11 +2107,12 @@ function docGoto(){
 function docBuildPages(){
   const box=DOCS.root.querySelector(".dv-pages"); const m=DOCS.cur;
   box.innerHTML=DOCS.sizes.map(([w,h],i)=>{ const H=Math.round(1000*h/w);
-    return `<div class="dv-page" data-p="${i+1}">${m.kind==="img"?`<img src="${DOCS.imgUrl}" alt="" draggable="false">`:`<canvas></canvas>`}
+    return `<div class="dv-page" data-p="${i+1}">${m.kind==="img"?`<img src="${DOCS.imgUrl}" alt="" draggable="false">`:`<canvas></canvas>`}<svg class="dv-hl" viewBox="0 0 1000 ${H}" preserveAspectRatio="none"></svg>
       <svg class="dv-ov" viewBox="0 0 1000 ${H}" preserveAspectRatio="none" data-h="${H}"></svg>${DOCS.sizes.length>1?`<span class="dv-pn">${i+1}</span>`:""}</div>`; }).join("");
   if(DOCS.obs) DOCS.obs.disconnect();
   DOCS.obs=new IntersectionObserver(es=>es.forEach(e=>{ const pg=e.target; pg._vis=e.isIntersecting; if(e.isIntersecting) docRenderPage(pg); else docFreePage(pg); }),{root:DOCS.scroller,rootMargin:"900px 300px"});
   box.querySelectorAll(".dv-page").forEach(pg=>{ DOCS.obs.observe(pg); docDrawAnn(pg); });
+  docFindPaint();
   docBindDraw(box); docBindPinch();
 }
 function docBaseW(){ return Math.max(200,DOCS.scroller.clientWidth-24); }
@@ -2241,6 +2276,109 @@ function docBindPinch(){
   const fin=()=>{ if(!st) return; const s=st; st=null; box.style.transform=""; if(Math.abs(s.k-1)>0.02) docZoom(s.z*s.k,[s.ax,s.ay]); };
   sc.addEventListener("touchend",e=>{ if(e.touches.length<2) fin(); }); sc.addEventListener("touchcancel",fin);
   sc.addEventListener("gesturestart",e=>e.preventDefault());
+}
+
+/* ---------------- text search (PDF text layer; scanned PDFs have no text) ---------------- */
+const DOC_TC={}; // id -> {p: {str, nrm, map:[[item,char]], items:[[x,y,w,h,len]]}}
+const docNorm=s=>[...s].map(ch=>(ch.normalize("NFD")[0]||" ").toLowerCase()[0]).join("");
+async function docPageData(pdf,id,p){
+  const c=DOC_TC[id]||(DOC_TC[id]={}); if(c[p]) return c[p];
+  const page=await pdf.getPage(p), vp=page.getViewport({scale:1}), tc=await page.getTextContent(), W=vp.width, k=1000/W;
+  let str="", map=[], items=[], prev=null;
+  const lib=await pdfjs();
+  tc.items.forEach(it=>{
+    if(!it.str) { if(it.hasEOL&&str&&str.slice(-1)!==" "){ str+=" "; map.push(null); } return; }
+    const tx=lib.Util.transform(vp.transform,it.transform), fh=Math.hypot(tx[2],tx[3])||Math.abs(it.height)||8;
+    const x=tx[4], y=tx[5]-fh*0.88, w=(it.width||0)*Math.hypot(vp.transform[0],vp.transform[1]), ii=items.length;
+    items.push([x*k,y*k,w*k,fh*1.12*k,it.str.length,it.str]);
+    if(prev){ const gap=x-(prev.x+prev.w), dy=Math.abs(y-prev.y); if((dy>prev.h*0.5||gap>prev.h*0.18||prev.eol)&&str.slice(-1)!==" "){ str+=" "; map.push(null); } }
+    [...it.str].forEach((ch,ci)=>{ if(/\s/.test(ch)){ if(str.slice(-1)===" ") return; str+=" "; map.push([ii,ci]); } else { str+=ch; map.push([ii,ci]); } });
+    prev={x,y,w,h:fh,eol:it.hasEOL};
+  });
+  page.cleanup&&page.cleanup();
+  return c[p]={str,nrm:docNorm(str),map,items};
+}
+function docFindIn(d,q){ // -> [{a,b}] index ranges in d.str
+  const out=[]; if(!q) return out; let i=0;
+  while((i=d.nrm.indexOf(q,i))!==-1){ out.push([i,i+q.length]); i+=q.length; }
+  return out;
+}
+function docRangeRects(d,a,b){ // merge chars per text item into rectangles
+  const per={}; for(let j=a;j<b;j++){ const m=d.map[j]; if(!m) continue; const r=per[m[0]]||(per[m[0]]=[m[1],m[1]]); r[0]=Math.min(r[0],m[1]); r[1]=Math.max(r[1],m[1]); }
+  return Object.entries(per).map(([ii,[c0,c1]])=>{ const [x,y,w,h,n,s]=d.items[ii]; const cs=[...s], f=w/Math.max(1,docTw(s)), a=docTw(cs.slice(0,c0).join(""))*f, b=docTw(cs.slice(0,c1+1).join(""))*f; return [x+a-1,y,b-a+2,h]; });
+}
+let _docCx; const docTw=s=>{ if(!_docCx){ _docCx=document.createElement("canvas").getContext("2d"); _docCx.font="100px Helvetica, Arial, sans-serif"; } return _docCx.measureText(s).width; };
+const docQ=s=>docNorm(String(s||"").trim().replace(/\s+/g," "));
+function docFindBind(){
+  const bar=$("#dvFindBar"), q=$("#dvQ");
+  $("#dvFind").onclick=()=>{ if(bar.hidden) docFindOpen(); else docFindClose(); };
+  $("#dvFx").onclick=docFindClose;
+  $("#dvFn").onclick=()=>docFindStep(1); $("#dvFp").onclick=()=>docFindStep(-1);
+  q.onkeydown=e=>{ if(e.key==="Enter"){ e.preventDefault(); const F=DOCS.find; if(F&&F.q===docQ(q.value)&&F.hits.length) docFindStep(e.shiftKey?-1:1); else docFindRun(q.value); } else if(e.key==="Escape") docFindClose(); };
+  let tm; q.oninput=()=>{ clearTimeout(tm); tm=setTimeout(()=>{ if(docQ(q.value).length>=2) docFindRun(q.value); else { DOCS.find=null; docFindPaint(); $("#dvFc").textContent=""; } },450); };
+}
+function docFindOpen(text,fromPage){
+  const bar=$("#dvFindBar"); if(!bar) return; bar.hidden=false; $("#dvFind").classList.add("on");
+  const q=$("#dvQ"); if(text!=null){ q.value=text; docFindRun(text,fromPage); } else setTimeout(()=>{ q.focus(); q.select(); },30);
+}
+function docFindClose(){ const bar=$("#dvFindBar"); if(bar) bar.hidden=true; const b=$("#dvFind"); if(b) b.classList.remove("on"); DOCS.find=null; docFindPaint(); }
+async function docFindRun(raw,fromPage){
+  const m=DOCS.cur, pdf=DOCS.pdf; if(!m||!pdf) return; const q=docQ(raw), fc=$("#dvFc");
+  if(!q){ DOCS.find=null; docFindPaint(); fc.textContent=""; return; }
+  const F=DOCS.find={q,hits:[],i:-1,busy:true}; const n=pdf.numPages; let any=false;
+  for(let p=1;p<=n;p++){
+    if(DOCS.find!==F||DOCS.pdf!==pdf) return;
+    if(n>8&&p%4===1) fc.textContent=`Searching… ${Math.round(p/n*100)}%`;
+    let d; try{ d=await docPageData(pdf,m.id,p); }catch(e){ continue; }
+    if(d.str.trim()) any=true;
+    docFindIn(d,q).forEach(([a,b])=>F.hits.push({p,rects:docRangeRects(d,a,b),ctx:d.str.slice(Math.max(0,a-30),b+30)}));
+  }
+  F.busy=false;
+  if(!F.hits.length){ fc.textContent=any?"No match":"No text in this PDF (scanned)"; docFindPaint(); return; }
+  const start=fromPage||docCurPage(); let i=F.hits.findIndex(h=>h.p>=start); if(i<0) i=0;
+  F.i=i; docFindShow();
+}
+function docFindStep(d){ const F=DOCS.find; if(!F||!F.hits.length) return; F.i=(F.i+d+F.hits.length)%F.hits.length; docFindShow(); }
+function docFindShow(){
+  const F=DOCS.find; $("#dvFc").textContent=`${F.i+1} / ${F.hits.length}`; docFindPaint();
+  const h=F.hits[F.i], pg=DOCS.root.querySelector(`.dv-page[data-p="${h.p}"]`), sc=DOCS.scroller; if(!pg||!sc) return;
+  const s=pg.clientWidth/1000, r=h.rects[0]||[0,0,0,0];
+  sc.scrollTo({top:Math.max(0,pg.offsetTop+r[1]*s-sc.clientHeight*0.33), left:Math.max(0,pg.offsetLeft+r[0]*s-sc.clientWidth*0.3)});
+}
+function docFindPaint(){
+  if(!DOCS.root) return; const F=DOCS.find, cur=F&&F.i>=0?F.hits[F.i]:null;
+  DOCS.root.querySelectorAll(".dv-page").forEach(pg=>{ const sv=pg.querySelector(".dv-hl"); if(!sv) return; const p=+pg.dataset.p;
+    sv.innerHTML=F?F.hits.filter(h=>h.p===p).map(h=>h.rects.map(([x,y,w,hh])=>`<rect x="${x}" y="${y}" width="${w}" height="${hh}" rx="2" class="${h===cur?"cur":""}"/>`).join("")).join(""):""; });
+}
+/* search across every PDF of the library */
+async function docLibSearch(raw){
+  const box=DOCS.root.querySelector(".dv-res"); if(!box) return; const q=docQ(raw);
+  if(q.length<2){ box.innerHTML=""; box.hidden=true; return; }
+  const tok=DOCS.libTok={}; box.hidden=false; box.innerHTML=`<div class="muted">Searching…</div>`;
+  const pdfs=DOCS.list.filter(m=>m.kind==="pdf"), res=[]; let scanned=0;
+  let lib; try{ lib=await pdfjs(); }catch(e){ box.innerHTML=`<div class="muted">PDF engine not found.</div>`; return; }
+  for(const m of pdfs){
+    if(DOCS.libTok!==tok) return;
+    box.innerHTML=`<div class="muted">Searching ${esc(m.name)}…</div>`;
+    let task=null, hits=[], hasText=false;
+    try{
+      const c=DOC_TC[m.id]; let pdf=null;
+      for(let p=1;p<=(m.pages||1);p++){
+        let d=c&&c[p]; if(!d){ if(!pdf){ const buf=await docFileGet(m.id); task=lib.getDocument({data:new Uint8Array(buf)}); pdf=await task.promise; } if(p>pdf.numPages) break; d=await docPageData(pdf,m.id,p); }
+        if(d.str.trim()) hasText=true;
+        docFindIn(d,q).forEach(([a,b])=>hits.push({p,pre:d.str.slice(Math.max(0,a-40),a),hit:d.str.slice(a,b),post:d.str.slice(b,b+50)}));
+      }
+    }catch(e){}
+    if(task){ try{ task.destroy().catch(()=>{}); }catch(e){} }
+    if(!hasText) scanned++;
+    if(hits.length) res.push({m,hits});
+  }
+  if(DOCS.libTok!==tok) return;
+  const total=res.reduce((s,r)=>s+r.hits.length,0);
+  box.innerHTML=`<div class="dv-rh"><b>${total} result${total>1?"s":""}</b> for “${esc(raw.trim())}”${scanned?` <span class="muted">· ${scanned} scanned PDF${scanned>1?"s":""} without text not searchable</span>`:""}<span class="sp"></span><button class="dv-b" id="dvResX">✕</button></div>`+
+    (res.length?res.map(({m,hits})=>`<div class="dv-rd"><div class="dv-rn">${esc(m.name)} <span class="muted">· ${hits.length}</span></div>${hits.slice(0,30).map(h=>`<button class="dv-ri" data-rid="${esc(m.id)}" data-rp="${h.p}"><span class="dv-rp">p. ${h.p}</span><span class="dv-rs">…${esc(h.pre)}<mark>${esc(h.hit)}</mark>${esc(h.post)}…</span></button>`).join("")}${hits.length>30?`<div class="muted" style="padding:4px 8px">+ ${hits.length-30} more — open the document to see them all</div>`:""}</div>`).join(""):`<div class="muted" style="padding:6px 2px">No match${pdfs.length?"":" — no PDF in the library"}.</div>`);
+  box.querySelectorAll("[data-rid]").forEach(b=>b.onclick=()=>docOpen(b.dataset.rid,{q:raw,page:+b.dataset.rp}));
+  const x=$("#dvResX"); if(x) x.onclick=()=>{ box.hidden=true; DOCS.libQ=""; const i=DOCS.root.querySelector(".dv-ls"); if(i) i.value=""; };
 }
 
 /* ===================== Flight Log → Statistics ===================== */
