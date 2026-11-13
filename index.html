@@ -942,6 +942,81 @@ html.tabv.wallhome .tb-bar{background:rgba(10,11,14,.35)}
 .dv-ocrb{font-size:12px;min-height:30px;padding:5px 10px;border-color:var(--mag)!important;color:var(--text)}
 .dv-fc:has(.dv-ocrb){min-width:0}
 
+/* ---- custom top banner ---- */
+.brand.bnr{background:var(--bnr) center/cover no-repeat,var(--bnrbg,var(--brandgrad));width:var(--bnrw,220px);min-width:0;padding:0}
+.brand.bnr[data-fit="contain"]{background:var(--bnr) center/contain no-repeat,var(--bnrbg,var(--brandgrad));background-origin:content-box;padding:3px 6px}
+.brand.bnr>*{display:none!important}
+@media(max-width:760px){.brand.bnr{width:min(var(--bnrw,220px),44vw)}}
+.bn-box{display:flex;justify-content:center;padding:16px;background:var(--bg);border:1px solid var(--line);border-radius:10px;margin:10px 0}
+.bn-prev{pointer-events:none}
+.bn-row{display:flex;align-items:center;gap:10px;margin:10px 2px;flex-wrap:wrap}
+.bn-fit button{padding:7px 14px}
+
+/* ---- Manuals (FCOM / FCTM) — Documents Folder look ---- */
+.mn{--mnl:#2a2d35;--mnb:#22242b;--mnt:#e7e9ee;--mnm:#a9aebb;--mnac:#b9bad6;margin-top:6px}
+.mn-head{display:flex;align-items:center;gap:14px;padding:6px 2px 18px;border-bottom:1px solid var(--mnl);margin-bottom:18px;flex-wrap:wrap}
+.mn-ttl{display:flex;flex-direction:column;gap:3px}.mn-ttl b{font-size:21px;font-weight:600;color:var(--mnt)}.mn-ttl span{font-size:13.5px;color:var(--mnm);letter-spacing:.02em}
+.mn-head .sp{flex:1}
+.mn-seg{display:flex;border:1px solid #444955;border-radius:4px;overflow:hidden}
+.mn-seg button{background:transparent;color:var(--mnt);border:0;border-left:1px solid #444955;padding:11px 22px;font-size:15px;letter-spacing:.04em;min-width:96px}
+.mn-seg button:first-child{border-left:0}.mn-seg button.on{background:var(--mnac);color:#1b1c22;font-weight:600}
+.mn-pinb,.mn-more{background:transparent;color:var(--mnt);border:1px solid #444955;border-radius:4px;padding:10px 14px;font-size:15px;display:flex;align-items:center;gap:10px}
+.mn-pinb i{font-style:normal;background:#40444f;border-radius:3px;padding:1px 8px;font-size:13px}
+.mn-body{display:grid;grid-template-columns:minmax(260px,38%) 1fr;gap:16px;height:calc(100vh - 290px);min-height:480px}
+html.tabv .mn-body{height:calc(100vh - 250px)}
+.mn-left,.mn-right{background:var(--mnb);border:1px solid var(--mnl);border-radius:4px;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+.mn-sw{padding:18px 18px 16px;border-bottom:1px solid var(--mnl)}
+.mn-sw input{width:100%;background:#1b1d23;border:1px solid #5a5f6b;border-radius:3px;color:var(--mnt);padding:12px 14px;font-size:15px}
+#mnNav{display:flex;flex-direction:column;min-height:0;flex:1}
+.mn-crumb{display:flex;align-items:center;gap:10px;background:none;border:0;border-bottom:1px solid var(--mnl);color:var(--mnt);text-align:left;padding:16px 22px;font-size:15px;width:100%}
+.mn-crumb.mn-root{color:var(--mnm);letter-spacing:.03em}
+.mn-sel{display:flex;flex-direction:column;gap:3px;padding:14px 18px;border-bottom:1px solid var(--mnl)}
+.mn-sel b{font-size:16.5px;color:var(--mnt);font-weight:600}.mn-sel span{font-size:12.5px;color:var(--mnm)}
+.mn-list{overflow:auto;padding:14px 18px;display:flex;flex-direction:column;gap:6px;flex:1}
+.mn-row{display:flex;align-items:stretch;background:#2a2c33;border:1px solid transparent;border-radius:3px;color:var(--mnt);text-align:left;padding:0;width:100%;min-height:50px}
+.mn-row.on{background:#30333c;border-color:#5a5f6b}
+.mn-c{flex:none;width:96px;padding:13px 14px;border-right:1px solid #444955;margin:7px 0;display:flex;align-items:center;font-size:14px;font-variant-numeric:tabular-nums;line-height:1.25}
+.mn-t{flex:1;display:flex;flex-direction:column;justify-content:center;gap:3px;padding:9px 14px;min-width:0}
+.mn-t b{font-weight:400;font-size:14.5px}.mn-t small{color:var(--mnm);font-size:12px;overflow:hidden;text-overflow:ellipsis}
+.mn-t small mark{background:#ffe14d;color:#111;border-radius:2px;padding:0 1px}
+.mn-hit .mn-t small{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.mn-ch{display:flex;align-items:center;padding:0 14px;color:var(--mnm);font-size:20px}
+.mn-load{color:var(--mnm);font-size:13px;padding:16px 18px}
+.mn-imp{margin:auto;text-align:center;padding:30px 22px;display:flex;flex-direction:column;align-items:center;gap:10px;color:var(--mnt)}
+.mn-imp p{font-size:13px;max-width:320px;margin:0 0 6px}.mn-impi{color:var(--mnm)}
+.mn-none{margin:auto}.mn-none span{display:inline-block;background:#26282f;color:var(--mnt);padding:12px 18px;border-radius:3px;font-size:15px}
+.mn-rh{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--mnl)}
+.mn-rh b{font-size:15px;font-weight:500;letter-spacing:.03em;color:var(--mnt)}.mn-rh .sp{flex:1}
+.mn-b{background:transparent;color:var(--mnt);border:1px solid #5a5f6b;border-radius:3px;padding:9px 14px;font-size:14.5px}
+.mn-b.on{border-color:var(--mnac)}.mn-b.mn-fs{background:var(--mnac);color:#1b1c22;border-color:var(--mnac)}
+.mn-scroll{overflow:auto;flex:1;padding:16px 16px 30px}
+.mn-card{border:1px solid #5a5f6b}
+.mn-ct{display:grid;grid-template-columns:minmax(120px,26%) 1fr;border-bottom:1px solid #5a5f6b}
+.mn-code{padding:18px 16px;font-weight:600;font-size:15px;border-right:1px solid #5a5f6b;color:var(--mnt)}
+.mn-title{padding:18px 16px;font-weight:600;font-size:15px;text-align:center;color:var(--mnt)}
+.mn-app{display:grid;grid-template-columns:minmax(120px,26%) 1fr;background:#2a2e38;border-bottom:1px solid #3a3e48;padding:11px 0;font-size:13.5px}
+.mn-app span:first-child{color:var(--mnm);padding-left:32px}.mn-app span:last-child{color:var(--mnt)}
+.mn-path{padding:12px 16px 0;font-size:12.5px;color:var(--mnm)}
+.mn-path button{background:none;border:0;color:var(--mnm);text-decoration:underline;padding:0;font-size:12.5px}
+.mn-kids{display:flex;flex-wrap:wrap;gap:6px;padding:12px 16px 0}
+.mn-kids button{background:#2a2c33;border:1px solid #444955;border-radius:3px;color:var(--mnt);padding:7px 10px;font-size:12.5px;display:flex;gap:8px}
+.mn-kids button span{color:var(--mnm)}
+.mn-pages{display:flex;flex-direction:column;gap:14px;padding:16px}
+.mn-pg{position:relative;background:#fff;width:100%;box-shadow:0 2px 10px #0007}
+.mn-pg canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.mn-pages.dark .mn-pg{background:#181a1f}.mn-pages.dark .mn-pg canvas{filter:invert(.92) hue-rotate(180deg) contrast(.92)}
+.mn-pages.dark .dv-hl{mix-blend-mode:screen}.mn-pages.dark .dv-hl rect{fill:#5a4a00;opacity:.8}
+.mn-pn{position:absolute;right:6px;bottom:-17px;font-size:10.5px;color:var(--mnm);font-family:var(--mono)}
+.mn.full .mn-right{position:fixed;inset:0;z-index:300;border-radius:0}
+.mn-prow{display:flex;gap:6px;align-items:stretch}.mn-prow .mn-row{flex:1}
+.mn-unpin{background:#2a2c33;border:1px solid #444955;color:var(--mnm);border-radius:3px;width:44px;font-size:18px}
+.mn-mi{display:block;cursor:pointer}
+@media(max-width:820px){.mn-body{grid-template-columns:1fr;height:auto}.mn-left{max-height:46vh}.mn-right{min-height:70vh}.mn-c{width:76px}.mn-seg button{min-width:70px;padding:10px 14px}}
+html.light .mn{--mnl:#d4d7de;--mnb:#f4f5f8;--mnt:#1b1d23;--mnm:#5d6370;--mnac:#b9bad6}
+html.light .mn-row,html.light .mn-kids button{background:#e9ebf0}html.light .mn-app{background:#e6e8ee}html.light .mn-sw input{background:#fff}html.light .mn-none span{background:#e6e8ee}
+.mn-mi{padding:14px 12px;font-size:15px;border-radius:8px}
+.mn-row{flex:none}.mn-c{white-space:nowrap;width:auto;min-width:96px}
+
 /* standalone app: full bleed + safe areas */
 .app{margin:0!important;min-height:100vh;border:0!important;border-radius:0!important;box-shadow:none!important;max-width:none}
 .top{padding-top:calc(10px + env(safe-area-inset-top));padding-left:calc(16px + env(safe-area-inset-left));padding-right:calc(16px + env(safe-area-inset-right))}
@@ -2615,6 +2690,7 @@ const TAB_APPS=[
   {id:"docs",name:"Documents",bg:"#e5484d",bg2:"#7c1a26",g:'<path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5"/><path d="M9 14l2 2 4-4" />',go:()=>{ S.checklist.view="docs"; save("checklist"); go("checklist"); },badge:()=>""},
   {id:"log",name:"Flight Log",bg:"#4f5bd5",bg2:"#1f2577",g:'<path d="M4 5a2 2 0 012-2h12v18H6a2 2 0 01-2-2z"/><path d="M4 17a2 2 0 012-2h12M8 7h6M8 10.5h4"/>',go:()=>{ S.settings.logView="log"; save("settings"); go("logbook"); },badge:()=>""},
   {id:"stats",name:"Statistics",bg:"#d4418e",bg2:"#5c1747",g:'<path d="M4 20V11M10 20V5M16 20v-6M21 20H3"/>',go:()=>{ S.settings.logView="stats"; save("settings"); go("logbook"); },badge:()=>""},
+  {id:"man",name:"Manuals",bg:"#3b4a8f",bg2:"#151a36",g:'<path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2zM4 21V5"/><path d="M8 7h7M8 11h5"/>',go:()=>{ S.checklist.view="man"; save("checklist"); go("checklist"); },show:()=>isWizz()},
   {id:"fdm",name:"FDM",bg:"#c6007e",bg2:"#2a1550",g:'<path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/><path d="M8.5 12.5l2.3 2.3 4.7-4.8"/>',go:()=>{ S.checklist.view="fdm"; save("checklist"); go("checklist"); },badge:()=>{ const r=fdmRelevant().length; return r?String(r):""; },show:()=>isWizz()},
   {id:"night",name:"Night Mode",bg:"#2b3352",bg2:"#0c1022",g:'<path d="M20 14.5A8 8 0 019.5 4 8 8 0 1020 14.5z"/><path d="M16 4.5l.5 1 1 .5-1 .5-.5 1-.5-1-1-.5 1-.5z" fill="#fff" stroke="none"/>',go:()=>dimModal(),badge:()=>""},
   {id:"settings",name:"Settings",bg:"#6b7180",bg2:"#2c2f38",g:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/>',go:()=>toggleDrawer(true),badge:()=>""},
@@ -2630,7 +2706,7 @@ function appCol(a){ if(!iconProfile()) return [a.bg,a.bg2]; const i=TAB_APPS.ind
   const P=ICON_PAL[S.settings.mode==="global"?"global":"wizz"]; return P[i%P.length]; }
 function iconStyleToggle(){ S.settings.iconStyle=iconProfile()?"standard":"profile"; save("settings"); render(); toast(iconProfile()?`App icons: ${curStyle()?curStyle().name:isWizz()?"Wizz":"Global"} style`:"App icons: Standard"); }
 const appById=id=>TAB_APPS.find(a=>a.id===id);
-function appOf(){ if(current==="briefing") return S.briefing.view==="navlog"?"navlog":"briefing"; if(current==="wx") return S.wx.view==="map"?"map":"wx"; if(current==="checklist") return S.checklist.view==="docs"?"docs":S.checklist.view==="fdm"?"fdm":"checklist"; if(current==="logbook") return S.settings.logView==="stats"?"stats":"log"; return current; }
+function appOf(){ if(current==="briefing") return S.briefing.view==="navlog"?"navlog":"briefing"; if(current==="wx") return S.wx.view==="map"?"map":"wx"; if(current==="checklist") return S.checklist.view==="docs"?"docs":S.checklist.view==="fdm"?"fdm":S.checklist.view==="man"?"man":"checklist"; if(current==="logbook") return S.settings.logView==="stats"?"stats":"log"; return current; }
 function setUi(m){
   S.settings.ui=m; save("settings"); applyUi();
   if(m==="tablet"){ tabGo("home"); } else { if(current==="home") current=MODULES[0].id; render(); }
@@ -2642,7 +2718,7 @@ function applyUi(){ document.documentElement.classList.toggle("tabv",isTab()); a
 let WALL, WALLK; const wallKey=()=>LS+"wall:"+(S.settings.mode||"wizz");
 const wallLoad=()=>{ const k=wallKey(); if(WALLK!==k){ WALLK=k; try{ const old=localStorage.getItem(LS+"wall"); if(old){ if(!localStorage.getItem(k)) localStorage.setItem(k,old); localStorage.removeItem(LS+"wall"); } WALL=localStorage.getItem(k); }catch(e){ WALL=null; } } return WALL; };
 const wallName=()=>{ const c=typeof curCustom==="function"&&curCustom(); return c?c.name:S.settings.mode==="global"?"Global":"Wizz"; };
-function applyWall(){ wallLoad(); const r=document.documentElement; r.classList.toggle("wallhome",!!(WALL&&isTab()&&current==="home")); if(WALL) r.style.setProperty("--wall",`url("${WALL}")`); else r.style.removeProperty("--wall"); }
+function applyWall(){ if(typeof applyBanner==="function") applyBanner(); wallLoad(); const r=document.documentElement; r.classList.toggle("wallhome",!!(WALL&&isTab()&&current==="home")); if(WALL) r.style.setProperty("--wall",`url("${WALL}")`); else r.style.removeProperty("--wall"); }
 function wallPick(){
   const inp=document.createElement("input"); inp.type="file"; inp.accept="image/*";
   inp.onchange=()=>{ const f=inp.files&&inp.files[0]; if(!f) return; const url=URL.createObjectURL(f), img=new Image();
@@ -2808,6 +2884,43 @@ function styleEditor(orig,bkey){
   const del=$("#syDel"); if(del) del.onclick=()=>confirmBox("Delete style",`Delete the “${st.name}” style?`,"Delete",()=>{ S.settings.styles=styList().filter(x=>x.id!==st.id); if(String(S.settings.mode)==="s:"+st.id) S.settings.mode=st.base==="wizz"?"wizz":"global"; save("settings"); applyMode(); render(); toast("Style deleted"); });
   const dup=$("#syDup"); if(dup) dup.onclick=()=>{ const c=JSON.parse(JSON.stringify(st)); c.id=Date.now().toString(36); c.name=st.name+" copy"; styList().push(c); S.settings.mode="s:"+c.id; save("settings"); closeModal(); applyMode(); render(); toast("Style duplicated"); };
   preview();
+}
+
+/* ---- top banner (brand box) per profile: own image, fill/fit ---- */
+const bnrKey=()=>LS+"banner:"+(S.settings.mode||"wizz");
+let BNR={k:null,v:null};
+function bnrGet(){ const k=bnrKey(); if(BNR.k!==k){ BNR.k=k; try{ BNR.v=JSON.parse(localStorage.getItem(k)||"null"); }catch(e){ BNR.v=null; } } return BNR.v; }
+function bnrSet(v){ const k=bnrKey(); try{ if(v) localStorage.setItem(k,JSON.stringify(v)); else localStorage.removeItem(k); BNR={k,v}; applyBanner(); return true; }catch(e){ toast("Storage full — try a smaller image"); return false; } }
+function applyBanner(){
+  const b=document.querySelector(".top .brand"); if(!b) return; const v=bnrGet();
+  b.classList.toggle("bnr",!!(v&&v.img));
+  if(v&&v.img){ b.style.setProperty("--bnr",`url("${v.img}")`); b.dataset.fit=v.fit||"cover"; b.style.setProperty("--bnrbg",v.bg||"var(--brandgrad)"); b.style.setProperty("--bnrw",(v.w||220)+"px"); }
+  else { b.style.removeProperty("--bnr"); b.removeAttribute("data-fit"); }
+}
+function bannerModal(){
+  const v=Object.assign({fit:"cover",w:220,bg:""},bnrGet()||{}), name=(typeof wallName==="function"?wallName():"this profile");
+  const draw=()=>{ const p=$("#bnPrev"); if(!p) return; p.className="brand bn-prev"+(v.img?" bnr":""); p.dataset.fit=v.fit; p.style.setProperty("--bnr",v.img?`url("${v.img}")`:"none"); p.style.setProperty("--bnrbg",v.bg||"var(--brandgrad)"); p.style.setProperty("--bnrw",v.w+"px");
+    document.querySelectorAll("[data-bfit]").forEach(x=>x.classList.toggle("on",x.dataset.bfit===v.fit)); };
+  openModal(`<div class="modal-h"><h3>Top banner</h3><button class="x" data-close>×</button></div>
+    <div class="confirm-txt">Replace the banner at the top left with your own image for the <b>${esc(name)}</b> profile (saved on this device).</div>
+    <div class="bn-box"><div id="bnPrev" class="brand bn-prev">${document.querySelector(".top .brand").innerHTML}</div></div>
+    <div class="bn-row"><label class="btn mag">${v.img?"Change image":"Import image"}<input type="file" accept="image/*" hidden id="bnFile"></label>
+      <span class="seg bn-fit"><button data-bfit="cover">Fill</button><button data-bfit="contain">Fit</button></span></div>
+    <div class="bn-row"><span class="muted" style="font-size:12.5px">Width</span><input type="range" id="bnW" min="140" max="420" step="10" value="${v.w}" style="flex:1"><span class="mono" id="bnWv">${v.w}px</span></div>
+    <div class="bn-row"><span class="muted" style="font-size:12.5px">Background behind the image (Fit)</span><input type="color" id="bnBg" value="${/^#/.test(v.bg)?v.bg:"#1a1b20"}"><button class="btn ghost" id="bnBgR">Profile colours</button></div>
+    <div class="modal-f"><button class="btn ghost" id="bnRm">Original banner</button><span class="sp"></span><button class="btn ghost" data-close>Cancel</button><button class="btn mag" id="bnOk">Save</button></div>`);
+  $("#modal").querySelectorAll("[data-close]").forEach(b=>b.onclick=closeModal);
+  draw();
+  $("#bnFile").onchange=e=>{ const f=e.target.files[0]; if(!f) return; const u=URL.createObjectURL(f), im=new Image();
+    im.onload=()=>{ const M=1000, k=Math.min(1,M/Math.max(im.width,im.height)), c=document.createElement("canvas"); c.width=Math.round(im.width*k); c.height=Math.round(im.height*k); c.getContext("2d").drawImage(im,0,0,c.width,c.height); URL.revokeObjectURL(u);
+      v.img=/png|gif|webp|svg/i.test(f.type)?c.toDataURL("image/png"):c.toDataURL("image/jpeg",0.9); if(v.img.length>1.2e6) v.img=c.toDataURL("image/jpeg",0.8);
+      if(!bnrGet()&&im.width/im.height>2.2) v.w=Math.min(420,Math.max(160,Math.round(38*im.width/im.height/10)*10)); const r=$("#bnW"); if(r){ r.value=v.w; $("#bnWv").textContent=v.w+"px"; } draw(); };
+    im.onerror=()=>{ URL.revokeObjectURL(u); toast("Unsupported image"); }; im.src=u; };
+  document.querySelectorAll("[data-bfit]").forEach(x=>x.onclick=()=>{ v.fit=x.dataset.bfit; draw(); });
+  $("#bnW").oninput=e=>{ v.w=+e.target.value; $("#bnWv").textContent=v.w+"px"; draw(); };
+  $("#bnBg").oninput=e=>{ v.bg=e.target.value; draw(); }; $("#bnBgR").onclick=()=>{ v.bg=""; draw(); };
+  $("#bnRm").onclick=()=>{ closeModal(); bnrSet(null); toast("Original banner restored"); };
+  $("#bnOk").onclick=()=>{ if(!v.img){ toast("Import an image first"); return; } if(bnrSet(v)){ closeModal(); toast("Banner saved for "+name); } };
 }
 
 const NAVLOG_IMG="data:image/png;base64,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/Ur2K9mvZL+yX8l+JfuV/Ur2K9mvZL+yX8l+JfuV7Ff2K9mvZL+yX8l+JfuV7Ff2K9mvZL+S/cp+JfuV7Ff2K9mvtCvFxtp9zbFTF3To0GkyqjgEGjfB+a/cf5PsV7JfyX5lv5L9SvYr2a/sV7JfyX5lv5L9SvYr2a/sV7JfyX4l+5X9SvYr2a/sV7JfyX4l+5X9SvYr2a9kv7JfyX4l+5X9SvYr2a9kv7JfyX4l+5XsV/Yr2a9kv5L9yn4l+5XsV/Yr2a9kv5L9yn6l7hMba/c1x05d0KFDp8mo4hBo3ATnv3L/TbJfyX4l+5X9SvYr2a9kv7JfyX4l+5X9SvYr2a9kv7JfyX4l+5XsV/Yr2a9kv7JfyX4l+5XsV/Yr2a9kv5L9yn4l+5XsV/Yr2a9kv5L9yn4l+5XsV7Jf2a9kv5L9SvYr+5XsV7Jf2a9kv5L9SvYr+5W6T2ys3dccO+3+Dses4phr3ATnD3L+K9mvZL+S/cp+JfuV7FeyX9mvZL+S/cp+JfuV7FeyX9mvZL+S/Ur2K/uV7FeyX9mvZL+S/Ur2K/uV7FeyX8l+Zb+S/Ur2K/uV7FeyX8l+Zb+S/Ur2K9mv7FeyX8l+JfuV/Ur2K9mv7FeyX8l+JfuV/UrdJzbW7muOnbqgQ4dOk1HFIdC4Cc5/5f6bZL+S/Ur2K/uV7FeyX8l+Zb+S/Ur2K/uV7FeyX8l+Zb+S/Ur2K9mv7FeyX8l+Zb+S/Ur2K9mv7FeyX8l+JfuV/Ur2K9mv7FeyX8l+JfuV/Ur2K9mvZL+yX8l+JfuV7Ff2K9mvZL+yX8l+JfuV7Ff2K3Wf2Fi7rzl26oIOHTpNRhWHQOMmOP+V+2+S/Ur2K9mv7FeyX8l+JfuV/Ur2K9mv7FeyX8l+JfuV/Ur2K9mvZL+yX8l+JfuV/Ur2K9mvZL+yX8l+JfuV7Ff2K9mvZL+yX8l+JfuV7Ff2K9mvZL+S/cp+JfuV7FeyX9mvZL+S/cp+JfuV7FeyX9mv1H1iY+2+5thp93c4ZhXHXOMmOH+Q81/JfiX7lexX9ivZr2S/kv3KfiX7lexX9ivZr2S/kv3KfiX7lexXsl/Zr2S/kv3KfiX7lexXsl/Zr2S/kv1K9iv7lexXsl/Zr2S/kv1K9iv7lexXsl/JfmW/kv1K9ivZr+xXsl/JfmW/kv1K9ivZr+xX6j6xsXZfc+zUBR06dJqM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";
@@ -3178,6 +3291,176 @@ function fdmPlane(){ return `<svg class="fdm-plane" viewBox="0 0 600 200" aria-h
 function fdmBriefBanner(){ if(!isWizz()) return ""; const R=fdmRelevant(); if(!R.length) return "";
   return `<div class="fdm-alert fdm-alert-b">${fdmIc("sa",20)}<div><b>vWZZ FDM · special procedures for this flight</b><span>${R.map(t=>`<button data-fdmopen="${t.id}">${esc(t.apts.join("/"))} · ${esc(t.title.replace(/\s*\(.*?\)/,""))} ›</button>`).join("")}</span></div></div>`; }
 
+/* ===================== Manuals (FCOM / FCTM) — Wizz profile, "Documents Folder" look ===================== */
+/* The PDFs are imported once and kept on this device (IndexedDB). Chapters come from the PDF bookmarks. */
+const MAN_DEF={fcom:{lab:"FCOM",full:"Flight Crew Operating Manual"},fctm:{lab:"FCTM",full:"Flight Crew Techniques Manual"}};
+const MAN={w:null,pdf:null,task:null,nodes:[],top:[],name:"",ps:[612,792],obs:null,q:"",busy:false,res:null,hlq:"",tok:0};
+const manMeta=()=>{ try{ return JSON.parse(localStorage.getItem(LS+"man")||"{}"); }catch(e){ return {}; } };
+const manMetaSet=m=>{ try{ localStorage.setItem(LS+"man",JSON.stringify(m)); }catch(e){} };
+const manSt=()=>S.checklist.man||(S.checklist.man={w:"fcom",fcom:{},fctm:{},pins:[],dark:false});
+const manFileId=w=>"man:"+w;
+
+async function manLoad(w){
+  if(MAN.w===w&&MAN.pdf) return true;
+  manClose();
+  const buf=await docFileGet(manFileId(w)).catch(()=>null); if(!buf) return false;
+  const lib=await pdfjs(); MAN.task=docGetDoc(lib,buf); const pdf=await MAN.task.promise; MAN.pdf=pdf; MAN.w=w;
+  const p1=await pdf.getPage(1), v=p1.getViewport({scale:1}); MAN.ps=[v.width,v.height];
+  let ol=[]; try{ ol=await pdf.getOutline()||[]; }catch(e){}
+  const nodes=[];
+  async function pageOf(it){ try{ let d=it.dest; if(typeof d==="string") d=await pdf.getDestination(d); if(!Array.isArray(d)) return null; const r=d[0]; return typeof r==="number"?r+1:(await pdf.getPageIndex(r))+1; }catch(e){ return null; } }
+  async function walk(items,parent,depth){ const out=[]; for(const it of items){ const n={t:String(it.title||"").replace(/\s+/g," ").trim(),p:await pageOf(it),kids:[],parent,depth}; nodes.push(n); out.push(n); if(it.items&&it.items.length) n.kids=await walk(it.items,n,depth+1); } return out; }
+  let top=await walk(ol,null,0);
+  MAN.name=MAN_DEF[w].lab;
+  if(top.length===1&&top[0].kids.length){ MAN.name=top[0].t||MAN.name; const r=top[0]; nodes.splice(nodes.indexOf(r),1); top=r.kids; const fix=(n,d)=>{ n.depth=d; n.kids.forEach(k=>fix(k,d+1)); }; top.forEach(n=>{ n.parent=null; fix(n,0); }); }
+  if(!top.length){ // no bookmarks: chapters of 10 pages
+    for(let s=1;s<=pdf.numPages;s+=10){ const n={t:`Pages ${s}–${Math.min(pdf.numPages,s+9)}`,p:s,kids:[],parent:null,depth:0}; nodes.push(n); top.push(n); }
+  }
+  // codes + page ranges
+  const code=(list,pre)=>list.forEach((n,i)=>{ n.code=(pre?pre+"-":"")+String(i+1).padStart(2,"0"); code(n.kids,n.code); }); code(top,"");
+  const sub=n=>[n,...n.kids.flatMap(sub)];
+  const starts=nodes.map(n=>n.p).filter(Boolean).sort((a,b)=>a-b);
+  nodes.forEach(n=>{ const all=sub(n).map(x=>x.p).filter(Boolean); n.start=all.length?Math.min(...all):null; });
+  nodes.forEach(n=>{ if(!n.start) return; const mx=Math.max(...sub(n).map(x=>x.p||0),n.start); const nx=starts.find(s=>s>mx); n.end=Math.max(mx,nx?nx-1:pdf.numPages); });
+  MAN.nodes=nodes.filter(n=>n.start); MAN.top=top.filter(n=>n.start);
+  const mm=manMeta(); if(mm[w]&&mm[w].pages!==pdf.numPages){ mm[w].pages=pdf.numPages; manMetaSet(mm); }
+  return true;
+}
+function manClose(){ if(MAN.obs){ MAN.obs.disconnect(); MAN.obs=null; } if(MAN.task){ try{ MAN.task.destroy().catch(()=>{}); }catch(e){} } MAN.task=null; MAN.pdf=null; MAN.w=null; MAN.nodes=[]; MAN.top=[]; MAN.res=null; MAN.hlq=""; }
+const manByCode=c=>MAN.nodes.find(n=>n.code===c)||null;
+function manNodeOfPage(p){ let best=null; MAN.nodes.forEach(n=>{ if(n.start<=p&&p<=n.end&&(!best||n.depth>best.depth||(n.depth===best.depth&&n.end-n.start<best.end-best.start))) best=n; }); return best; }
+const manPath=n=>{ const a=[]; while(n){ a.unshift(n); n=n.parent; } return a; };
+
+async function manImport(w,file){
+  if(!file) return; if(!(file.type==="application/pdf"||/\.pdf$/i.test(file.name))){ toast("Please choose a PDF"); return; }
+  if(navigator.storage&&navigator.storage.persist) navigator.storage.persist().catch(()=>{});
+  toast(`Importing ${MAN_DEF[w].lab}…`);
+  try{ const buf=await file.arrayBuffer(); const lib=await pdfjs(); const t=docGetDoc(lib,buf.slice(0)); const pd=await t.promise; const pages=pd.numPages; t.destroy().catch(()=>{});
+    await docFilePut(manFileId(w),buf); const mm=manMeta(); mm[w]={name:file.name.replace(/\.pdf$/i,""),size:file.size,pages,added:Date.now()}; manMetaSet(mm);
+    if(MAN.w===w) manClose(); delete DOC_TC[manFileId(w)]; const st=manSt(); st[w]={}; save("checklist"); toast(`${MAN_DEF[w].lab} imported · ${pages} pages`); render();
+  }catch(e){ toast(/import|module|fetch/i.test(String(e))?"PDF engine missing — upload pdf.min.mjs & pdf.worker.min.mjs":"Can't open this PDF"); }
+}
+async function manRemove(w){ try{ await idb("files","readwrite",s=>s.delete(manFileId(w))); }catch(e){} const mm=manMeta(); delete mm[w]; manMetaSet(mm); if(MAN.w===w) manClose(); delete DOC_TC[manFileId(w)]; const st=manSt(); st[w]={}; st.pins=(st.pins||[]).filter(p=>p.w!==w); save("checklist"); render(); toast(`${MAN_DEF[w].lab} removed from this device`); }
+
+async function renderManuals(el){
+  const st=manSt(), w=st.w==="fctm"?"fctm":"fcom", mm=manMeta(), has=!!mm[w], pins=(st.pins||[]);
+  const tok=++MAN.tok;
+  el.innerHTML=`<div class="mn ${st.full?"full":""}">
+    <div class="mn-head"><div class="mn-ttl"><b>Documents Folder</b><span>${MAN_DEF[w].lab}${has?" · "+esc(mm[w].name):""}</span></div><span class="sp"></span>
+      <div class="mn-seg">${Object.keys(MAN_DEF).map(k=>`<button data-mw="${k}" class="${k===w?"on":""}">${MAN_DEF[k].lab}</button>`).join("")}</div>
+      <button class="mn-pinb" id="mnPins">Pinned <i>${pins.length}</i></button>
+      ${has?`<button class="mn-more" id="mnMore" aria-label="Manual options">⋯</button>`:""}</div>
+    <div class="mn-body">
+      <div class="mn-left">${has?`<div class="mn-sw"><input id="mnQ" type="search" placeholder="Search procedures…" autocomplete="off" enterkeyhint="search" value="${esc(MAN.q)}"></div><div id="mnNav"><div class="mn-load">Opening ${MAN_DEF[w].lab}…</div></div>`
+        :`<div class="mn-imp"><div class="mn-impi">${docSvg("M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9zM14 3v6h6M12 18v-6M9 15l3-3 3 3",36)}</div><b>Import the ${MAN_DEF[w].lab} PDF</b><p class="muted">${MAN_DEF[w].full} — the PDF stays on this device, chapters are built from its bookmarks.</p><label class="btn mag">Choose PDF<input type="file" accept="application/pdf,.pdf" hidden id="mnFile"></label></div>`}</div>
+      <div class="mn-right" id="mnRight"><div class="mn-none"><span>No document selected.</span></div></div>
+    </div></div>`;
+  el.querySelectorAll("[data-mw]").forEach(b=>b.onclick=()=>{ st.w=b.dataset.mw; MAN.q=""; MAN.res=null; save("checklist"); render(); });
+  $("#mnPins").onclick=manPinsModal;
+  const f=$("#mnFile"); if(f) f.onchange=()=>manImport(w,f.files[0]);
+  const mo=$("#mnMore"); if(mo) mo.onclick=()=>{ openModal(`<div class="modal-h"><h3>${MAN_DEF[w].lab}</h3><button class="x" data-close>×</button></div>
+      <div class="confirm-txt"><b>${esc(mm[w].name)}</b><br>${mm[w].pages||"?"} pages · ${fmtSize(mm[w].size)} · imported ${fmtDay(mm[w].added)}</div>
+      <div class="dv-menu"><label class="mn-mi">↻ Replace with a new revision<input type="file" accept="application/pdf,.pdf" hidden id="mnRep"></label><button id="mnRm" class="warn">Remove from this device</button></div>`);
+    $("#modal").querySelectorAll("[data-close]").forEach(b=>b.onclick=closeModal);
+    $("#mnRep").onchange=e=>{ closeModal(); manImport(w,e.target.files[0]); };
+    $("#mnRm").onclick=()=>{ closeModal(); confirmBox("Remove manual",`Remove the ${MAN_DEF[w].lab} from this device?`,"Remove",()=>manRemove(w)); };
+  };
+  if(!has) return;
+  try{ const ok=await manLoad(w); if(tok!==MAN.tok) return; if(!ok){ $("#mnNav").innerHTML=`<div class="mn-load">File missing — import it again from ⋯</div>`; return; } }
+  catch(e){ if(tok!==MAN.tok) return; $("#mnNav").innerHTML=`<div class="mn-load">${/import|module|fetch/i.test(String(e))?"PDF engine not found — upload pdf.min.mjs and pdf.worker.min.mjs next to index.html.":"This PDF can't be opened."}</div>`; return; }
+  const q=$("#mnQ"); let tm;
+  q.oninput=()=>{ clearTimeout(tm); MAN.q=q.value; tm=setTimeout(()=>{ MAN.res=null; manNav(); if(docQ(MAN.q).length>=2) manTextSearch(); },350); };
+  q.onkeydown=e=>{ if(e.key==="Enter"){ e.preventDefault(); clearTimeout(tm); MAN.q=q.value; MAN.res=null; manNav(); if(docQ(MAN.q).length>=2) manTextSearch(); } };
+  manNav(); const cur=manByCode((st[w]||{}).sel); if(cur) manShow(cur,(st[w]||{}).pg); else manEmpty();
+  if(docQ(MAN.q).length>=2&&!MAN.res) manTextSearch();
+}
+function manRow(n,sel){ return `<button class="mn-row ${sel?"on":""}" data-mc="${n.code}"><span class="mn-c">${n.code}</span><span class="mn-t"><b>${esc(n.t)}</b><small>Pages ${n.start}${n.end>n.start?"–"+n.end:""}${n.kids.length?` · ${n.kids.length} section${n.kids.length>1?"s":""}`:""}</small></span>${n.kids.length?`<span class="mn-ch">›</span>`:""}</button>`; }
+function manNav(){
+  const box=$("#mnNav"); if(!box||!MAN.pdf) return; const st=manSt(), w=MAN.w, cs=st[w]||(st[w]={});
+  const qq=docQ(MAN.q);
+  if(qq.length>=2){
+    const tm=MAN.nodes.filter(n=>docNorm(n.t).includes(qq)||n.code.startsWith(MAN.q.trim()));
+    const R=MAN.res;
+    box.innerHTML=`<div class="mn-sel"><b>Search results</b><span>${tm.length} chapter${tm.length!==1?"s":""}${R?` · ${R.length} text match${R.length!==1?"es":""}`:" · searching text…"}</span></div><div class="mn-list">
+      ${tm.map(n=>manRow(n,n.code===cs.sel)).join("")}
+      ${R?R.slice(0,80).map(h=>`<button class="mn-row mn-hit" data-mp="${h.p}"><span class="mn-c">p. ${h.p}</span><span class="mn-t"><b>${esc(h.n?h.n.t:"Page "+h.p)}</b><small>…${esc(h.pre)}<mark>${esc(h.hit)}</mark>${esc(h.post)}…</small></span></button>`).join("")+(R.length>80?`<div class="mn-load">+ ${R.length-80} more — refine the search</div>`:""):`<div class="mn-load">Searching inside the ${MAN_DEF[w].lab}…</div>`}
+      ${R&&!R.length&&!tm.length?`<div class="mn-load">No match.</div>`:""}</div>`;
+  } else {
+    const cur=manByCode(cs.nav), list=cur?cur.kids:MAN.top;
+    box.innerHTML=(cur?`<button class="mn-crumb" id="mnUp">‹ <span>${cur.code} ${esc(cur.t)}</span></button>`:`<div class="mn-crumb mn-root">${esc(MAN.name)}</div>`)+
+      `<div class="mn-sel"><b>${cur?"Select a document":"Select a category"}</b><span>vWZZ · ${MAN_DEF[w].lab}${cur?" · "+esc(manPath(cur).map(n=>n.t).join(" › ")):""}</span></div>
+      <div class="mn-list">${list.map(n=>manRow(n,n.code===cs.sel)).join("")}</div>`;
+    const up=$("#mnUp"); if(up) up.onclick=()=>{ cs.nav=cur.parent?cur.parent.code:""; save("checklist"); manNav(); };
+  }
+  box.querySelectorAll("[data-mc]").forEach(b=>b.onclick=()=>{ const n=manByCode(b.dataset.mc); if(!n) return; if(n.kids.length&&!qq) cs.nav=n.code; MAN.hlq=qq.length>=2?MAN.q:""; manShow(n); manNav(); });
+  box.querySelectorAll("[data-mp]").forEach(b=>b.onclick=()=>{ const p=+b.dataset.mp, n=manNodeOfPage(p); MAN.hlq=MAN.q; if(n){ manShow(n,p); manNav(); } });
+}
+async function manTextSearch(){
+  const pdf=MAN.pdf, w=MAN.w, q=docQ(MAN.q), id=manFileId(w); if(!pdf||q.length<2) return;
+  const my=MAN.q, out=[];
+  for(let p=1;p<=pdf.numPages;p++){
+    if(MAN.pdf!==pdf||MAN.q!==my) return;
+    let d; try{ d=await docPageData(pdf,id,p); }catch(e){ continue; }
+    docFindIn(d,q).forEach(([a,b])=>out.push({p,pre:d.str.slice(Math.max(0,a-40),a),hit:d.str.slice(a,b),post:d.str.slice(b,b+60)}));
+  }
+  if(MAN.pdf!==pdf||MAN.q!==my) return;
+  out.forEach(h=>h.n=manNodeOfPage(h.p)); MAN.res=out; manNav();
+}
+function manEmpty(){ const r=$("#mnRight"); if(r) r.innerHTML=`<div class="mn-none"><span>No document selected.</span></div>`; }
+function manShow(n,toPage){
+  const st=manSt(), w=MAN.w, cs=st[w]||(st[w]={}); cs.sel=n.code; save("checklist");
+  const R=$("#mnRight"); if(!R) return; const pinned=(st.pins||[]).some(p=>p.w===w&&p.code===n.code), path=manPath(n), top=path[0];
+  const pages=[]; for(let p=n.start;p<=n.end;p++) pages.push(p);
+  R.innerHTML=`<div class="mn-rh"><b>${esc((top.t||"").toUpperCase())}</b><span class="sp"></span>
+      <button class="mn-b ${pinned?"on":""}" id="mnPin">${pinned?"Pinned":"Pin"}</button>
+      <button class="mn-b ${st.dark?"on":""}" id="mnDark" title="Dark pages">${st.dark?"☾ Dark":"☀ Light"}</button>
+      <button class="mn-b mn-fs" id="mnFull">${st.full?"Exit Full Screen":"Full Screen"}</button></div>
+    <div class="mn-scroll"><div class="mn-card">
+      <div class="mn-ct"><div class="mn-code">${n.code}</div><div class="mn-title">${esc(n.t)}</div></div>
+      <div class="mn-app"><span>Applicable to</span><span>ALL A32X</span></div>
+      <div class="mn-app"><span>Manual</span><span>${esc(MAN.name)} · pages ${n.start}${n.end>n.start?"–"+n.end:""}</span></div>
+      ${path.length>1?`<div class="mn-path">${path.slice(0,-1).map(x=>`<button data-mc="${x.code}">${esc(x.t)}</button>`).join(" › ")}</div>`:""}
+      ${n.kids.length?`<div class="mn-kids">${n.kids.map(k=>`<button data-mc="${k.code}"><span>${k.code}</span>${esc(k.t)}</button>`).join("")}</div>`:""}
+      <div class="mn-pages ${st.dark?"dark":""}">${pages.map(p=>`<div class="mn-pg" data-p="${p}" style="aspect-ratio:${MAN.ps[0]}/${MAN.ps[1]}"><canvas></canvas><svg class="dv-hl" preserveAspectRatio="none"></svg><span class="mn-pn">${p}</span></div>`).join("")}</div>
+    </div></div>`;
+  $("#mnPin").onclick=()=>{ const P=st.pins||(st.pins=[]); const i=P.findIndex(p=>p.w===w&&p.code===n.code); if(i>=0) P.splice(i,1); else P.push({w,code:n.code,t:n.t}); save("checklist"); const b=$("#mnPins i"); if(b) b.textContent=P.length; manShow(n); };
+  $("#mnDark").onclick=()=>{ st.dark=!st.dark; save("checklist"); const pg=R.querySelector(".mn-pages"); pg.classList.toggle("dark",st.dark); const b=$("#mnDark"); b.classList.toggle("on",st.dark); b.textContent=st.dark?"☾ Dark":"☀ Light"; };
+  $("#mnFull").onclick=()=>{ st.full=!st.full; save("checklist"); const m=document.querySelector(".mn"); if(m) m.classList.toggle("full",st.full); document.documentElement.classList.toggle("dv-lock",st.full); $("#mnFull").textContent=st.full?"Exit Full Screen":"Full Screen"; };
+  document.documentElement.classList.toggle("dv-lock",!!st.full);
+  R.querySelectorAll("[data-mc]").forEach(b=>b.onclick=()=>{ const k=manByCode(b.dataset.mc); if(k){ if(k.kids.length) cs.nav=k.code; else if(k.parent) cs.nav=k.parent.code; manShow(k); manNav(); } });
+  const sc=R.querySelector(".mn-scroll");
+  if(MAN.obs) MAN.obs.disconnect();
+  MAN.obs=new IntersectionObserver(es=>es.forEach(e=>{ const pg=e.target; if(e.isIntersecting) manRenderPage(pg); else manFreePage(pg); }),{root:sc,rootMargin:"1200px 0px"});
+  R.querySelectorAll(".mn-pg").forEach(pg=>MAN.obs.observe(pg));
+  if(toPage&&toPage!==n.start){ const pg=R.querySelector(`.mn-pg[data-p="${toPage}"]`); if(pg) setTimeout(()=>{ sc.scrollTop+=pg.getBoundingClientRect().top-sc.getBoundingClientRect().top-10; },40); } else sc.scrollTop=0;
+}
+async function manRenderPage(pg){
+  const pdf=MAN.pdf; if(!pdf) return; const cv=pg.querySelector("canvas"), W=pg.clientWidth; if(!W) return;
+  const dpr=Math.min(window.devicePixelRatio||1,2.5), px=Math.floor(W*dpr); if(pg._rw===px) return; pg._rw=px;
+  try{ const page=await pdf.getPage(+pg.dataset.p); if(pdf!==MAN.pdf) return; const v0=page.getViewport({scale:1});
+    if(Math.abs(v0.width/v0.height-MAN.ps[0]/MAN.ps[1])>0.01) pg.style.aspectRatio=`${v0.width}/${v0.height}`;
+    const vp=page.getViewport({scale:px/v0.width}); const off=document.createElement("canvas"); off.width=Math.floor(vp.width); off.height=Math.floor(vp.height);
+    const ctx=off.getContext("2d"); ctx.fillStyle="#fff"; ctx.fillRect(0,0,off.width,off.height);
+    const t=page.render({canvasContext:ctx,viewport:vp}); pg._task=t; await t.promise; pg._task=null; if(pg._rw!==px) return;
+    cv.width=off.width; cv.height=off.height; cv.getContext("2d").drawImage(off,0,0); off.width=0;
+    manPaintHl(pg,v0);
+  }catch(e){ if(!(e&&e.name==="RenderingCancelledException")) pg._rw=0; }
+}
+function manFreePage(pg){ const cv=pg.querySelector("canvas"); if(pg._task){ try{ pg._task.cancel(); }catch(e){} pg._task=null; } if(cv){ cv.width=0; cv.height=0; } pg._rw=0; }
+async function manPaintHl(pg,v0){
+  const sv=pg.querySelector(".dv-hl"); if(!sv) return; const q=docQ(MAN.hlq), H=Math.round(1000*v0.height/v0.width); sv.setAttribute("viewBox",`0 0 1000 ${H}`);
+  if(q.length<2){ sv.innerHTML=""; return; }
+  try{ const d=await docPageData(MAN.pdf,manFileId(MAN.w),+pg.dataset.p); sv.innerHTML=docFindIn(d,q).map(([a,b])=>docRangeRects(d,a,b).map(([x,y,w,h])=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2"/>`).join("")).join(""); }catch(e){}
+}
+function manPinsModal(){
+  const st=manSt(), P=st.pins||[];
+  openModal(`<div class="modal-h"><h3>Pinned</h3><button class="x" data-close>×</button></div>
+    ${P.length?`<div class="mn-list" style="padding:4px 2px 10px">${P.map((p,i)=>`<div class="mn-prow"><button class="mn-row" data-pi="${i}"><span class="mn-c">${MAN_DEF[p.w].lab}<br>${p.code}</span><span class="mn-t"><b>${esc(p.t)}</b></span></button><button class="mn-unpin" data-pu="${i}" aria-label="Unpin">×</button></div>`).join("")}</div>`:`<div class="confirm-txt">Nothing pinned yet — open a chapter and tap <b>Pin</b> to keep it here.</div>`}`);
+  $("#modal").querySelectorAll("[data-close]").forEach(b=>b.onclick=closeModal);
+  $("#modal").querySelectorAll("[data-pu]").forEach(b=>b.onclick=()=>{ P.splice(+b.dataset.pu,1); save("checklist"); closeModal(); render(); });
+  $("#modal").querySelectorAll("[data-pi]").forEach(b=>b.onclick=()=>{ const p=P[+b.dataset.pi]; closeModal(); st.w=p.w; const cs=st[p.w]||(st[p.w]={}); cs.sel=p.code; const par=p.code.split("-").slice(0,-1).join("-"); cs.nav=par; MAN.q=""; save("checklist"); render(); });
+}
+
 /* =====================================================================
    EFB — modular single-page app (Wizz mode + Global mode)
    To add a module: push an entry into MODULES (id, label, icon,
@@ -3534,13 +3817,15 @@ function tagLabel(l){
 }
 
 function clViewSeg(el){
-  if(S.checklist.view==="fdm"&&!isWizz()) S.checklist.view="cl";
-  const v=S.checklist.view==="docs"?"docs":S.checklist.view==="fdm"?"fdm":"cl", nR=isWizz()?fdmRelevant().length:0;
-  const h=`<div class="vseg"><button data-v="cl" class="${v==="cl"?"on":""}">${ICON.check}Checklists</button><button data-v="docs" class="${v==="docs"?"on":""}">${docSvg("M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9zM14 3v6h6M8 13h8M8 17h5",16)}Documents</button>${isWizz()?`<button data-v="fdm" class="${v==="fdm"?"on":""}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/><path d="M8.5 12.5l2.3 2.3 4.7-4.8"/></svg>FDM${nR?`<span class="vseg-b">${nR}</span>`:""}</button>`:""}</div>`;
+  if((S.checklist.view==="fdm"||S.checklist.view==="man")&&!isWizz()) S.checklist.view="cl";
+  if(S.checklist.view!=="man"&&S.checklist.man&&S.checklist.man.full){ S.checklist.man.full=false; document.documentElement.classList.remove("dv-lock"); }
+  const v=["docs","fdm","man"].includes(S.checklist.view)?S.checklist.view:"cl", nR=isWizz()?fdmRelevant().length:0;
+  const h=`<div class="vseg"><button data-v="cl" class="${v==="cl"?"on":""}">${ICON.check}Checklists</button><button data-v="docs" class="${v==="docs"?"on":""}">${docSvg("M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9zM14 3v6h6M8 13h8M8 17h5",16)}Documents</button>${isWizz()?`<button data-v="fdm" class="${v==="fdm"?"on":""}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/><path d="M8.5 12.5l2.3 2.3 4.7-4.8"/></svg>FDM${nR?`<span class="vseg-b">${nR}</span>`:""}</button><button data-v="man" class="${v==="man"?"on":""}">${docSvg("M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2zM4 21V5M8 7h7M8 11h5",16)}Manuals</button>`:""}</div>`;
   return [h,()=>el.querySelectorAll(".vseg button").forEach(b=>b.onclick=()=>{ if(S.checklist.view===b.dataset.v) return; S.checklist.view=b.dataset.v; save("checklist"); render(); window.scrollTo({top:0}); })];
 }
 function renderChecklist(el){
   const [vseg,vbind]=clViewSeg(el);
+  if(S.checklist.view==="man"&&isWizz()){ el.innerHTML=vseg; vbind(); const box=document.createElement("div"); el.appendChild(box); renderManuals(box); return; }
   if(S.checklist.view==="fdm"&&isWizz()){ el.innerHTML=vseg; vbind(); const box=document.createElement("div"); el.appendChild(box); renderFdm(box); return; }
   if(S.checklist.view==="docs"){ const sc=DOCS.scroller, keep=sc&&sc.isConnected?[sc.scrollTop,sc.scrollLeft]:null; el.innerHTML=vseg; vbind(); docsMount(el,keep); return; }
   const cl=activeCl(), C=CHECKLISTS[cl];
@@ -4839,6 +5124,7 @@ function renderDrawer(){
     <button class="mod" id="styNew">＋ New company style</button>
     <h4>View</h4>
     <button class="mod ${isTab()?"on":""}" id="uiTog">▦ ${isTab()?"Tablet view (on) — switch to classic":"Tablet view"}</button>
+    <button class="mod" id="bnrBtn">🏷 Top banner — custom image</button>
     ${isTab()?`<button class="mod" id="wallBtn">🖼 ${WALL?"Wallpaper — change / remove":"Import a wallpaper"}</button>`:""}
     <div class="mode-note">All interfaces share the same flight log.</div>
     <h4>Modules</h4>
@@ -4870,6 +5156,7 @@ function renderDrawer(){
   $("#expBtn").onclick=()=>{ toggleDrawer(false); exportData(); };
   $("#impBtn").onclick=()=>{ toggleDrawer(false); importData(); };
   $("#fsMenu").onclick=()=>{ toggleDrawer(false); toggleFullscreen(); };
+  { const bb=$("#bnrBtn"); if(bb) bb.onclick=()=>{ toggleDrawer(false); bannerModal(); }; }
   { const wb=$("#wallBtn"); if(wb) wb.onclick=()=>{ toggleDrawer(false); wallMenu(); }; }
   $("#uiTog").onclick=()=>{ toggleDrawer(false); setUi(isTab()?"classic":"tablet"); };
   $("#fleetBtn").onclick=()=>{ toggleDrawer(false); fleetModal(); };
