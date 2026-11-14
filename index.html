@@ -1017,6 +1017,20 @@ html.light .mn-row,html.light .mn-kids button{background:#e9ebf0}html.light .mn-
 .mn-mi{padding:14px 12px;font-size:15px;border-radius:8px}
 .mn-row{flex:none}.mn-c{white-space:nowrap;width:auto;min-width:96px}
 
+/* ---- VATSIM ATIS on the weather cards ---- */
+.atis-b{background:transparent;border:1px solid var(--mag);color:var(--text);border-radius:6px;font-size:11.5px;font-weight:800;letter-spacing:.06em;padding:4px 9px;margin-right:6px}
+.atis-b.on{background:var(--mag);color:#fff}
+.atis{margin-top:10px;border:1px solid var(--line);border-left:3px solid #2fbf71;border-radius:8px;background:var(--panel2);padding:10px 12px}
+.atis-err{border-left-color:#f2b33d;display:flex;align-items:center;gap:8px;font-size:13px;color:#f2b33d}
+.atis-h{display:flex;align-items:center;gap:9px;margin:4px 0 6px;flex-wrap:wrap}
+.atis-l{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:6px;background:#2fbf71;color:#08130c;font-weight:900;font-size:16px}
+.atis-k{font-size:10.5px;font-weight:800;letter-spacing:.08em;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:1px 6px}
+.atis-f{margin-left:auto;color:#2fbf71;font-weight:700}
+.atis-t{white-space:pre-wrap;font-size:12.5px;line-height:1.45;color:var(--text);margin-bottom:8px}
+.atis-ft{display:flex;align-items:center;gap:8px;font-size:11.5px;border-top:1px solid var(--line);padding-top:7px}
+.atis-ft .sp,.atis-err .sp{flex:1}
+.atis-x{background:transparent;border:1px solid var(--line);color:var(--text);border-radius:6px;font-size:12px;padding:4px 9px}
+
 /* standalone app: full bleed + safe areas */
 .app{margin:0!important;min-height:100vh;border:0!important;border-radius:0!important;box-shadow:none!important;max-width:none}
 .top{padding-top:calc(10px + env(safe-area-inset-top));padding-left:calc(16px + env(safe-area-inset-left));padding-right:calc(16px + env(safe-area-inset-right))}
@@ -4545,7 +4559,7 @@ function renderWeather(el){
     if(m&&rh!=null&&m.wspd!=null&&!m.vrb){ const c=windComp(rh,m.wdir,m.wspd), g=m.gust?windComp(rh,m.wdir,m.gust):null;
       comp=`<div class="wx-comp"><span>RWY ${esc(a.rwy)}</span><b class="${c.head<0?"neg":""}">${c.head<0?"TAIL "+(-c.head):"HEAD "+c.head}${g?"/"+Math.abs(g.head):""} kt</b><b>X ${Math.abs(c.cross)}${g?"/"+Math.abs(g.cross):""} kt ${c.cross>0?"R":c.cross<0?"L":""}</b></div>`; }
     return `<div class="wx-card">
-      <div class="wx-h"><span class="role-t">${a.role}</span><b class="mono">${a.icao}</b>${m?catBadge(m.cat):""}<span class="sp"></span><span class="wx-age ${w.age!=null&&w.age>METAR_MAX_MIN?"old":""}">${w.src?w.src.toUpperCase():""}${w.age!=null?" · "+(w.age<120?w.age+" min":Math.round(w.age/60)+" h"):""}${w.age!=null&&w.age>METAR_MAX_MIN?" · outdated":""}</span>${a.role==="EXTRA"?`<button class="wx-del" data-wxdel="${a.icao}" title="Remove ${a.icao}" aria-label="Remove ${a.icao}">×</button>`:""}</div>
+      <div class="wx-h"><span class="role-t">${a.role}</span><b class="mono">${a.icao}</b>${m?catBadge(m.cat):""}<span class="sp"></span><button class="atis-b ${ATIS.show[a.icao]?"on":""}" data-atis="${a.icao}" title="Request the VATSIM ATIS">ATIS</button><span class="wx-age ${w.age!=null&&w.age>METAR_MAX_MIN?"old":""}">${w.src?w.src.toUpperCase():""}${w.age!=null?" · "+(w.age<120?w.age+" min":Math.round(w.age/60)+" h"):""}${w.age!=null&&w.age>METAR_MAX_MIN?" · outdated":""}</span>${a.role==="EXTRA"?`<button class="wx-del" data-wxdel="${a.icao}" title="Remove ${a.icao}" aria-label="Remove ${a.icao}">×</button>`:""}</div>
       ${m?`<div class="wx-grid">
         <div><small>Wind</small><b>${m.wspd==null?"—":m.vrb?"VRB "+m.wspd:String(m.wdir).padStart(3,"0")+"° / "+m.wspd+(m.gust?"G"+m.gust:"")} kt</b></div>
         <div><small>Visibility</small><b>${m.cavok?"CAVOK":kmOrM(m.vis)}</b></div>
@@ -4555,6 +4569,7 @@ function renderWeather(el){
         <div><small>Weather</small><b>${m.wx.length?esc(m.wx.join(", ")):"nil"}</b></div>
       </div>${comp}<div class="wx-raw mono">${esc(m.raw)}</div>`:`<div class="muted" style="font-size:12.5px;padding:6px 0">${canLive?(rel?"Fetching live weather…":"No METAR yet — set the relay or paste."):"No METAR yet — tap ① then paste."}</div>`}
       ${t&&t.groups.length?`<div class="taf"><div class="taf-h">TAF ${esc(t.valid)} <span class="wx-age ${w.tafOk?"":"old"}">${esc((w.tafSrc||"").toUpperCase())}${w.tafOk?"":" · expired"}</span></div>${t.groups.map(g=>`<div class="taf-r"><span class="taf-l mono">${esc(g.label)}</span>${catBadge(g.cat)}<span class="taf-c">${esc(condLine(g))||"—"}</span></div>`).join("")}<details><summary>Raw TAF</summary><div class="wx-raw mono">${esc(t.raw)}</div></details></div>`:""}
+      ${atisBlock(a.icao)}
     </div>`}).join(""):""}
   ${(()=>{ const pre=[...new Set(aps.map(x=>x.icao.slice(0,2)))]; const live=sigmetsFor(pre);
      return SIG.text?`<h2 class="sec">SIGMET (live) <span class="count">${live.length} for ${pre.join(", ")} regions</span></h2>${live.length?`<pre class="ofp-txt" style="max-height:300px;overflow:auto">${esc(live.join("\n\n"))}</pre>`:`<div class="empty">No SIGMET in force for these regions.</div>`}`:(sig?`<h2 class="sec">SIGMET (from OFP)</h2><pre class="ofp-txt" style="max-height:300px;overflow:auto">${esc(sig)}</pre>`:""); })()}
@@ -4565,10 +4580,45 @@ function renderWeather(el){
   // auto: fetch live only for airports whose OFP data is missing/outdated, at most every 10 min
   if(canLive&&stale.length){ const due=stale.filter(x=>{ const f=wxFor(x.icao).fetched; return !f||Date.now()-new Date(f)>10*60e3; }).map(x=>x.icao); if(due.length) setTimeout(()=>wxFetchLive(due,false),50); }
   else if(canLive&&rel&&!SIG.text&&aps.length) setTimeout(()=>sigmetFetch().then(()=>{ if(current==="wx"){const y=window.scrollY;render();window.scrollTo(0,y);} }),50);
-  vbind();
+  vbind(); atisBind(el);
   el.querySelectorAll("[data-wxdel]").forEach(b=>b.onclick=()=>{ const k=b.dataset.wxdel; S.wx.extra=(S.wx.extra||"").toUpperCase().split(/[\s,]+/).filter(x=>x&&x!==k).join(" "); if(S.wx.live) delete S.wx.live[k]; save("wx"); const y=window.scrollY; render(); window.scrollTo(0,y); toast(`${k} removed`); });
   const ex=$("#wxExtra"); ex.addEventListener("change",()=>{S.wx.extra=ex.value.toUpperCase();save("wx");render()});
   const wi=$("#wxIn"); wi.addEventListener("paste",()=>setTimeout(()=>importWx(wi.value),50));
+}
+
+/* ---- VATSIM ATIS (online ATIS stations from the public VATSIM data feed) ---- */
+const ATIS={t:0,list:null,show:{},busy:{}};
+async function atisList(force){
+  if(!force&&ATIS.list&&Date.now()-ATIS.t<30e3) return ATIS.list;
+  let L=null; const rel=relayUrl();
+  if(rel){ try{ const r=await fetch(`${rel}/traffic`); if(r.ok){ const j=await r.json(); if(Array.isArray(j.a)) L=j.a.map(x=>({cs:x[0],f:x[1],code:x[2],txt:x[3],on:x[4]})); } }catch(_){} }
+  if(!L){ try{ const r=await fetch("https://data.vatsim.net/v3/vatsim-data.json"); if(r.ok){ const d=await r.json(); L=(d.atis||[]).map(c=>({cs:c.callsign,f:c.frequency,code:c.atis_code||"",txt:(c.text_atis||[]).join("\n"),on:c.logon_time})); } }catch(_){} }
+  if(!L) throw new Error("net");
+  ATIS.list=L; ATIS.t=Date.now(); return L;
+}
+function atisFor(icao){ const re=new RegExp("^"+icao+"(_[A-Z0-9]+)?_ATIS$","i"); return (ATIS.list||[]).filter(x=>re.test(String(x.cs))).sort((x,y)=>String(x.cs).localeCompare(String(y.cs))); }
+function atisLetter(x){ if(x.code) return x.code; const m=String(x.txt||"").match(/\b(?:INFORMATION|INFO|ATIS)\s+([A-Z])\b/i); return m?m[1].toUpperCase():""; }
+function atisBlock(icao){
+  const s=ATIS.show[icao]; if(!s) return "";
+  if(ATIS.busy[icao]) return `<div class="atis"><div class="muted" style="font-size:12.5px">Requesting ATIS from VATSIM…</div></div>`;
+  if(s.err) return `<div class="atis atis-err"><b>⚠ ${esc(s.err)}</b><span class="sp"></span><button class="atis-x" data-atisr="${icao}">Retry</button><button class="atis-x" data-atisc="${icao}">✕</button></div>`;
+  const ago=Math.max(0,Math.round((Date.now()-ATIS.t)/60e3));
+  return `<div class="atis">${s.list.map(x=>{ const L=atisLetter(x), kind=/_D_ATIS$/i.test(x.cs)?"DEPARTURE":/_A_ATIS$/i.test(x.cs)?"ARRIVAL":"";
+    return `<div class="atis-h"><span class="atis-l">${L?esc(L):"–"}</span><b class="mono">${esc(x.cs)}</b>${kind?`<span class="atis-k">${kind}</span>`:""}<span class="mono atis-f">${esc(x.f||"")}</span></div>
+      <div class="atis-t mono">${esc(String(x.txt||"").trim()||"(no text)")}</div>`; }).join("")}
+    <div class="atis-ft"><span class="muted">VATSIM · updated ${ago?ago+" min ago":"just now"}</span><span class="sp"></span><button class="atis-x" data-atisr="${icao}">⟳ Refresh</button><button class="atis-x" data-atisc="${icao}">✕</button></div></div>`;
+}
+async function atisReq(icao,force){
+  ATIS.show[icao]=ATIS.show[icao]||{}; ATIS.busy[icao]=true; atisRefresh();
+  try{ await atisList(force); const L=atisFor(icao); ATIS.show[icao]=L.length?{list:L}:{err:`No ATIS online on VATSIM for ${icao}`}; }
+  catch(e){ ATIS.show[icao]={err:IS_SA?"VATSIM unreachable — check your connection or relay":"VATSIM ATIS only works in the standalone app"}; }
+  delete ATIS.busy[icao]; atisRefresh();
+}
+function atisRefresh(){ if(current==="wx"&&S.wx.view!=="map"){ const y=window.scrollY; render(); window.scrollTo(0,y); } }
+function atisBind(el){
+  el.querySelectorAll("[data-atis]").forEach(b=>b.onclick=()=>{ const k=b.dataset.atis; if(ATIS.show[k]&&!ATIS.busy[k]){ delete ATIS.show[k]; atisRefresh(); } else atisReq(k,false); });
+  el.querySelectorAll("[data-atisr]").forEach(b=>b.onclick=()=>atisReq(b.dataset.atisr,true));
+  el.querySelectorAll("[data-atisc]").forEach(b=>b.onclick=()=>{ delete ATIS.show[b.dataset.atisc]; atisRefresh(); });
 }
 
 /* ================= WIND / RUNWAY CALCULATOR ================= */
