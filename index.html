@@ -2756,7 +2756,7 @@ function renderHome(el){
   const aps=wxAirports().filter(a=>a.role==="DEP"||a.role==="ARR");
   const wxs=aps.map(a=>{ const w=wxFor(a.icao), m=w&&w.metar?parseMetar(w.metar):null; return `<div class="hw-wx"><span class="mono">${a.role}</span><b class="mono">${a.icao}</b>${m&&m.cat?catBadge(m.cat):`<span class="muted">—</span>`}<em class="mono">${m&&m.wspd!=null?(m.vrb?"VRB":String(m.wdir).padStart(3,"0"))+"/"+m.wspd+(m.gust?"G"+m.gust:"")+"kt":""}${m&&m.temp!=null?" · "+m.temp+"°":""}</em></div>`; }).join("");
   const nb=(S.settings.badges||[]).length;
-  const tile=a=>{ const bd=a.badge(); return `<button class="ha" data-app="${a.id}"><span class="ha-i" style="--a:${appCol(a)[0]};--b:${appCol(a)[1]}">${TG(a.g)}${bd?`<i class="ha-b">${esc(bd)}</i>`:""}</span><span class="ha-n">${esc(a.name)}</span></button>`; };
+  const tile=a=>{ let bd=""; try{ bd=a.badge?a.badge():""; }catch(e){} return `<button class="ha" data-app="${a.id}"><span class="ha-i" style="--a:${appCol(a)[0]};--b:${appCol(a)[1]}">${TG(a.g)}${bd?`<i class="ha-b">${esc(bd)}</i>`:""}</span><span class="ha-n">${esc(a.name)}</span></button>`; };
   el.innerHTML=`<div class="home">
     <div class="h-widgets">
       ${clockWidget()}
