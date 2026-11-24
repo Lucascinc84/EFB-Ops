@@ -4492,6 +4492,7 @@ function summarizeOfp(o){
   const icao=gv(o,"aircraft.icaocode")||gv(o,"aircraft.icao_code");
   let variant=ICAO_MAP[icao]||"";
   const acname=gv(o,"aircraft.name");
+  if(!variant&&acname){ const n=String(acname).toLowerCase().replace(/\s+/g," "); for(const f of FAMILIES){ const v=f.variants.find(x=>n.includes(x.v.toLowerCase())); if(v){ variant=v.v; break; } } }
   if(icao==="A21N"&&/XLR/i.test(acname)) variant="A321XLR"; else if(icao==="A21N"&&/\bLR\b/i.test(acname)) variant="A321LR";
   const engRaw=gv(o,"aircraft.engines");
   let eng="";
@@ -5154,7 +5155,10 @@ const PERF_DB={
  "777-200LR":{mtow:347450,mlw:223000,v2:175,vref:147,tofl:3000,lfl:1750,fam:"b777"},
  "777-300":{mtow:299370,mlw:237680,v2:170,vref:150,tofl:3200,lfl:1900,fam:"b777"},
  "777-300ER":{mtow:351500,mlw:251290,v2:175,vref:149,tofl:3100,lfl:1850,fam:"b777"},
- "777F":{mtow:347800,mlw:260800,v2:178,vref:155,tofl:2900,lfl:2000,fam:"b777"}
+ "777F":{mtow:347800,mlw:260800,v2:178,vref:155,tofl:2900,lfl:2000,fam:"b777"},
+ /* business jets — weights & field lengths from Bombardier fact sheets; speeds are estimates */
+ "Global 6000":{mtow:45132,mlw:35652,v2:142,vref:118,tofl:1974,lfl:814,fam:"bd",est:true},
+ "Global 7500":{mtow:52095,mlw:39735,v2:140,vref:114,tofl:1756,lfl:760,fam:"bd",est:true}
 };
 /* flap settings: s = speed factor, d = distance factor (relative to the reference config, marked ref) */
 const FLAPS={
@@ -5162,7 +5166,8 @@ const FLAPS={
  a220:{to:[["1",1.03,1.08],["2",1,1,1],["3",0.98,0.97],["4",0.96,0.95]], ldg:[["5",0.98,0.96],["4",1,1,1]], ab:[["MAX MANUAL",1.0],["HI",1.15],["MED",1.45],["LO",1.9]], vapp:"airbus"},
  b737:{to:[["1",1.06,1.10],["5",1,1,1],["10",0.98,0.96],["15",0.96,0.93],["25",0.93,0.90]], ldg:[["30",1,1,1],["40",0.97,0.95],["15",1.10,1.25]], ab:[["MAX MANUAL",1.0],["MAX",1.15],["3",1.5],["2",1.8],["1",2.1]], vapp:"boeing"},
  b757:{to:[["5",1.03,1.06],["15",1,1,1],["20",0.98,0.96]], ldg:[["30",1,1,1],["25",1.04,1.08]], ab:[["MAX MANUAL",1.0],["MAX",1.15],["3",1.5],["2",1.8],["1",2.1]], vapp:"boeing"},
- b777:{to:[["5",1.03,1.06],["15",1,1,1],["20",0.98,0.96]], ldg:[["30",1,1,1],["25",1.04,1.08]], ab:[["MAX MANUAL",1.0],["MAX",1.15],["4",1.35],["3",1.5],["2",1.8],["1",2.1]], vapp:"boeing"}
+ b777:{to:[["5",1.03,1.06],["15",1,1,1],["20",0.98,0.96]], ldg:[["30",1,1,1],["25",1.04,1.08]], ab:[["MAX MANUAL",1.0],["MAX",1.15],["4",1.35],["3",1.5],["2",1.8],["1",2.1]], vapp:"boeing"},
+ bd:{to:[["6",1.03,1.07],["16",1,1,1]], ldg:[["30",1,1,1],["16",1.08,1.18]], ab:[["MAX MANUAL",1.0],["MEDIUM MANUAL",1.3],["LIGHT MANUAL",1.6]], vapp:"boeing"}
 };
 /* Type particularities (kept modest): vro = V2−VR gap, lapse = thrust loss per °C above flat rating,
    flexMax = max assumed temp above ISA, rat = Boeing takeoff ratings (thrust fraction) */
@@ -5170,7 +5175,8 @@ const PERF_TRAITS={
  airbus:{vro:5,lapse:0.011,flexMax:55}, a220:{vro:5,lapse:0.010,flexMax:55},
  b737:{vro:6,lapse:0.011,flexMax:50,rat:[["TO",1],["TO-1",0.92],["TO-2",0.84]]},
  b757:{vro:6,lapse:0.011,flexMax:50,rat:[["TO",1],["TO-1",0.9],["TO-2",0.8]]},
- b777:{vro:7,lapse:0.010,flexMax:50,rat:[["TO",1],["TO-1",0.9],["TO-2",0.8]]}
+ b777:{vro:7,lapse:0.010,flexMax:50,rat:[["TO",1],["TO-1",0.9],["TO-2",0.8]]},
+ bd:{vro:4,lapse:0.010,flexMax:50}
 };
 const VARIANT_TRAITS={ // small per-variant tweaks
  "A321ceo":{vro:6},"A321neo":{vro:6,lapse:0.009,flexMax:60},"A321LR":{vro:6,lapse:0.009,flexMax:60},"A321XLR":{vro:6,lapse:0.009,flexMax:60},
@@ -5348,8 +5354,8 @@ function bindPerfAc(el){
 }
 function renderPerf(el){
   const AC=perfAc(), T=AC.type;
-  if(!T){ el.innerHTML=`<div class="page-head"><span class="title-chip">Performance</span></div>${perfAcCard()}<div class="empty" style="margin-top:10px">Import an OFP, choose the aircraft in the Briefing, or switch to Manual. Supported: A220, A318–A321XLR, 737NG, 757, 777.</div>`; bindPerfAc(el); return; }
-  if(false){ el.innerHTML=`<div class="page-head"><span class="title-chip">Performance</span></div><div class="empty">Select the aircraft in the Briefing (type / variant) to compute performance. Supported: A220, A318–A321XLR, 737NG, 757, 777.</div>`; return; }
+  if(!T){ el.innerHTML=`<div class="page-head"><span class="title-chip">Performance</span></div>${perfAcCard()}<div class="empty" style="margin-top:10px">Import an OFP, choose the aircraft in the Briefing, or switch to Manual. Supported: A220, A318–A321XLR, 737NG, 757, 777, Global 6000, Global 7500.</div>`; bindPerfAc(el); return; }
+  if(false){ el.innerHTML=`<div class="page-head"><span class="title-chip">Performance</span></div><div class="empty">Select the aircraft in the Briefing (type / variant) to compute performance. Supported: A220, A318–A321XLR, 737NG, 757, 777, Global 6000, Global 7500.</div>`; return; }
   const db=PERF_DB[T], F=FLAPS[db.fam]; const P=S.perf;
   const tr=traitsFor(T,AC.eng);
   if(tr.rat&&!P.to.rating) P.to.rating=tr.rat[0][0];
@@ -5363,7 +5369,7 @@ function renderPerf(el){
   const flTo=F.to.map(x=>[x[0],"CONF / FLAPS "+x[0]]), flLd=F.ldg.map(x=>[x[0],"CONF / FLAPS "+x[0]]), abO=F.ab.map(x=>[x[0],x[0]]);
   if(!P.to.flaps) P.to.flaps=(F.to.find(x=>x[3])||F.to[0])[0];
   if(!P.ldg.flaps) P.ldg.flaps=(F.ldg.find(x=>x[3])||F.ldg[0])[0];
-  if(!P.ldg.ab) P.ldg.ab=(F.ab[2]||F.ab[1])[0];
+  if(!P.ldg.ab) P.ldg.ab=(F.ab[2]||F.ab[1]||F.ab[0])[0];
   if(!P.to.thr) P.to.thr="auto"; if(!P.to.cond) P.to.cond="dry"; if(!P.ldg.cond) P.ldg.cond="dry"; if(!P.ldg.rev) P.ldg.rev="IDLE";
   const bar=(need,avail)=>{ if(!avail) return ""; const p=Math.min(100,need/avail*100); return `<div class="rbar"><i style="width:${p}%" class="${need>avail?"bad":p>85?"warn":"ok"}"></i><span>${num(need)} / ${num(avail)} m</span></div>`; };
   el.innerHTML=`
@@ -5380,12 +5386,13 @@ function renderPerf(el){
         ${f("to","w","TOW (kg)",num(Math.round(db.mtow*0.85)),'inputmode="numeric"')}${sel("to","flaps","Flaps",flTo)}
         ${f("to","elev","Elevation (ft)","0",'inputmode="numeric"')}${f("to","oat","OAT (°C)","15",'inputmode="numeric"')}
         ${f("to","qnh","QNH (hPa)","1013",'inputmode="numeric"')}${f("to","hw","Head(+)/Tail(−) wind kt","0",'inputmode="numeric"')}
-        ${sel("to","cond","Runway",condO)}${sel("to","thr","Thrust",[["auto",(db.fam==="airbus"||db.fam==="a220")?"FLEX (auto)":"Assumed temp (auto)"],["toga",(db.fam==="airbus"||db.fam==="a220")?"TOGA (forced)":"Full TO (forced)"]])}${tr.rat&&P.to.thr!=="toga"?sel("to","rating","Thrust rating",tr.rat.map(r=>[r[0],r[0]+(r[1]<1?" (derate)":"")])):""}
+        ${sel("to","cond","Runway",condO)}${sel("to","thr","Thrust",[["auto",(["airbus","a220","bd"].includes(db.fam))?"FLEX (auto)":"Assumed temp (auto)"],["toga",(["airbus","a220","bd"].includes(db.fam))?"TOGA (forced)":"Full TO (forced)"]])}${tr.rat&&P.to.thr!=="toga"?sel("to","rating","Thrust rating",tr.rat.map(r=>[r[0],r[0]+(r[1]<1?" (derate)":"")])):""}
       </div>
       <div class="perf-out">
         <div class="vspd"><div><small>V1</small><b>${to.v1}</b></div><div><small>VR</small><b>${to.vr}</b></div><div><small>V2</small><b>${to.v2}</b></div>
-          <div class="thr ${to.ok===false?"bad":""}"><small>THRUST</small><b>${to.ok===false?"NO GO":(db.fam==="airbus"||db.fam==="a220")?(to.flex!=null?"FLEX "+to.flex+"°":"TOGA"):(to.forceToga?"TO":to.rating+(to.flex!=null?" · "+to.flex+"°":""))}</b></div></div>
+          <div class="thr ${to.ok===false?"bad":""}"><small>THRUST</small><b>${to.ok===false?"NO GO":(["airbus","a220","bd"].includes(db.fam))?(to.flex!=null?"FLEX "+to.flex+"°":"TOGA"):(to.forceToga?"TO":to.rating+(to.flex!=null?" · "+to.flex+"°":""))}</b></div></div>
         ${bar(to.dist,+P.to.tora)}
+        ${db.est?`<div class="perf-note" style="color:var(--amber)">Business-jet model: weights and field lengths from the Bombardier fact sheet, V-speeds estimated — check them against your aircraft's FMS / EFB.</div>`:""}
         <div class="perf-note">${to.forceToga?"Forced full thrust — ":""}TOGA distance ${num(to.toga)} m · pressure alt ${num(to.a.pa)} ft · ISA ${Math.round(to.a.isa)}°C${to.wOver?' · <span class="neg">TOW above MTOW</span>':""}${!P.to.tora?" · enter TORA for FLEX":""}</div>
       </div>
     </section>
@@ -5399,11 +5406,11 @@ function renderPerf(el){
         ${f("ldg","gust","Gust kt","",'inputmode="numeric"')}${sel("ldg","cond","Runway",condO)}${sel("ldg","ab","Autobrake",abO)}${sel("ldg","rev","Reversers",[["NO REV","NO REV"],["IDLE","IDLE REV"],["MAX","MAX REV"]])}
       </div>
       <div class="perf-out">
-        <div class="vspd"><div><small>${db.fam==="airbus"||db.fam==="a220"?"VLS":"VREF"}</small><b>${ld.vref}</b></div><div><small>VAPP</small><b>${ld.vapp}</b></div><div><small>INCR</small><b>+${ld.inc}</b></div>
+        <div class="vspd"><div><small>${["airbus","a220"].includes(db.fam)?"VLS":"VREF"}</small><b>${ld.vref}</b></div><div><small>VAPP</small><b>${ld.vapp}</b></div><div><small>INCR</small><b>+${ld.inc}</b></div>
           <div class="thr ${ld.okAct===false?"bad":ld.ok===false?"warn":""}"><small>LANDING</small><b>${ld.okAct===false?"NO GO":ld.ok===false?"MARGINAL":P.ldg.lda?"OK":"—"}</b></div></div>
         <div class="ldr"><div><small>Actual (${esc(ld.ab)} · ${esc(ld.rev==="NO REV"?"no rev":ld.rev==="MAX"?"max rev":"idle rev")})</small><b>${num(ld.actual)} m</b>${ld.actual!==ld.actualNoRev?`<span class="revd">−${num(ld.actualNoRev-ld.actual)} m vs no rev</span>`:""}</div><div><small>Required, regulatory (×1.67${P.ldg.cond&&P.ldg.cond!=="dry"?" · "+P.ldg.cond:""})</small><b>${num(ld.required)} m</b></div></div>
         ${bar(ld.actual,+P.ldg.lda)}
-        <div class="perf-note">${pfx?`LW used ${num(ld.w)} kg (perf factor ${pfVal()>0?"+":""}${pfVal()}%) · `:""}${db.fam==="airbus"||db.fam==="a220"?"VAPP = VLS + max(5, ⅓ headwind), max +15":"VAPP = VREF + ½ headwind + gust, min +5, max +20"}${ld.wOver?' · <span class="neg">LW above MLW</span>':""}</div>
+        <div class="perf-note">${pfx?`LW used ${num(ld.w)} kg (perf factor ${pfVal()>0?"+":""}${pfVal()}%) · `:""}${["airbus","a220"].includes(db.fam)?"VAPP = VLS + max(5, ⅓ headwind), max +15":"VAPP = VREF + ½ headwind + gust, min +5, max +20"}${ld.wOver?' · <span class="neg">LW above MLW</span>':""}</div>
       </div>
     </section>
   </div>
