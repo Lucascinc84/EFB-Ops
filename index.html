@@ -1220,6 +1220,107 @@ html[data-mode=jet][data-theme=dark] .ha-i svg{color:var(--jsil);stroke:var(--js
 html[data-mode=jet][data-theme=dark] .h-dock{background:rgba(20,21,25,.7)!important;border:1px solid rgba(194,199,207,.16)!important;box-shadow:0 16px 40px rgba(0,0,0,.5)}
 html[data-mode=jet][data-theme=dark]{--cyan:#c2c7cf}
 
+/* ===================== Business Jet — "Signature" layout (side rail, editorial) ===================== */
+@media (min-width:900px){
+html[data-jlay=sig]:not(.tabv) .app{max-width:none;display:grid;grid-template-columns:232px minmax(0,1fr);grid-template-rows:auto 1fr;min-height:100vh}
+html[data-jlay=sig]:not(.tabv) .top{grid-column:1 / -1}
+html[data-jlay=sig]:not(.tabv) .tabs{grid-column:1;grid-row:2;flex-direction:column;align-self:start;position:sticky;top:67px;height:calc(100vh - 67px);overflow-y:auto;padding:26px 0 24px;gap:2px;border-bottom:0;border-right:1px solid var(--jline,#2c2f36);background:linear-gradient(180deg,#0e0f12 0%,#0a0b0d 100%)}
+html[data-jlay=sig]:not(.tabv) .tabs::before{content:"FLIGHT DECK";display:block;padding:0 26px 14px;font-size:10.5px;letter-spacing:.32em;color:#6c727c;font-weight:600}
+html[data-jlay=sig]:not(.tabv) .tabs::after{content:"";display:block;margin:22px 26px 0;height:1px;background:linear-gradient(90deg,rgba(194,199,207,.35),transparent)}
+html[data-jlay=sig]:not(.tabv) .tab{justify-content:flex-start;gap:14px;padding:13px 22px 13px 26px;border-bottom:0;border-left:2px solid transparent;font-size:12px;letter-spacing:.2em;color:#8b919b;width:100%;text-align:left;position:relative}
+html[data-jlay=sig]:not(.tabv) .tab svg{opacity:.75}
+html[data-jlay=sig]:not(.tabv) .tab .pill{margin-left:auto}
+html[data-jlay=sig]:not(.tabv) .tab:hover{color:#e6e8ec;background:rgba(255,255,255,.02)}
+html[data-jlay=sig]:not(.tabv) .tab.on{color:#f4f5f7;border-left-color:var(--mag);background:linear-gradient(90deg,rgba(200,16,46,.16),rgba(200,16,46,0) 75%)}
+html[data-jlay=sig]:not(.tabv) .tab.on svg{opacity:1;color:var(--mag)}
+html[data-jlay=sig]:not(.tabv) main{grid-column:2;grid-row:2;padding:34px 44px 80px;max-width:1240px;width:100%}
+}
+/* editorial look (all widths) */
+html[data-jlay=sig] .title-chip{font-size:32px!important;font-weight:200!important;letter-spacing:.01em;position:relative;padding:0 0 10px!important;margin-bottom:6px}
+html[data-jlay=sig] .title-chip::after{content:"";position:absolute;left:0;bottom:0;width:38px;height:2px;background:var(--mag)}
+html[data-jlay=sig] .page-head{align-items:flex-end;margin-bottom:22px}
+html[data-jlay=sig] .card,html[data-jlay=sig] .wx-card,html[data-jlay=sig] .blk{border-radius:3px!important}
+html[data-jlay=sig][data-theme=dark] .card,html[data-jlay=sig][data-theme=dark] .wx-card{background:linear-gradient(180deg,#16171a 0%,#121316 100%)!important;border:1px solid rgba(194,199,207,.1)!important;border-top:1px solid rgba(194,199,207,.22)!important}
+html[data-jlay=sig] .fld input,html[data-jlay=sig] .fld select,html[data-jlay=sig] .frm input,html[data-jlay=sig] .frm select{background:transparent!important;border:0!important;border-bottom:1px solid rgba(194,199,207,.25)!important;border-radius:0!important;padding-left:2px}
+html[data-jlay=sig] .fld input:focus,html[data-jlay=sig] .frm input:focus{border-bottom-color:var(--mag)!important}
+html[data-jlay=sig] .fld label,html[data-jlay=sig] .frm label{text-transform:uppercase;letter-spacing:.18em;font-size:10px;color:#7b818b}
+html[data-jlay=sig] .btn{border-radius:999px!important;padding-left:18px;padding-right:18px;letter-spacing:.16em!important;font-size:11px!important}
+html[data-jlay=sig] .vseg,html[data-jlay=sig] .seg{border-radius:999px!important;padding:3px}
+html[data-jlay=sig] .vseg button,html[data-jlay=sig] .seg button{border-radius:999px!important}
+html[data-jlay=sig] .pill{border-radius:999px}
+html[data-jlay=sig] .item{border-radius:0;border-bottom:1px solid rgba(194,199,207,.08)}
+html[data-jlay=sig] h2.sec{display:flex;align-items:center;gap:14px}
+html[data-jlay=sig] h2.sec::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(194,199,207,.28),transparent)}
+html[data-jlay=sig][data-theme=dark] .top{background:rgba(9,10,12,.9)}
+html[data-jlay=sig] .brand{border-radius:2px!important}
+html[data-jlay=sig] #modeSeg,html[data-jlay=sig] .status{border-radius:999px}
+
+/* ===================== Signature — modern pro components ===================== */
+html[data-jlay=sig]{--jx-a:rgba(194,199,207,.14);--jx-s:#c2c7cf;--jx-m:#8b919b}
+/* context strip on every page */
+.jx-strip{display:flex;align-items:center;gap:30px;padding:12px 18px;margin:-6px 0 26px;border:1px solid var(--jx-a);border-left:2px solid var(--mag);background:linear-gradient(90deg,rgba(200,16,46,.07),rgba(255,255,255,.015) 40%);border-radius:2px;flex-wrap:wrap}
+.jx-strip .sp{flex:1}
+.jx-si{display:flex;flex-direction:column;gap:3px;min-width:0}
+.jx-si small{font-size:9.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--jx-m);font-weight:600}
+.jx-si b{font-size:14px;font-weight:500;color:#eef0f3;letter-spacing:.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.jx-utc b{font-family:var(--mono);color:var(--jx-s)}
+/* briefing hero */
+.jx-hero{position:relative;overflow:hidden;margin:6px 0 34px;padding:26px 30px 22px;border:1px solid var(--jx-a);border-top-color:rgba(194,199,207,.3);border-radius:3px;
+  background:radial-gradient(700px 240px at 50% -40%,rgba(200,16,46,.20),transparent 70%),linear-gradient(180deg,#17181c 0%,#101114 100%);box-shadow:0 24px 60px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.05)}
+.jx-hero::after{content:"";position:absolute;inset:auto 0 0 0;height:1px;background:linear-gradient(90deg,transparent,rgba(194,199,207,.4),transparent)}
+.jx-h-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.jx-eyebrow{font-size:10.5px;letter-spacing:.34em;text-transform:uppercase;color:var(--jx-m);font-weight:600}
+.jx-eyebrow::before{content:"";display:inline-block;width:18px;height:1px;background:var(--mag);vertical-align:middle;margin-right:10px}
+.jx-tag{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--jx-s);border:1px solid var(--jx-a);border-radius:999px;padding:5px 12px}
+.jx-route{display:grid;grid-template-columns:auto 1fr auto;align-items:end;gap:26px;padding:6px 0 18px}
+.jx-ap{display:flex;flex-direction:column;gap:4px}
+.jx-ap small{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--jx-m)}
+.jx-ap b{font-size:64px;line-height:.95;font-weight:200;letter-spacing:.06em;color:#f6f7f9;font-family:var(--font)}
+.jx-ap.jx-r{text-align:right}
+.jx-arc{position:relative;height:74px;color:rgba(194,199,207,.5);display:flex;align-items:flex-end;justify-content:center}
+.jx-arc>svg{position:absolute;inset:0 0 14px;width:100%;height:60px}
+.jx-plane{position:absolute;left:50%;top:-2px;transform:translateX(-50%);color:var(--mag);filter:drop-shadow(0 0 10px rgba(200,16,46,.6))}
+.jx-arc em{font-style:normal;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--jx-s);background:#131417;padding:2px 10px;position:relative}
+.jx-h-bot{display:flex;align-items:center;gap:36px;padding-top:16px;border-top:1px solid var(--jx-a)}
+.jx-h-bot .sp{flex:1}
+.jx-ring{position:relative;width:74px;height:74px;display:grid;place-items:center}
+.jx-ring svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.jx-ring circle{fill:none;stroke-width:3}
+.jx-ring .t{stroke:rgba(194,199,207,.12)}.jx-ring .v{stroke:var(--mag);stroke-linecap:round;transition:stroke-dashoffset .5s}
+.jx-ring b{font-size:20px;font-weight:300;color:#f2f3f5;margin-top:-8px}.jx-ring b i{font-style:normal;font-size:11px;color:var(--jx-m)}
+.jx-ring small{position:absolute;bottom:14px;font-size:7.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--jx-m)}
+@media(max-width:760px){.jx-ap b{font-size:40px}.jx-route{gap:12px}.jx-h-bot{gap:18px;flex-wrap:wrap}.jx-hero{padding:20px 18px}}
+/* briefing sections — numbered, airy */
+html[data-jlay=sig] .bgrid{counter-reset:jsec;gap:22px}
+html[data-jlay=sig] .bcard{background:linear-gradient(180deg,#15161a,#111215)!important;border:1px solid var(--jx-a);border-radius:3px}
+html[data-jlay=sig] .bcard-h{background:transparent!important;padding:18px 20px 14px;gap:14px;border-bottom:1px solid var(--jx-a)}
+html[data-jlay=sig] .bcard-h::before{counter-increment:jsec;content:counter(jsec,decimal-leading-zero);font-family:var(--font);font-size:26px;font-weight:200;color:rgba(194,199,207,.55);letter-spacing:.02em;min-width:34px}
+html[data-jlay=sig] .bcard-h h3{font-size:13px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:#eef0f3}
+html[data-jlay=sig] .bcard-h .role{background:transparent!important;border:1px solid var(--jx-a);color:var(--jx-s)!important;border-radius:999px;padding:3px 9px;font-size:10px;letter-spacing:.14em}
+html[data-jlay=sig] .bcard-h .role.pf{border-color:rgba(200,16,46,.5);color:#ff6a80!important}
+html[data-jlay=sig] .bcard-h .prog{font-size:11px;letter-spacing:.08em;color:var(--jx-m)}
+html[data-jlay=sig] .bcard .bar{height:1px!important;background:transparent}
+html[data-jlay=sig] .bcard .bar i{background:var(--mag)!important;height:1px}
+html[data-jlay=sig] .bbody{padding:6px 20px 14px}
+html[data-jlay=sig] .brow{grid-template-columns:44% 1fr;border-bottom:1px solid rgba(194,199,207,.07)!important;padding:9px 0;position:relative}
+html[data-jlay=sig] .brow label{font-size:12.5px;color:#a9aeb7;letter-spacing:.02em}
+html[data-jlay=sig] .brow input{background:transparent!important;border:0!important;color:#f2f3f5;font-size:14px;text-align:right;padding:2px 0}
+html[data-jlay=sig] .brow input::placeholder{color:#4a4e56}
+html[data-jlay=sig] .brow.filled label::before{content:"";position:absolute;left:-12px;top:50%;width:4px;height:4px;margin-top:-2px;border-radius:50%;background:var(--mag)}
+html[data-jlay=sig] .brow .tri{justify-content:flex-end}
+html[data-jlay=sig] .bcard.closed .bcard-h{border-bottom:0}
+html[data-jlay=sig] .card .flight-hdr{gap:22px}
+html[data-jlay=sig] .page-head .title-chip{font-size:22px!important}
+html[data-jlay=sig] .item{background:transparent!important;border-radius:0;margin:0;border-bottom:1px solid rgba(194,199,207,.08);padding:14px 10px;font-family:var(--font);letter-spacing:.02em}
+html[data-jlay=sig] .item .val{font-family:var(--font);letter-spacing:.12em;font-size:12px}
+html[data-jlay=sig] .item.on,html[data-jlay=sig] .item.done{background:linear-gradient(90deg,rgba(200,16,46,.10),transparent 70%)!important}
+html[data-jlay=sig] .cl-pick button{border-radius:999px}
+.jx-plane{transition:left 1.2s ease,top 1.2s ease,transform 1.2s ease;top:-2px}
+.jx-plane.live{filter:drop-shadow(0 0 12px rgba(200,16,46,.9))}
+.jx-arc.live>svg path:first-child{opacity:.6}
+.jx-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#2fd27a;margin-right:8px;vertical-align:middle;box-shadow:0 0 0 0 rgba(47,210,122,.6);animation:jxPulse 1.8s infinite}
+@keyframes jxPulse{0%{box-shadow:0 0 0 0 rgba(47,210,122,.6)}70%{box-shadow:0 0 0 8px rgba(47,210,122,0)}100%{box-shadow:0 0 0 0 rgba(47,210,122,0)}}
+
 /* standalone app: full bleed + safe areas */
 .app{margin:0!important;min-height:100vh;border:0!important;border-radius:0!important;box-shadow:none!important;max-width:none}
 .top{padding-top:calc(10px + env(safe-area-inset-top));padding-left:calc(16px + env(safe-area-inset-left));padding-right:calc(16px + env(safe-area-inset-right))}
@@ -1477,7 +1578,7 @@ const CHECKLISTS = {
  {t:"POWER-OFF", i:["EQUIP COOLING - INLET|OFF","EMER LTS|OFF","HYD 3A|OFF","HYD 3B|OFF","HYD 2B|OFF","ANTI-ICE - L COWL|OFF","ANTI-ICE - WING|OFF","ANTI-ICE - R COWL|OFF","APU|OFF","PTU|OFF","DOME|OFF","BATT 1|OFF","BATT 2|OFF"]},
  {t:"FLAPS & SPEEDS", info:true, i:["#Flaps use","!FLAPS 0 — cruise","!FLAPS 1 — slats only","!FLAPS 2 — take-off (best climb)","!FLAPS 3 — take-off","!FLAPS 4 — take-off (short field) · landing","!FLAPS 5 — landing (short field)","#Recommended flap extension","!0 → 1 : 220 kt · 1 → 2 : 200 kt · 2 → 3 : 180 kt · 3 → 4 : 160 kt · 4 → 5 : 140 kt","#Recommended flap retraction","!4 → 3 : 170 kt · 3 → 2 : 180 kt · 2 → 1 : 190 kt · 1 → 0 : 200 kt","#Maximum speeds","!FLAPS 1 : 230 kt · FLAPS 2 : 210 kt · FLAPS 3 : 210 kt · FLAPS 4 : 190 kt · FLAPS 5 : 170 kt","!GEAR UP : 220 kt · GEAR DN : 250 kt · WIPERS : 250 kt"]}
  ]},
-  bizjet:{jet:true, name:"Global 6000", title:"Business Jet · Normal Checklist", src:"Global 6000 checklist (user document)", v:1, sections:[
+  bizjet:{jet:true, name:"Global 6000", title:"Global 6000 · Normal Checklist", src:"Global 6000 checklist (user document)", v:1, sections:[
     {t:"Pre-Start", i:["Briefing|CONFIRMED","Brakes|ON","Throttle|IDLE","Spoilers|CHECK (OFF)","Flaps|RETRACTED","Seatbelt lights|OFF","No smoking|ON","Navigation lights|OFF","Beacon|ON","Landing light|OFF","Strobe lights|OFF","Flight plan|COMPLETE","FMC|COMPLETE","Altimeter|SET","Minimums|SET","Controls|TESTED","Cruise speed + alt|SET","Weight and balance|COMPLETE","Fuel|RECEIVED AND LOADED"]},
     {t:"After Start / Taxi", i:["Engines|CONFIRM (STARTED)","Pushback / taxi|CLEARANCE","Seatbelt lights|ON","No smoking|ON","Navigation lights|ON","Takeoff flaps|SET","Brakes|OFF","Forward thrust|SET"]},
     {t:"Hold Short", i:["Briefing|CONFIRMED","Landing lights|ON","Strobe lights|ON","Takeoff flaps|SET","Controls|CHECKED","Cabin|READY"]},
@@ -2953,7 +3054,7 @@ function applyUi(){ document.documentElement.classList.toggle("tabv",isTab()); a
 /* one wallpaper per interface profile: wizz, global, and each company style (s:<id>) */
 let WALL, WALLK; const wallKey=()=>LS+"wall:"+(S.settings.mode||"wizz");
 const wallLoad=()=>{ const k=wallKey(); if(WALLK!==k){ WALLK=k; try{ const old=localStorage.getItem(LS+"wall"); if(old){ if(!localStorage.getItem(k)) localStorage.setItem(k,old); localStorage.removeItem(LS+"wall"); } WALL=localStorage.getItem(k); }catch(e){ WALL=null; } } return WALL; };
-const wallName=()=>{ const c=typeof curCustom==="function"&&curCustom(); return c?c.name:S.settings.mode==="global"?"Global":S.settings.mode==="jet"?"Business Jet":"Wizz"; };
+const wallName=()=>{ const c=typeof curCustom==="function"&&curCustom(); return c?c.name:S.settings.mode==="global"?"Global":S.settings.mode==="jet"?"Private Jet":"Wizz"; };
 function applyWall(){ if(typeof applyBanner==="function") applyBanner(); wallLoad(); const r=document.documentElement; r.classList.toggle("wallhome",!!(WALL&&isTab()&&current==="home")); if(WALL) r.style.setProperty("--wall",`url("${WALL}")`); else r.style.removeProperty("--wall"); }
 function wallPick(){
   const inp=document.createElement("input"); inp.type="file"; inp.accept="image/*";
@@ -3014,7 +3115,7 @@ const STY_BG={obsidian:["#0b0c0e","#111215","#17181c","#1e2025","#2c2f36"],silve
 const STY_FONTS={elegant:"'Avenir Next','Helvetica Neue','Segoe UI',system-ui,sans-serif",modern:"Inter,system-ui,sans-serif",system:"-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif",rounded:"ui-rounded,'SF Pro Rounded','Nunito',system-ui,sans-serif",classic:"Georgia,'Times New Roman',serif",technical:"'JetBrains Mono',ui-monospace,monospace"};
 const styList=()=>S.settings.styles||(S.settings.styles=[]);
 const BUILTIN={wizz:{id:"wizz",name:"Wizz",short:"EFB",sub:"Flight Ops",base:"wizz",c:{pri:"#c6007e",sec:"#3a2a6e",acc:"#e2238f"},bg:"charcoal",font:"modern",bar:"gradient",logo:"",builtin:"wizz"},
-  jet:{id:"jet",name:"Business Jet",short:"JET",sub:"Private Aviation",base:"jet",c:{pri:"#c8102e",sec:"#1a1c21",acc:"#c2c7cf"},bg:"obsidian",font:"elegant",bar:"solid",logo:"",builtin:"jet"},
+  jet:{id:"jet",name:"Private Jet",short:"JET",sub:"Private Aviation",base:"jet",c:{pri:"#c8102e",sec:"#1a1c21",acc:"#c2c7cf"},bg:"obsidian",font:"elegant",bar:"solid",logo:"",builtin:"jet"},
   global:{id:"global",name:"Global",short:"EFB",sub:"Global Ops",base:"global",c:{pri:"#1f6fe5",sec:"#0b2b63",acc:"#5aa2ff"},bg:"charcoal",font:"modern",bar:"gradient",logo:"",builtin:"global"}};
 const builtinOv=()=>S.settings.builtinOv||(S.settings.builtinOv={});
 const curCustom=()=>{ const m=String(S.settings.mode||""); return m.startsWith("s:")?styList().find(s=>s.id===m.slice(2))||null:null; };
@@ -3058,7 +3159,7 @@ async function styLogoFile(f){
 function styleEditor(orig,bkey){
   if(bkey) orig=builtinOv()[bkey]||BUILTIN[bkey];
   const isNew=!orig&&!bkey;
-  const BN={wizz:"Wizz",global:"Global",jet:"Business Jet"};
+  const BN={wizz:"Wizz",global:"Global",jet:"Private Jet"};
   if(bkey&&(S.settings.mode||"wizz")!==bkey||bkey&&curCustom()){ S.settings.mode=bkey; save("settings"); applyMode(); render(); }
   const st=orig?Object.assign(JSON.parse(JSON.stringify(orig)),bkey?{builtin:bkey,base:bkey,id:bkey}:{}):{id:Date.now().toString(36),name:"My Airline",short:"EFB",sub:"Flight Ops",base:"global",c:{pri:"#0f7ad8",sec:"#0a2c5c",acc:"#47a8ff"},bg:"charcoal",font:"modern",bar:"gradient",logo:""};
   const preview=()=>{ applyStyle(st); const p=$("#styPrev"); if(p){ p.querySelector(".sp-b b").textContent=st.short||"EFB"; p.querySelector(".sp-b span").innerHTML=esc(st.sub||"").split(/\s+/).slice(0,3).join("<br>"); const li=p.querySelector(".sp-logo"); li.innerHTML=st.logo?`<img src="${st.logo}" alt="">`:document.querySelector(".top .logo").outerHTML; } };
@@ -3074,7 +3175,7 @@ function styleEditor(orig,bkey){
       ${bkey?"":`<div><label>Company name</label><input id="syName" value="${esc(st.name)}" maxlength="30"></div>`}
       <div><label>Brand (top bar)</label><input id="syShort" value="${esc(st.short)}" maxlength="8" placeholder="EFB"></div>
       <div><label>Subtitle</label><input id="sySub" value="${esc(st.sub)}" maxlength="24" placeholder="Flight Ops"></div>
-      ${bkey?"":`<div><label>Works like</label><select id="syBase"><option value="global" ${st.base==="global"||!st.base?"selected":""}>Global — airliners</option><option value="jet" ${st.base==="jet"?"selected":""}>Business Jet — private jets</option><option value="wizz" ${st.base==="wizz"?"selected":""}>Wizz fleet — A320 / A321 & registrations</option></select></div>`}
+      ${bkey?"":`<div><label>Works like</label><select id="syBase"><option value="global" ${st.base==="global"||!st.base?"selected":""}>Global — airliners</option><option value="jet" ${st.base==="jet"?"selected":""}>Private Jet</option><option value="wizz" ${st.base==="wizz"?"selected":""}>Wizz fleet — A320 / A321 & registrations</option></select></div>`}
     </div>
     ${bkey&&bkey!=="jet"?"":`<div id="syFleetBox" style="${st.base==="wizz"?"display:none":""}"><h4 class="sty-h">${st.base==="jet"?"Jet fleet":"Company fleet"} <span id="syFleetN">(${(st.fleet||[]).length})</span></h4>
       <div class="fl-list" id="syFleet">${fleetRowsHTML(st.fleet||[])}</div>
@@ -3840,6 +3941,53 @@ const ICON={
 const isWizz=()=>S.settings.mode==="wizz"||!S.settings.mode||((typeof curStyle==="function")&&!!curStyle()&&curStyle().base==="wizz");
 /* profiles removed — Wizz / Global only */
 const isJet=()=>S.settings.mode==="jet"||((typeof curStyle==="function")&&!!curStyle()&&curStyle().base==="jet");
+const jsig=()=>isJet()&&S.settings.jetLay!=="classic";
+function jxUtc(){ const d=new Date(); return String(d.getUTCHours()).padStart(2,"0")+":"+String(d.getUTCMinutes()).padStart(2,"0")+"Z"; }
+function jxStrip(){
+  const h=S.briefing.hdr, ac=currentAc(), sum=S.ofp&&S.ofp.sum;
+  const it=(k,v)=>`<div class="jx-si"><small>${k}</small><b>${esc(v||"—")}</b></div>`;
+  return `<div class="jx-strip">${it("Flight",h.cs)}${it("Route",h.from&&h.to?h.from+" → "+h.to:"")}${it("Aircraft",ac.type)}${it("Registration",ac.reg)}${sum&&sum.fl?it("Cruise","FL"+sum.fl):""}<span class="sp"></span><div class="jx-si jx-utc"><small>UTC</small><b>${jxUtc()}</b></div></div>`;
+}
+function jxHero(){
+  const h=S.briefing.hdr, ac=currentAc(), sum=S.ofp&&S.ofp.sum;
+  let A=0,B=0; BRIEFING.forEach(s=>{ const [a,b]=briefProgress(s); A+=a; B+=b; }); const pc=B?Math.round(A/B*100):0, C=2*Math.PI*44;
+  const dt=h.date?new Date(h.date+"T00:00:00Z").toUTCString().slice(0,16):"Date not set";
+  return `<section class="jx-hero">
+    <div class="jx-h-top"><span class="jx-eyebrow">Flight briefing</span><span class="jx-tag">${esc(ac.type||"Aircraft")}${ac.reg?" · "+esc(ac.reg):""}</span></div>
+    <div class="jx-route">
+      <div class="jx-ap"><small>Departure</small><b>${esc(h.from||"– – – –")}</b></div>
+      <div class="jx-arc" id="jxArc"><svg viewBox="0 0 300 60" preserveAspectRatio="none"><path d="M6 52 Q150 -14 294 52" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="3 5" vector-effect="non-scaling-stroke"/><path id="jxDone" d="M6 52 Q150 -14 294 52" pathLength="1" fill="none" stroke="var(--mag)" stroke-width="2" stroke-dasharray="0 1" style="opacity:0"/></svg>
+        <span class="jx-plane" id="jxPlane"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 00-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z" transform="rotate(90 12 12)"/></svg></span>
+        <em id="jxLbl">${esc(h.cs||"Callsign")}${sum&&sum.fl?" · FL"+esc(sum.fl):""}</em></div>
+      <div class="jx-ap jx-r"><small>Arrival</small><b>${esc(h.to||"– – – –")}</b></div>
+    </div>
+    <div class="jx-h-bot"><div class="jx-si"><small>Date</small><b>${esc(dt)}</b></div><div class="jx-si"><small>Alternate</small><b>${esc((sum&&sum.altn)||"—")}</b></div><div class="jx-si"><small>Engines</small><b>${esc(ac.eng||"—")}</b></div><span class="sp"></span>
+      <div class="jx-ring"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" class="t"/><circle cx="50" cy="50" r="44" class="v" style="stroke-dasharray:${C};stroke-dashoffset:${C*(1-pc/100)}"/></svg><b>${pc}<i>%</i></b><small>Briefed</small></div></div>
+  </section>`;
+}
+/* live plane on the briefing arc — automatic when your callsign is connected on VATSIM */
+function jxLive(){
+  const arc=document.getElementById("jxArc"), pl=document.getElementById("jxPlane"), done=document.getElementById("jxDone"), lbl=document.getElementById("jxLbl"); if(!arc||!pl) return;
+  const R=typeof routeGeo==="function"?routeGeo():null, now=Date.now(), v=MAP&&MAP.vat&&now-MAP.vatAt<120e3?MAP.vat:null;
+  let t=0.5, live=false, info="";
+  if(R&&v&&R.dist>0){ const at=alongTrack(R,v.lat,v.lon); if(at.x<300){ t=Math.max(0,Math.min(1,at.d/R.dist)); live=true;
+    const rem=Math.max(0,Math.round(R.dist-at.d)); info=` · ${Math.round(t*100)}% · ${v.alt>1500?"FL"+String(Math.round(v.alt/100)).padStart(3,"0"):"GND"} · ${Math.round(v.gs)} KT · ${rem} NM TO GO`; } }
+  const W=arc.clientWidth||300, sx=W/300, u=1-t;
+  const x=u*u*6+2*u*t*150+t*t*294, y=u*u*52+2*u*t*(-14)+t*t*52, dx=(2*u*(150-6)+2*t*(294-150))*sx, dy=2*u*(-14-52)+2*t*(52+14);
+  const ang=Math.atan2(dy,dx)*180/Math.PI;
+  pl.style.left=(x/300*100)+"%"; pl.style.top=(y-11)+"px"; pl.style.transform=`translateX(-50%) rotate(${live?ang:0}deg)`;
+  pl.classList.toggle("live",live); arc.classList.toggle("live",live);
+  if(done){ done.style.opacity=live?"1":"0"; done.setAttribute("stroke-dasharray",`${t} 1`); }
+  if(lbl){ const h=S.briefing.hdr, sum=S.ofp&&S.ofp.sum; lbl.innerHTML=live?`<i class="jx-dot"></i>LIVE · ${esc(R.cs)}${esc(info)}`:`${esc(h.cs||"Callsign")}${sum&&sum.fl?" · FL"+esc(sum.fl):""}`; }
+}
+let _jxT=null;
+function jxLiveStart(){
+  jxLive(); if(_jxT) return;
+  const tick=async()=>{ if(!(current==="briefing"&&jsig()&&document.getElementById("jxArc"))){ clearInterval(_jxT); _jxT=null; return; }
+    if(typeof vatPoll==="function"&&!document.hidden){ try{ await vatPoll(); }catch(e){} } jxLive(); };
+  _jxT=setInterval(tick,15000); setTimeout(tick,300);
+}
+window.addEventListener("resize",()=>{ if(document.getElementById("jxArc")) jxLive(); });
 const modeKey=()=>isWizz()?"wizz":isJet()?"jet":"global";
 const gHdr=()=>{ const h=S.briefing.hdr; if(isJet()){ if(!h.j||!h.j.variant) h.j=Object.assign({fam:"bd_global",variant:"Global 6000",eng:"RR BR710A2-20"},h.j||{}); return h.j; } return h.g; };
 const famList=()=>FAMILIES.filter(f=>famAllowed(f.id));
@@ -3922,8 +4070,8 @@ function renderBriefing(el){
   if(S.briefing.view==="navlog"){ renderNavlog(el,vseg,vbind); return; }
   const h=S.briefing.hdr, f=S.briefing.f;
   const hf=(k,l,cls="",ph="")=>`<div class="fld"><label>${l}</label><input data-h="${k}" class="${cls}" value="${esc(h[k]||"")}" placeholder="${ph}"></div>`;
-  el.innerHTML=`${vseg}${fdmBriefBanner()}
-  <div class="page-head"><span class="title-chip">Smart Briefing</span><span class="sp"></span>
+  el.innerHTML=`${vseg}${fdmBriefBanner()}${jsig()?jxHero():""}
+  <div class="page-head"><span class="title-chip">${jsig()?"Flight details":"Smart Briefing"}</span><span class="sp"></span>
     <button class="btn mag" id="bSb">SimBrief</button>
     <button class="btn ghost" id="bReset">Reset</button>
     <button class="btn ghost" id="bCopy">Copy</button>
@@ -3951,7 +4099,7 @@ function renderBriefing(el){
         return `<div class="brow ${any?"filled":""}"><label>${esc(fd.k)}</label><div class="tri">${fd.tri.map((t,i)=>`<input data-f="${ks[i]}" value="${esc(f[ks[i]]||"")}" placeholder="${t}" inputmode="numeric">`).join("")}</div></div>`;
       }).join("")}</div></section>`}).join("")}
   </div>`;
-  vbind(); el.querySelectorAll("[data-fdmopen]").forEach(b=>b.onclick=()=>{ FDM_UI.open=b.dataset.fdmopen; S.checklist.view="fdm"; save("checklist"); go("checklist"); window.scrollTo({top:0}); });
+  vbind(); if(jsig()) jxLiveStart(); el.querySelectorAll("[data-fdmopen]").forEach(b=>b.onclick=()=>{ FDM_UI.open=b.dataset.fdmopen; S.checklist.view="fdm"; save("checklist"); go("checklist"); window.scrollTo({top:0}); });
   el.querySelectorAll("[data-h]").forEach(inp=>inp.addEventListener("input",()=>{
     let v=inp.value; if(["cs","from","to"].includes(inp.dataset.h)){v=v.toUpperCase();inp.value=v}
     S.briefing.hdr[inp.dataset.h]=v; save("briefing"); updateStatus();
@@ -5388,31 +5536,33 @@ function updateStatus(){
 }
 function renderModeSeg(){
   const seg=$("#modeSeg"); if(!seg) return; const m=S.settings.mode||"wizz", P=curProf();
-  seg.innerHTML=`<button data-mode="wizz" class="${m==="wizz"?"on":""}">Wizz</button><button data-mode="global" class="${m==="global"?"on":""}">Global</button><button data-mode="jet" class="${m==="jet"?"on":""}">Jet</button>${styleModeSeg()}`;
+  seg.innerHTML=`<button data-mode="wizz" class="${m==="wizz"?"on":""}">Wizz</button><button data-mode="global" class="${m==="global"?"on":""}">Global</button><button data-mode="jet" class="${m==="jet"?"on":""}">Private Jet</button>${styleModeSeg()}`;
   seg.querySelectorAll("button[data-mode]").forEach(b=>b.onclick=()=>setMode(b.dataset.mode)); bindStyleSeg();
 }
 function applyMode(){
   const r=document.documentElement, ST=curStyle();
   r.dataset.mode=modeKey();
   applyStyle(ST||(isJet()?BUILTIN.jet:null));
+  r.dataset.jlay=isJet()&&S.settings.jetLay!=="classic"?"sig":"";
   if(isJet()){ const st=ST||BUILTIN.jet; r.dataset.theme=(STY_BG[st.bg]||[]).light?"light":"dark"; } else r.dataset.theme=ST&&(STY_BG[ST.bg]||[]).light?"light":"dark";
 }
 function setMode(m){
   if(S.settings.mode===m) return;
   S.settings.mode=m; save("settings"); applyMode(); render();
-  const ST=curCustom(); toast(ST?`${ST.name} style`:m==="global"?"Global mode — all aircraft":m==="jet"?"Business Jet mode":"Wizz mode — A320 / A321");
+  const ST=curCustom(); toast(ST?`${ST.name} style`:m==="global"?"Global mode — all aircraft":m==="jet"?"Private Jet mode":"Wizz mode — A320 / A321");
 }
 function renderDrawer(){
   $("#drawer").innerHTML=`<div class="brand" style="margin-bottom:10px">${document.querySelector(".top .logo").outerHTML}<b>EFB</b><span>${isWizz()?"Flight<br>Ops":isJet()?"Private<br>Aviation":"Global<br>Ops"}</span></div>
     <h4>Interface</h4>
     <div class="sty-item"><button class="mod ${S.settings.mode==="wizz"||!S.settings.mode?"on":""}" data-mode="wizz">● Wizz Air — A320 / A321${builtinOv().wizz?' <small class="sty-cust">customised</small>':""}</button><button class="sty-ed-b" data-bed="wizz" aria-label="Edit Wizz design">✎</button></div>
     <div class="sty-item"><button class="mod ${S.settings.mode==="global"?"on":""}" data-mode="global">● Global — A220 · A320 · 737 · 757 · 777${builtinOv().global?' <small class="sty-cust">customised</small>':""}</button><button class="sty-ed-b" data-bed="global" aria-label="Edit Global design">✎</button></div>
-    <div class="sty-item"><button class="mod ${S.settings.mode==="jet"?"on":""}" data-mode="jet">● Business Jet — Global · Challenger · Falcon · Gulfstream${builtinOv().jet?' <small class="sty-cust">customised</small>':""}</button><button class="sty-ed-b" data-bed="jet" aria-label="Edit Business Jet design">✎</button></div>
+    <div class="sty-item"><button class="mod ${S.settings.mode==="jet"?"on":""}" data-mode="jet">● Private Jet${builtinOv().jet?' <small class="sty-cust">customised</small>':""}</button><button class="sty-ed-b" data-bed="jet" aria-label="Edit Private Jet design">✎</button></div>
     <h4>Company styles</h4>
     ${styList().map(s=>`<div class="sty-item ${curCustom()&&curCustom().id===s.id?"on":""}"><button class="mod" data-sty="${s.id}"><i class="sty-dot" style="background:linear-gradient(135deg,${s.c.pri},${s.c.sec})"></i>${esc(s.name)}</button><button class="sty-ed-b" data-styed="${s.id}" aria-label="Edit">✎</button></div>`).join("")}
     <button class="mod" id="styNew">＋ New company style</button>
     <h4>View</h4>
     <button class="mod ${isTab()?"on":""}" id="uiTog">▦ ${isTab()?"Tablet view (on) — switch to classic":"Tablet view"}</button>
+    ${isJet()?`<button class="mod" id="jLayBtn">✦ Jet layout: ${S.settings.jetLay==="classic"?"Classic — switch to Signature":"Signature — switch to Classic"}</button>`:""}
     <button class="mod" id="bnrBtn">🏷 Top banner — custom image</button>
     ${isTab()?`<button class="mod" id="wallBtn">🖼 ${WALL?"Wallpaper — change / remove":"Import a wallpaper"}</button>`:""}
     <div class="mode-note">All interfaces share the same flight log.</div>
@@ -5445,6 +5595,7 @@ function renderDrawer(){
   $("#expBtn").onclick=()=>{ toggleDrawer(false); exportData(); };
   $("#impBtn").onclick=()=>{ toggleDrawer(false); importData(); };
   $("#fsMenu").onclick=()=>{ toggleDrawer(false); toggleFullscreen(); };
+  { const jl=$("#jLayBtn"); if(jl) jl.onclick=()=>{ S.settings.jetLay=S.settings.jetLay==="classic"?"sig":"classic"; save("settings"); toggleDrawer(false); applyMode(); render(); toast("Jet layout: "+(S.settings.jetLay==="classic"?"Classic":"Signature")); }; }
   { const bb=$("#bnrBtn"); if(bb) bb.onclick=()=>{ toggleDrawer(false); bannerModal(); }; }
   { const wb=$("#wallBtn"); if(wb) wb.onclick=()=>{ toggleDrawer(false); wallMenu(); }; }
   $("#uiTog").onclick=()=>{ toggleDrawer(false); setUi(isTab()?"classic":"tablet"); };
@@ -5563,6 +5714,7 @@ function render(){
   if(current==="home"){ if(isTab()){ renderHome(v); return; } current=MODULES[0].id; }
   { const mm=MODULES.find(x=>x.id===current); if(mm&&mm.wizzOnly&&!isWizz()){ current=MODULES[0].id; updateTabs(); } }
   const m=MODULES.find(x=>x.id===current); m.render(v);
+  if(jsig()&&!isTab()&&current!=="briefing") v.insertAdjacentHTML("afterbegin",jxStrip());
 }
 window.addEventListener("hashchange",()=>go(location.hash.slice(1)));
 applyMode(); badgeInit();
