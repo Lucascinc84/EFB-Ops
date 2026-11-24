@@ -1320,6 +1320,9 @@ html[data-jlay=sig] .cl-pick button{border-radius:999px}
 .jx-arc.live>svg path:first-child{opacity:.6}
 .jx-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#2fd27a;margin-right:8px;vertical-align:middle;box-shadow:0 0 0 0 rgba(47,210,122,.6);animation:jxPulse 1.8s infinite}
 @keyframes jxPulse{0%{box-shadow:0 0 0 0 rgba(47,210,122,.6)}70%{box-shadow:0 0 0 8px rgba(47,210,122,0)}100%{box-shadow:0 0 0 0 rgba(47,210,122,0)}}
+/* wallpaper must win over the Private Jet home backgrounds */
+html.tabv.wallhome[data-mode][data-theme] .app{background:linear-gradient(rgba(0,0,0,.22),rgba(0,0,0,.40)),var(--wall) center/cover no-repeat fixed!important}
+html.tabv.wallhome[data-mode][data-theme=light] .app{background:linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.28)),var(--wall) center/cover no-repeat fixed!important}
 
 /* standalone app: full bleed + safe areas */
 .app{margin:0!important;min-height:100vh;border:0!important;border-radius:0!important;box-shadow:none!important;max-width:none}
